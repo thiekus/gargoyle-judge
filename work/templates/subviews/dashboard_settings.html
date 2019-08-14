@@ -1,0 +1,69 @@
+<div class="row">
+    <div class="col-12 col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Ubah Pengaturan Akun
+                </h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+
+                    <!-- -->
+                    <form action="{{.BaseUrl}}dashboard/settings" method="POST">
+                        <div class="form-group">
+                            <label for="email">Alamat Email:</label>
+                            <input type="text" class="form-control" id="email" name="email"
+                                value="{{.UserData.Email}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="iguser">Alamat Instagram:</label>
+                            <input type="text" class="form-control" id="iguser" name="iguser"
+                                value="{{.UserData.IgUsername}}" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 form-group">
+                                <label for="pass1">Ubah Password:</label>
+                                <input type="password" class="form-control" id="pass1" name="pass1">
+                            </div>
+                            <div class="col-6 form-group">
+                                <label for="pass2">Ulangi Password:</label>
+                                <input type="password" class="form-control" id="pass2" name="pass2">
+                            </div>
+                        </div>
+
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-info">Ubah Profil</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <!-- Profil Avatar -->
+        <div class="card">
+            <div class="text-center">
+                <div class="card-body">
+                    <img src="{{.BaseUrl}}avatar" class="rounded-circle" alt="Card image"
+                        style="height:150px;">
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">
+                        {{.UserData.DisplayName}}
+                    </h4>
+                    <h6 class="card-subtitle text-muted">
+                        {{.UserData.Address}}
+                    </h6>
+                </div>
+                <div class="text-center">
+                    <a href="{{.BaseUrl}}dashboard/profile" target="_blank"
+                        class="btn btn-info round btn-min-width mb-2">Ubah Profil</a>
+                </div>
+                <br />
+            </div>
+        </div>
+    </div>
+
+</div>

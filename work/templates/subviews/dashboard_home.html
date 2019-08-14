@@ -1,0 +1,70 @@
+<div class="row">
+
+    <div class="col-12 col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Berita dan Pengumuman
+                </h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    {{if gt .PageData.Count 0}}
+                    {{with .PageData.News}}
+                    {{range .}}
+                    <div class="card box-shadow-0 border-info">
+                        <div class="card-header card-head-inverse bg-info">
+                            <h4 class="card-title text-white">{{.Title}}</h4>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <p>By <strong>{{.Author}}</strong> at {{.PostDate}}</p>
+                                <p>{{.Contents}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                    {{end}}
+                    {{else}}
+                    <p>Belum ada sesuatu yang diberitahukan atau diumumkan!</p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <!-- Profil Kanan -->
+        <div class="card">
+            <div class="text-center">
+                <div class="card-body">
+                    <img src="{{.BaseUrl}}avatar" class="rounded-circle" alt="Card image" style="height:150px;">
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title">
+                        {{.UserData.DisplayName}}
+                    </h4>
+                    <h6 class="card-subtitle text-muted">
+                        {{.UserData.Address}}
+                    </h6>
+                </div>
+                <div class="text-center">
+                    <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-info round btn-min-width mb-2"> Ubah
+                        Profil</a>
+                </div>
+                <br />
+            </div>
+        </div>
+        <!-- Onlyn card -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Pengguna Aktif</h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    <p>Ada 666 orang yang sedang online dalam 5 menit terakhir.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

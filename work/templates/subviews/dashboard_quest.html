@@ -1,0 +1,107 @@
+<div class="row">
+    <div class="col-12 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">{{.PageData.Name}}
+                </h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+
+                    <div class="card box-shadow-0 border-info">
+                        <div class="card-header card-head-inverse bg-info">
+                            <h4 class="card-title text-white float-left">{{.PageData.Name}}</h4>
+                            <div class="heading-elements float-right">
+                                <!-- Caption kanan -->
+                                <div id="tiktok"></div>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <table>
+                                    <tr>
+                                        <td>Time limit</td>
+                                        <td> :
+                                            {{.PageData.TimeLimit}} detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Memory limit</td>
+                                        <td> :
+                                            {{.PageData.MemLimit}} MB</td>
+                                    </tr>
+                                </table>
+                                <p>
+                                    {{.PageData.Description}}
+                                </p>
+                                <br />
+
+                                <div class="card box-shadow-0 border-info">
+                                    <div class="card-header card-head-inverse bg-info">
+                                        <h4 class="card-title text-white">
+                                            Submit Solution
+                                        </h4>
+                                        <a class="heading-elements-toggle"><i
+                                                class="la la-ellipsis-v font-medium-3"></i></a>
+                                        <div class="heading-elements">
+                                            <!-- Caption kanan -->
+                                        </div>
+                                    </div>
+                                    <div class="card-content collapse show">
+                                        <div class="card-body">
+                                            <!-- Form submissions -->
+                                            <form method="POST" action="<?php echo base_url(); ?>quest/submit"
+                                                enctype="multipart/form-data">
+                                                <input type="hidden" name="questId" value="{{.PageData.Id}}" />
+                                                <input type="hidden" name="problemId" value="{{.PageData.ContestId}}" />
+                                                <select class="form-control" name="lang" style="width:250px;">
+                                                    <option value="c">C</option>
+                                                    <option value="cpp">C++</option>
+                                                    <option value="java">Java</option>
+                                                </select>
+                                                <br />
+                                                <input class="form-control" type="file" name="source_code"
+                                                    style="width:250px;" />
+                                                <br />
+                                                <input class="btn btn-info" type="submit" value="Submit" />
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function timeConverter(waktu) {
+        var hour = ("0" + (Math.floor(waktu / 3600))).slice(-2);
+        var min = ("0" + Math.floor((waktu - (hour * 3600)) / 60)).slice(-2);
+        var sec = ("0" + Math.floor(waktu - (hour * 3600) - (min * 60))).slice(-2);
+        var time = 'Sisa waktu: ' + hour + ':' + min + ':' + sec;
+        return time;
+    }
+
+    function tickTock(waktu) {
+        var waktuSisa = timeConverter(waktu);
+        //console.log(waktuSisa);
+        $("#tiktok").html(waktuSisa);
+        if (waktu > 0) {
+            setTimeout(function () {
+                tickTock(waktu - 1);
+            }, 1000);
+        } else {
+            window.location.replace("{{.BaseUrl}}dashboard?timeOut=yes");
+        }
+    }
+
+    function initReminderTimer() {
+        tickTock(600)
+    }
+</script>

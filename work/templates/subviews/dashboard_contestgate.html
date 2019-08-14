@@ -1,0 +1,52 @@
+<div class="row">
+    <div class="col-12 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Daftar Kontes dan Latihan
+                </h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+
+                    {{if gt .PageData.Count 0}}
+
+                    <p>Terdapat {{.PageData.Count}} kontes atau latihan disini.</p>
+                    <p>Kontes/latihan akan dimulai apabila anda memulai dengan memasuki kontes yang anda pilih.</p>
+
+                    {{with .PageData.Contests}}
+                    {{range .}}
+                    <div class="card box-shadow-0 border-info">
+                        <div class="card-header card-head-inverse bg-info">
+                            <h4 class="card-title text-white float-left">{{.Title}}</h4>
+                            <div class="heading-elements float-right">
+                                Terdapat {{.QuestCount}} soal
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <p>{{.Description}}</p>
+                                {{.TimeDesc}}
+                                <div class="text-right">
+                                    <a href="{{.ContestUrl}}" class="btn btn-success">Mulai
+                                        {{.ContestType}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{end}}
+                    {{end}}
+
+                    {{else}}
+                    <p>Belum ada kontes yang dipublikasikan!</p>
+                    {{end}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function initReminderTimer() {}
+</script>
