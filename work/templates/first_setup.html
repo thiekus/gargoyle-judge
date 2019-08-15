@@ -38,7 +38,7 @@
     <!-- ============================================================== -->
     <!-- signup form  -->
     <!-- ============================================================== -->
-    <form class="splash-container" action="{{.BaseUrl}}gsetup" method="POST">
+    <form class="splash-container" action="{{.BaseUrl}}gysetup" method="POST">
         {{if ne .MessageStr ""}}
         <div class="row">
             <div class="col-12 col-md-12">
@@ -52,60 +52,82 @@
                 <p>Masukan pengaturan database untuk menggunakan Gargoyle Judgement System</p>
             </div>
             <div class="card-body">
+                {{if not .PageData.DbDone}}
                 <div class="form-group">
-                    Database Host
-                    <input class="form-control form-control-lg" type="text" name="dbhost" value="{{.PageData.DbHost}}"
-                        required="" placeholder="Host (e.g localhost:3306)" autocomplete="off">
+                    Database Driver
+                    <select id="dbdriverselect" class="form-control" name="dbdriver">
+                        <option value="mysql">MySQL/MariaDB</option>
+                        <option value="sqlite3">SQLite</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    Database Username
-                    <input class="form-control form-control-lg" type="text" name="dbuser" value="{{.PageData.DbUser}}"
-                        required="" placeholder="DB Username" autocomplete="off">
+                <div id="dbdriver_cs">
+                    <div class="form-group">
+                        Database Host
+                        <input class="form-control form-control-lg" type="text" name="dbhost"
+                            value="{{.PageData.DbHost}}" required="" placeholder="Host (e.g localhost:3306)"
+                            autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        Database Username
+                        <input class="form-control form-control-lg" type="text" name="dbuser"
+                            value="{{.PageData.DbUser}}" required="" placeholder="DB Username" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        Database Password
+                        <input class="form-control form-control-lg" type="password" name="dbpass"
+                            value="{{.PageData.DbPass}}" placeholder="DB Password">
+                    </div>
+                    <div class="form-group">
+                        Database Name
+                        <input class="form-control form-control-lg" type="text" name="dbname"
+                            value="{{.PageData.DbName}}" required="" placeholder="DB Name" autocomplete="off">
+                    </div>
                 </div>
-                <div class="form-group">
-                    Database Password
-                    <input class="form-control form-control-lg" type="password" name="dbpass"
-                        value="{{.PageData.DbPass}}" placeholder="DB Password">
-                </div>
-                <div class="form-group">
-                    Database Name
-                    <input class="form-control form-control-lg" type="text" name="dbname" value="{{.PageData.DbName}}"
-                        required="" placeholder="DB Name" autocomplete="off">
+
+                <div id="dbdriver_file" style="display:none;">
+                    <div class="form-group">
+                        Database File
+                        <input class="form-control form-control-lg" type="text" name="dbfile"
+                            value="{{.PageData.DbFile}}" placeholder="DB Filename" autocomplete="off">
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" name="dbcreate" checked><span
+                        <input class="custom-control-input" type="checkbox" name="dbcreate" value="yes" checked><span
                             class="custom-control-label">Buat tabel database baru<br />(PERHATIAN: ini akan menghapus
                             tabel yang sudah ada jika ada)</span>
                     </label>
                 </div>
+                {{end}} <!--if DbDone-->
 
                 <div class="form-group">
                     <label class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" name="admincreate" checked><span
-                            class="custom-control-label">Buat admin baru</span>
+                        <input id="adminregcheck" class="custom-control-input" type="checkbox" name="admincreate"
+                            value="yes" checked><span class="custom-control-label">Buat admin baru</span>
                     </label>
                 </div>
-                <div class="form-group">
-                    Admin Username
-                    <input class="form-control form-control-lg" type="text" name="adminuser" value="gyroot" required=""
-                        placeholder="DB Username" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    Admin Email
-                    <input class="form-control form-control-lg" type="email" name="adminemail" value=""
-                        placeholder="DB Username" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    Admin Password
-                    <input class="form-control form-control-lg" type="password" name="adminpass1"
-                        value="" placeholder="DB Password">
-                </div>
-                <div class="form-group">
-                    Database Password
-                    <input class="form-control form-control-lg" type="password" name="adminpass2"
-                        value="" placeholder="DB Password">
+                <div id="adminregform">
+                    <div class="form-group">
+                        Admin Username
+                        <input class="form-control form-control-lg" type="text" name="adminuser" value="gyroot"
+                            required="" placeholder="Admin Username" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        Admin Email
+                        <input class="form-control form-control-lg" type="email" name="adminemail" value=""
+                            placeholder="Admin Email" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        Admin Password
+                        <input class="form-control form-control-lg" type="password" name="adminpass1" value=""
+                            placeholder="Admin Password">
+                    </div>
+                    <div class="form-group">
+                        Enter Admin Password Again
+                        <input class="form-control form-control-lg" type="password" name="adminpass2" value=""
+                            placeholder="Admin Password Confirm">
+                    </div>
                 </div>
 
                 <div class="form-group pt-2">
@@ -124,6 +146,22 @@
     <script>
         $(function () {
             $("body").overlayScrollbars({});
+            $("#dbdriverselect").change(function () {
+                if ($(this).val() == "mysql") {
+                    $("#dbdriver_file").hide();
+                    $("#dbdriver_cs").show();
+                } else {
+                    $("#dbdriver_cs").hide();
+                    $("#dbdriver_file").show();
+                }
+            });
+            $("#adminregcheck").click(function () {
+                if ($(this).prop("checked")) {
+                    $("#adminregform").show();
+                } else {
+                    $("#adminregform").hide();
+                }
+            });
         });
     </script>
 

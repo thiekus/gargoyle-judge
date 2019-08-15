@@ -1,0 +1,12 @@
+.idea
+gyslave/
+windeploy/
+work/master_config.json
+work/slave_config.json
+work/gymaster
+work/gymaster.exe
+work/gyslave
+work/gyslave.exe
+work/database.db
+work/cert/server.crt
+work/cert/server.key

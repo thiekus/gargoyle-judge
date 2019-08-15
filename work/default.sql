@@ -4,24 +4,24 @@
 -- User table
 DROP TABLE IF EXISTS gy_users;
 CREATE TABLE gy_users (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
-	email VARCHAR(50) NOT NULL UNIQUE,
-	iguser VARCHAR(50),
-	display_name VARCHAR(50) NOT NULL,
-	address VARCHAR(150) NOT NULL,
-	avatar VARCHAR(150) NOT NULL,
-	role INTEGER,
-	verified INTEGER,
-	banned INTEGER,
-	create_time INTEGER
+    email VARCHAR(50) NOT NULL UNIQUE,
+    iguser VARCHAR(50),
+    display_name VARCHAR(50) NOT NULL,
+    address VARCHAR(150) NOT NULL,
+    avatar VARCHAR(150) NOT NULL,
+    role INTEGER,
+    verified INTEGER,
+    banned INTEGER,
+    create_time INTEGER
 );
 
 -- User roles
 DROP TABLE IF EXISTS gy_roles;
 CREATE TABLE gy_roles (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     rolename VARCHAR(20) NOT NULL,
     access_root INTEGER,
     access_jury INTEGER,
@@ -38,7 +38,7 @@ INSERT INTO gy_roles (rolename, access_root, access_jury, access_user) VALUES
 -- News
 DROP TABLE IF EXISTS gy_news;
 CREATE TABLE gy_news (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     author_id INTEGER,
     post_time INTEGER,
     title VARCHAR(50),
@@ -48,7 +48,7 @@ CREATE TABLE gy_news (
 -- Contest List
 DROP TABLE IF EXISTS gy_contests;
 CREATE TABLE gy_contests (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     title VARCHAR(50) NOT NULL,
     description TEXT,
     quest_count INTEGER,
@@ -63,7 +63,7 @@ CREATE TABLE gy_contests (
 -- Question List
 DROP TABLE IF EXISTS gy_quests;
 CREATE TABLE gy_quests (
-    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     contest_id INTEGER,
     quest_name VARCHAR(50) NOT NULL,
     description TEXT,

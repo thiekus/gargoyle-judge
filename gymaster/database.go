@@ -14,10 +14,12 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
+	"strings"
 )
 
 type DbContext struct {
-	db *sql.DB
+	db     *sql.DB
+	driver string
 }
 
 func OpenDatabase(multiStatements bool) (DbContext, error) {
@@ -47,6 +49,7 @@ func OpenDatabase(multiStatements bool) (DbContext, error) {
 	} else {
 		return ctx, errors.New("invalid db driver")
 	}
+	ctx.driver = appConfig.DbDriver
 	return ctx, nil
 }
 
@@ -58,8 +61,22 @@ func (d *DbContext) Db() *sql.DB {
 	return d.db
 }
 
+func (d *DbContext) Exec(query string, args ...interface{}) (sql.Result, error) {
+	return d.db.Exec(d.ParsePreprocessor(query), args...)
+}
+
+func (d *DbContext) ParsePreprocessor(query string) string {
+	strBuf := strings.ReplaceAll(query, "%TABLEPREFIX%", "gy_")
+	if d.driver == "sqlite3" {
+		strBuf = strings.ReplaceAll(query, "%AUTOINCREMENT%", "")
+	} else {
+		strBuf = strings.ReplaceAll(query, "%AUTOINCREMENT%", "AUTO_INCREMENT")
+	}
+	return strBuf
+}
+
 func (d *DbContext) Prepare(query string) (*sql.Stmt, error) {
-	return d.db.Prepare(query)
+	return d.db.Prepare(d.ParsePreprocessor(query))
 }
 
 func CreateBlankDatabase() error {
@@ -72,7 +89,7 @@ func CreateBlankDatabase() error {
 	}
 	defer db.Close()
 	createSql, err := ioutil.ReadFile("./default.sql")
-	if _, err = db.db.Exec(fmt.Sprintf("%s", createSql)); err != nil {
+	if _, err = db.Exec(fmt.Sprintf("%s", createSql)); err != nil {
 		log.Error(err)
 		return err
 	}
