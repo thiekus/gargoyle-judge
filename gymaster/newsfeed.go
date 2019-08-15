@@ -27,16 +27,16 @@ type NewsFeed struct {
 
 func fetchNewsFeed() NewsFeed {
 	nf := NewsFeed{
-		Count:0,
-		News:nil,
+		Count: 0,
+		News:  nil,
 	}
 	db, err := OpenDatabase(false)
 	if err != nil {
 		return nf
 	}
 	defer db.Close()
-	newsQuery := `SELECT n.id, (SELECT u.display_name FROM gy_users AS u WHERE u.id = n.author_id),
-       n.post_time, n.title, n.body FROM gy_news AS n`
+	newsQuery := `SELECT n.id, (SELECT u.display_name FROM %TABLEPREFIX%users AS u WHERE u.id = n.author_id),
+       n.post_time, n.title, n.body FROM %TABLEPREFIX%news AS n`
 	stmt, err := db.Prepare(newsQuery)
 	if err != nil {
 		return nf
@@ -55,7 +55,7 @@ func fetchNewsFeed() NewsFeed {
 			&newsTime,
 			&nd.Title,
 			&nd.Contents,
-			)
+		)
 		if err != nil {
 			return nf
 		}

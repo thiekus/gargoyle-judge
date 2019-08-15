@@ -46,7 +46,7 @@ func dashboardProfilePostEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer db.Close()
-	stmt, err := db.Prepare("UPDATE gy_users SET display_name = ?, address = ? WHERE id = ?")
+	stmt, err := db.Prepare("UPDATE %TABLEPREFIX%users SET display_name = ?, address = ? WHERE id = ?")
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
@@ -144,9 +144,9 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	qs, err := fetchQuestionList(r, id)
 	ps := ProblemSet{
-		Contest:cd,
-		Questions:qs,
-		Count:len(qs),
+		Contest:   cd,
+		Questions: qs,
+		Count:     len(qs),
 	}
 	pageName := "contest"
 	if cd.Trainer {

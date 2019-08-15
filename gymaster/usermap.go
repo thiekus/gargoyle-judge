@@ -18,28 +18,28 @@ import (
 )
 
 type UsersMap map[int]UserInfo
-type UsersTokenMap map[string] int
+type UsersTokenMap map[string]int
 
 const UserSessionName = "GargoyleUserSession"
 const FlashSessionName = "GargoyleFlashMessage"
 
 const (
 	FlashInformation = 0
-	FlashWarning = 1
-	FlashError = 2
+	FlashWarning     = 1
+	FlashError       = 2
 )
 
 type LoggedUsers struct {
 	sessionStore *sessions.CookieStore
-	umap UsersMap
-	tmap UsersTokenMap
+	umap         UsersMap
+	tmap         UsersTokenMap
 }
 
 func MakeLoggedUsersMap() LoggedUsers {
 	luser := LoggedUsers{
-		sessionStore:sessions.NewCookieStore([]byte(appConfig.SessionKey)),
-		umap:make(UsersMap),
-		tmap:make(UsersTokenMap),
+		sessionStore: sessions.NewCookieStore([]byte(appConfig.SessionKey)),
+		umap:         make(UsersMap),
+		tmap:         make(UsersTokenMap),
 	}
 	return luser
 }
@@ -47,9 +47,9 @@ func MakeLoggedUsersMap() LoggedUsers {
 func (lu *LoggedUsers) GetUserById(id int) *UserInfo {
 	if info, ok := lu.umap[id]; ok {
 		return &info
-} else {
-return nil
-}
+	} else {
+		return nil
+	}
 }
 
 func (lu *LoggedUsers) GetUserByToken(token string) *UserInfo {
@@ -102,7 +102,7 @@ func (lu *LoggedUsers) RefreshUser(userId int) error {
 	defer db.Close()
 	stmt, err := db.Prepare(
 		`SELECT id, username, password, email, iguser, display_name, address, avatar, role
-        FROM gy_users WHERE id = ?`)
+        FROM %TABLEPREFIX%users WHERE id = ?`)
 	if err != nil {
 		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
 		return err
@@ -127,7 +127,7 @@ func (lu *LoggedUsers) RefreshUser(userId int) error {
 		return errors.New("username or password either invalid or not exists")
 	}
 	ui.Id = uid
-	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM gy_roles WHERE id = ?")
+	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?")
 	if err != nil {
 		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
 		return err
@@ -163,7 +163,7 @@ func (lu *LoggedUsers) UserLogin(w http.ResponseWriter, r *http.Request, usernam
 	defer db.Close()
 	stmt, err := db.Prepare(
 		`SELECT id, username, password, email, iguser, display_name, address, avatar, role
-        FROM gy_users WHERE username = ? AND password = ?`)
+        FROM %TABLEPREFIX%users WHERE username = ? AND password = ?`)
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
 		return err
@@ -189,7 +189,7 @@ func (lu *LoggedUsers) UserLogin(w http.ResponseWriter, r *http.Request, usernam
 		return errors.New("username or password either invalid or not exists")
 	}
 	ui.Id = uid
-	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM gy_roles WHERE id = ?")
+	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?")
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
 		return err
@@ -256,9 +256,12 @@ func (lu *LoggedUsers) AddFlashMessage(w http.ResponseWriter, r *http.Request, m
 	if sess, err := lu.GetMessageSession(r); err == nil {
 		flashType := "info"
 		switch ftype {
-		case FlashInformation: flashType = "info"
-		case FlashWarning: flashType = "warning"
-		case FlashError: flashType = "error"
+		case FlashInformation:
+			flashType = "info"
+		case FlashWarning:
+			flashType = "warning"
+		case FlashError:
+			flashType = "error"
 		}
 		flashData := fmt.Sprintf("%s;%s", flashType, message)
 		sess.AddFlash(flashData)

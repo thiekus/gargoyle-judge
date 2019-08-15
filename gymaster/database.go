@@ -68,9 +68,9 @@ func (d *DbContext) Exec(query string, args ...interface{}) (sql.Result, error) 
 func (d *DbContext) ParsePreprocessor(query string) string {
 	strBuf := strings.ReplaceAll(query, "%TABLEPREFIX%", "gy_")
 	if d.driver == "sqlite3" {
-		strBuf = strings.ReplaceAll(query, "%AUTOINCREMENT%", "")
+		strBuf = strings.ReplaceAll(strBuf, "%AUTOINCREMENT%", "")
 	} else {
-		strBuf = strings.ReplaceAll(query, "%AUTOINCREMENT%", "AUTO_INCREMENT")
+		strBuf = strings.ReplaceAll(strBuf, "%AUTOINCREMENT%", "AUTO_INCREMENT")
 	}
 	return strBuf
 }

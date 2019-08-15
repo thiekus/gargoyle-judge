@@ -49,20 +49,20 @@ type ContestList struct {
 }
 
 type ProblemSet struct {
-	Count int
-	Contest ContestData
+	Count     int
+	Contest   ContestData
 	Questions []QuestionData
 }
 
 func fetchContestList(r *http.Request, trainer bool) ContestList {
-	cl := ContestList{Count:0}
+	cl := ContestList{Count: 0}
 	db, err := OpenDatabase(false)
 	if err != nil {
 		return cl
 	}
 	defer db.Close()
 	query := `SELECT id, title, description, quest_count, is_unlocked, is_private, is_trainer,
-        start_timestamp, end_timestamp, max_runtime FROM gy_contests WHERE is_trainer = ?`
+        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cl
@@ -90,7 +90,7 @@ func fetchContestList(r *http.Request, trainer bool) ContestList {
 			&cd.StartTime,
 			&cd.EndTime,
 			&cd.MaxTime,
-			)
+		)
 		if err != nil {
 			return cl
 		}
@@ -102,7 +102,7 @@ func fetchContestList(r *http.Request, trainer bool) ContestList {
 		} else {
 			cd.ContestType = "latihan"
 		}
-		cd.ContestUrl = getBaseUrl(r)+"dashboard/problem/"+strconv.Itoa(cd.Id)
+		cd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(cd.Id)
 		if (cd.StartTime != 0) && (cd.EndTime != 0) {
 			utStart := time.Unix(int64(cd.StartTime), 0)
 			utEnd := time.Unix(int64(cd.EndTime), 0)
@@ -132,7 +132,7 @@ func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 	}
 	defer db.Close()
 	query := `SELECT id, title, description, quest_count, is_unlocked, is_private, is_trainer,
-        start_timestamp, end_timestamp, max_runtime FROM gy_contests WHERE id = ?`
+        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cd, err
@@ -162,7 +162,7 @@ func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 	} else {
 		cd.ContestType = "latihan"
 	}
-	cd.ContestUrl = getBaseUrl(r)+"dashboard/problem/"+strconv.Itoa(cd.Id)
+	cd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(cd.Id)
 	if (cd.StartTime != 0) && (cd.EndTime != 0) {
 		utStart := time.Unix(int64(cd.StartTime), 0)
 		utEnd := time.Unix(int64(cd.EndTime), 0)
@@ -188,8 +188,8 @@ func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 		return qs, err
 	}
 	defer db.Close()
-	queryQuest := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts FROM gy_quests
-    	WHERE contest_id = ?`
+	queryQuest := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts
+		FROM %TABLEPREFIX%quests WHERE contest_id = ?`
 	stmt, err := db.Prepare(queryQuest)
 	if err != nil {
 		return qs, err
@@ -213,7 +213,7 @@ func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 		if err != nil {
 			return qs, err
 		}
-		qd.QuestUrl = getBaseUrl(r)+"dashboard/question/"+strconv.Itoa(qd.Id)
+		qd.QuestUrl = getBaseUrl(r) + "dashboard/question/" + strconv.Itoa(qd.Id)
 		qs = append(qs, qd)
 	}
 	return qs, nil
@@ -226,7 +226,7 @@ func fetchQuestion(r *http.Request, id int) (QuestionData, error) {
 		return qd, err
 	}
 	defer db.Close()
-	query := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts FROM gy_quests
+	query := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts FROM %TABLEPREFIX%quests
     	WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -241,10 +241,10 @@ func fetchQuestion(r *http.Request, id int) (QuestionData, error) {
 		&qd.TimeLimit,
 		&qd.MemLimit,
 		&qd.MaxAttempts,
-		)
+	)
 	if err != nil {
 		return qd, err
 	}
-	qd.ContestUrl = getBaseUrl(r)+"dashboard/problem/"+strconv.Itoa(qd.ContestId)
+	qd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(qd.ContestId)
 	return qd, nil
 }

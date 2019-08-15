@@ -118,7 +118,7 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer db.Close()
-		query := `INSERT INTO gy_users (username, password, email, display_name, address, avatar, iguser, role, verified)
+		query := `INSERT INTO %TABLEPREFIX%users (username, password, email, display_name, address, avatar, iguser, role, verified)
 			VALUES (?, ?, ?, ?, "unknown", "m:username", "", 1, 1)`
 		prep, err := db.Prepare(query)
 		if err != nil {
