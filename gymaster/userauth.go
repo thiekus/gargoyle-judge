@@ -21,7 +21,7 @@ type LoginFormData struct {
 
 func loginGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	lfd := LoginFormData{Target:r.FormValue("target")}
+	lfd := LoginFormData{Target: r.FormValue("target")}
 	CompileSinglePage(w, r, "login.html", lfd)
 }
 
@@ -34,9 +34,9 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		appUsers.AddFlashMessage(w, r, fmt.Sprintf("Error: %s", err), FlashError)
 		if target != "" {
-			http.Redirect(w, r, getBaseUrl(r)+"login?target="+target,302)
+			http.Redirect(w, r, getBaseUrl(r)+"login?target="+target, 302)
 		} else {
-			http.Redirect(w, r, getBaseUrl(r)+"login",302)
+			http.Redirect(w, r, getBaseUrl(r)+"login", 302)
 		}
 	} else {
 		// Login success
@@ -44,14 +44,14 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			targetDec, _ := base64.StdEncoding.DecodeString(target)
 			http.Redirect(w, r, getBaseUrl(r)+string(targetDec), 302)
 		} else {
-			http.Redirect(w, r, getBaseUrl(r)+"dashboard",302)
+			http.Redirect(w, r, getBaseUrl(r)+"dashboard", 302)
 		}
 	}
 }
 
 func logoutGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	appUsers.UserLogout(w, r)
-	http.Redirect(w, r, getBaseUrl(r),302)
+	http.Redirect(w, r, getBaseUrl(r), 302)
 }
 
 func forgotPassGetEndpoint(w http.ResponseWriter, r *http.Request) {

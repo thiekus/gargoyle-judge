@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r59"
+const appVersion = "0.6r71"
 
 var appConfig ConfigData
 var appCookieStore *sessions.CookieStore
@@ -67,12 +67,13 @@ func appMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "Internal server error: server on shutdown", http.StatusInternalServerError)
 			return
 		}
-		if !strings.HasPrefix(r.URL.Path, "/assets") {
+		if !strings.HasPrefix(r.URL.Path, "/assets") || !strings.HasPrefix(r.URL.Path, "/avatar") ||
+			!strings.HasPrefix(r.URL.Path, "/favicon.ico") {
 			log.Printf("Client %s accessing %s", r.RemoteAddr, r.URL.Path)
 		}
 		// All webservice endpoints are json-return
 		if strings.HasPrefix(r.URL.Path, "/ws") {
-			w.Header().Add("Content-Type", "application/json")
+			w.Header().Add("Content-Type", "application/json; charset=utf-8")
 		}
 		// Check user is login?
 		user := appUsers.GetLoggedUserInfo(r)
@@ -82,8 +83,7 @@ func appMiddleware(next http.Handler) http.Handler {
 			urlBase64 := base64.StdEncoding.EncodeToString([]byte(r.URL.Path))
 			http.Redirect(w, r, getBaseUrl(r)+"login?target="+urlBase64, 302)
 			return
-		} else
-		if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
+		} else if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
 			http.Redirect(w, r, getBaseUrl(r)+"dashboard", 302)
 			return
 		}
@@ -140,15 +140,18 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/dashboard/training", dashboardTrainingGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/question/{id}", dashboardQuestionGetEndpoint).Methods("GET")
+	//
+	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
+	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
 	// see firstsetup.go
 	r.HandleFunc("/gysetup", firstSetupGetEndpoint).Methods("GET")
 	r.HandleFunc("/gysetup", firstSetupPostEndpoint).Methods("POST")
 
 	// Resources endpoints, assets and website favicon
 	if appConfig.AssetsCaching {
-		r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
-	} else {
 		setAssetsWithCaching(r)
+	} else {
+		r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir("./assets"))))
 	}
 	// Handle favicon
 	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
@@ -173,7 +176,7 @@ func prepareHttpEndpoints() {
 
 	// Establish our server
 	appServer = http.Server{
-		Addr: fmt.Sprintf(":%d", appConfig.ListeningPort),
+		Addr:    fmt.Sprintf(":%d", appConfig.ListeningPort),
 		Handler: gziphandler.GzipHandler(r),
 	}
 	if appConfig.UseTLS {

@@ -32,7 +32,7 @@ func isFileExists(file string) bool {
 }
 
 func newLog() *logrus.Logger {
-	log:= logrus.New()
+	log := logrus.New()
 	// Much better logging
 	log.SetFormatter(&nested.Formatter{
 		HideKeys: true,

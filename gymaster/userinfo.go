@@ -27,5 +27,3 @@ type UserInfo struct {
 	Roles       UserAccess
 	LastAccess  int
 }
-
-

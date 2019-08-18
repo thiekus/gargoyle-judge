@@ -59,9 +59,9 @@ const ConfigFilename = "master_config.json"
 
 // Get configuration from config file
 func getConfigData() ConfigData {
-	log:= newLog()
-	configPath:= "./" + ConfigFilename
-	cfg:= ConfigData{}
+	log := newLog()
+	configPath := "./" + ConfigFilename
+	cfg := ConfigData{}
 	if !isFileExists(configPath) {
 		log.Warn("Config file doesn't exists yet, recreating new configuration...")
 		cfg.HasFirstSetup = ConfigDefaultHasFirstSetup
@@ -84,7 +84,7 @@ func getConfigData() ConfigData {
 		cfg.DbFile = ConfigDefaultDbFile
 		saveConfigData(cfg)
 	}
-	if jsonData, err:= ioutil.ReadFile(configPath); err == nil {
+	if jsonData, err := ioutil.ReadFile(configPath); err == nil {
 		if err = json.Unmarshal(jsonData, &cfg); err == nil {
 			log.Print("Config data loaded...")
 		} else {
@@ -98,10 +98,10 @@ func getConfigData() ConfigData {
 
 // Save current configuration to config file
 func saveConfigData(config ConfigData) {
-	configPath:= "./" + ConfigFilename
-	if jsonData, err:= json.Marshal(config); err == nil {
+	configPath := "./" + ConfigFilename
+	if jsonData, err := json.Marshal(config); err == nil {
 		if err = ioutil.WriteFile(configPath, jsonData, os.ModePerm); err == nil {
-			log:= newLog()
+			log := newLog()
 			log.Print("Config data have been saved!")
 		}
 	}

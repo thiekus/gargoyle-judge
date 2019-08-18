@@ -27,17 +27,6 @@ import (
 
 func setAssetsWithCaching(r *mux.Router) {
 	log := newLog()
-	m := minify.New()
-	if appConfig.AssetsMinify {
-		m.Add("text/html", &html.Minifier{
-			KeepDefaultAttrVals: true,
-		})
-		m.AddFunc("text/css", css.Minify)
-		m.AddFunc("image/svg+xml", svg.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
-		m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
-	}
 	// Initialize assets go-cache
 	c := cache.New(30*time.Minute, 1*time.Hour)
 	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -53,14 +42,27 @@ func setAssetsWithCaching(r *mux.Router) {
 			fileData, err := ioutil.ReadFile(localPath)
 			if err == nil {
 				var contentType string
+				ext := filepath.Ext(localPath)
+				switch ext {
+				case ".js":
+					contentType = "application/javascript"
+				case ".css":
+					contentType = "text/css"
+				case ".svg":
+					contentType = "image/svg+xml"
+				default:
+					contentType = http.DetectContentType(fileData)
+				}
+				m := minify.New()
 				if appConfig.AssetsMinify {
-					ext := filepath.Ext(localPath)
-					switch ext {
-					case ".js": contentType = "application/javascript"
-					case ".css": contentType = "text/css"
-					case ".svg": contentType = "image/svg+xml"
-					default: contentType = http.DetectContentType(fileData)
-					}
+					m.Add("text/html", &html.Minifier{
+						KeepDefaultAttrVals: true,
+					})
+					m.AddFunc("text/css", css.Minify)
+					m.AddFunc("image/svg+xml", svg.Minify)
+					m.AddFuncRegexp(regexp.MustCompile("^(application|text)/(x-)?(java|ecma)script$"), js.Minify)
+					m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
+					m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
 					fileData, err = m.Bytes(contentType, fileData)
 				}
 				c.Set(localPath, fileData, cache.DefaultExpiration)

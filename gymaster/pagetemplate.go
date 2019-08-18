@@ -47,16 +47,16 @@ type DashboardPageDataInfo struct {
 }
 
 type MenuNode struct {
-	Name      string	`json:"name"`
-	Title     string	`json:"title"`
-	IconClass string	`json:"iconClass"`
-	Location  string	`json:"location"`
+	Name      string `json:"name"`
+	Title     string `json:"title"`
+	IconClass string `json:"iconClass"`
+	Location  string `json:"location"`
 	Selected  bool
 }
 
 type MenuTOC struct {
-	GeneralMenu []MenuNode	`json:"generalMenu"`
-	ContestMenu []MenuNode	`json:"contestMenu"`
+	GeneralMenu   []MenuNode `json:"generalMenu"`
+	ContestMenu   []MenuNode `json:"contestMenu"`
 	SelectedTitle string
 }
 
@@ -184,11 +184,11 @@ func CompileDashboardPage(w http.ResponseWriter, r *http.Request, templateDash s
 		mainTitle = customTitle
 	}
 	dashPage := DashboardPageDataInfo{
-		PageName:pageName,
+		PageName:  pageName,
 		MainTitle: mainTitle,
-		Title: menuToc.SelectedTitle,
-		Content: template.HTML(byteContent.Bytes()),
-		Menu: menuToc,
+		Title:     menuToc.SelectedTitle,
+		Content:   template.HTML(byteContent.Bytes()),
+		Menu:      menuToc,
 	}
 	dataDash := NewPageInfoData(w, r, dashPage, true)
 	var byteDash bytes.Buffer
