@@ -29,14 +29,14 @@ const (
 	FlashError       = 2
 )
 
-type LoggedUsers struct {
+type UserController struct {
 	sessionStore *sessions.CookieStore
 	umap         UsersMap
 	tmap         UsersTokenMap
 }
 
-func MakeLoggedUsersMap() LoggedUsers {
-	luser := LoggedUsers{
+func MakeUserController() UserController {
+	luser := UserController{
 		sessionStore: sessions.NewCookieStore([]byte(appConfig.SessionKey)),
 		umap:         make(UsersMap),
 		tmap:         make(UsersTokenMap),
@@ -44,32 +44,32 @@ func MakeLoggedUsersMap() LoggedUsers {
 	return luser
 }
 
-func (lu *LoggedUsers) GetUserById(id int) *UserInfo {
-	if info, ok := lu.umap[id]; ok {
+func (uc *UserController) GetUserById(id int) *UserInfo {
+	if info, ok := uc.umap[id]; ok {
 		return &info
 	} else {
 		return nil
 	}
 }
 
-func (lu *LoggedUsers) GetUserByToken(token string) *UserInfo {
-	if uid, ok := lu.tmap[token]; ok {
-		return lu.GetUserById(uid)
+func (uc *UserController) GetUserByToken(token string) *UserInfo {
+	if uid, ok := uc.tmap[token]; ok {
+		return uc.GetUserById(uid)
 	} else {
 		return nil
 	}
 }
 
-func (lu *LoggedUsers) GetUserSession(r *http.Request) (*sessions.Session, error) {
-	return lu.sessionStore.Get(r, UserSessionName)
+func (uc *UserController) GetUserSession(r *http.Request) (*sessions.Session, error) {
+	return uc.sessionStore.Get(r, UserSessionName)
 }
 
-func (lu *LoggedUsers) GetMessageSession(r *http.Request) (*sessions.Session, error) {
-	return lu.sessionStore.Get(r, FlashSessionName)
+func (uc *UserController) GetMessageSession(r *http.Request) (*sessions.Session, error) {
+	return uc.sessionStore.Get(r, FlashSessionName)
 }
 
-func (lu *LoggedUsers) GetLoggedUserToken(r *http.Request) string {
-	if sess, err := lu.GetUserSession(r); err == nil {
+func (uc *UserController) GetLoggedUserToken(r *http.Request) string {
+	if sess, err := uc.GetUserSession(r); err == nil {
 		token := sess.Values["UserToken"]
 		if token != nil {
 			return token.(string)
@@ -78,21 +78,21 @@ func (lu *LoggedUsers) GetLoggedUserToken(r *http.Request) string {
 	return ""
 }
 
-func (lu *LoggedUsers) GetLoggedUserInfo(r *http.Request) *UserInfo {
-	if token := lu.GetLoggedUserToken(r); token != "" {
+func (uc *UserController) GetLoggedUserInfo(r *http.Request) *UserInfo {
+	if token := uc.GetLoggedUserToken(r); token != "" {
 		return appUsers.GetUserByToken(token)
 	}
 	return nil
 }
 
-func (lu *LoggedUsers) SetLoggedUserInfo(w http.ResponseWriter, r *http.Request, token string) {
-	if sess, err := lu.GetUserSession(r); err == nil {
+func (uc *UserController) SetLoggedUserInfo(w http.ResponseWriter, r *http.Request, token string) {
+	if sess, err := uc.GetUserSession(r); err == nil {
 		sess.Values["UserToken"] = token
 		sess.Save(r, w)
 	}
 }
 
-func (lu *LoggedUsers) RefreshUser(userId int) error {
+func (uc *UserController) RefreshUser(userId int) error {
 	log := newLog()
 	log.Printf("Refreshing user id no %d", userId)
 	db, err := OpenDatabase(false)
@@ -149,11 +149,11 @@ func (lu *LoggedUsers) RefreshUser(userId int) error {
 	ui.Roles.Contestant = acsUser > 0
 	ui.Roles.Operator = acsJury > 0
 	ui.Roles.SysAdmin = acsRoot > 0
-	lu.umap[userId] = ui
+	uc.umap[userId] = ui
 	return err
 }
 
-func (lu *LoggedUsers) UserLogin(w http.ResponseWriter, r *http.Request, username string, password string) error {
+func (uc *UserController) UserLogin(w http.ResponseWriter, r *http.Request, username string, password string) error {
 	log := newLog()
 	log.Printf("User %s trying to login...", username)
 	db, err := OpenDatabase(false)
@@ -215,32 +215,32 @@ func (lu *LoggedUsers) UserLogin(w http.ResponseWriter, r *http.Request, usernam
 	// Avoid token collisions
 	for {
 		token = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
-		if _, tokenExists := lu.tmap[token]; !tokenExists {
+		if _, tokenExists := uc.tmap[token]; !tokenExists {
 			break
 		}
 	}
 	ui.Token = token
-	lu.umap[uid] = ui
-	lu.tmap[token] = uid
+	uc.umap[uid] = ui
+	uc.tmap[token] = uid
 	// Set session
-	lu.SetLoggedUserInfo(w, r, token)
+	uc.SetLoggedUserInfo(w, r, token)
 	log.Printf("User %s logged in with token %s", username, token)
 	return nil
 }
 
-func (lu *LoggedUsers) UserRemoveFromList(token string) {
-	delete(lu.umap, lu.tmap[token])
-	delete(lu.tmap, token)
+func (uc *UserController) UserRemoveFromList(token string) {
+	delete(uc.umap, uc.tmap[token])
+	delete(uc.tmap, token)
 }
 
-func (lu *LoggedUsers) UserLogout(w http.ResponseWriter, r *http.Request) {
-	token := lu.GetLoggedUserToken(r)
-	lu.UserRemoveFromList(token)
-	lu.SetLoggedUserInfo(w, r, "")
+func (uc *UserController) UserLogout(w http.ResponseWriter, r *http.Request) {
+	token := uc.GetLoggedUserToken(r)
+	uc.UserRemoveFromList(token)
+	uc.SetLoggedUserInfo(w, r, "")
 }
 
-func (lu *LoggedUsers) GetFlashMessage(w http.ResponseWriter, r *http.Request) (string, string) {
-	if sess, err := lu.GetMessageSession(r); err == nil {
+func (uc *UserController) GetFlashMessage(w http.ResponseWriter, r *http.Request) (string, string) {
+	if sess, err := uc.GetMessageSession(r); err == nil {
 		if flash := sess.Flashes(); len(flash) > 0 {
 			flashArg := strings.SplitN(flash[len(flash)-1].(string), ";", 2)
 			flashType := flashArg[0]
@@ -252,8 +252,8 @@ func (lu *LoggedUsers) GetFlashMessage(w http.ResponseWriter, r *http.Request) (
 	return "", ""
 }
 
-func (lu *LoggedUsers) AddFlashMessage(w http.ResponseWriter, r *http.Request, message string, ftype int) {
-	if sess, err := lu.GetMessageSession(r); err == nil {
+func (uc *UserController) AddFlashMessage(w http.ResponseWriter, r *http.Request, message string, ftype int) {
+	if sess, err := uc.GetMessageSession(r); err == nil {
 		flashType := "info"
 		switch ftype {
 		case FlashInformation:

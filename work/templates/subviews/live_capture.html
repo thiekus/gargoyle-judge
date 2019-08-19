@@ -9,8 +9,14 @@
         <hr class="d-sm-none">
     </div>
     <div id="liveStreamBody" class="col-sm-8">
-        <video id="videoPreview" playsinline autoplay></video>
-        <img id="captureResult">
+        <div class="row">
+            <div class="col-sm-6">
+                <video id="videoPreview" playsinline autoplay></video>
+            </div>
+            <div class="col-sm-6">
+                <img id="captureResult">
+            </div>
+        </div>
     </div>
 </div>
 
@@ -132,14 +138,15 @@
             try {
                 var srcImg = new jpeg.pttImage(videoCaptureToImage(videoElement));
                 var bw = new jpeg.ByteWriter();
-                jpeg.encode(30, srcImg, bw);
+                jpeg.encode(50, srcImg, bw);
                 var url = bw.getImgUrl();
                 var dstImgElem = document.getElementById("captureResult");
                 dstImgElem.setAttribute("src", url);
                 // Send data
-                var data = bw.getWrittenBytes();
+                var data = bw.getBase64Data();
                 var fd = new FormData();
-                fd.append("name", "stream.jpg");
+                fd.append("fname", "stream.jpg");
+                fd.append("type", "image/jpeg")
                 fd.append("data", data);
                 $.ajax({
                     type: "POST",

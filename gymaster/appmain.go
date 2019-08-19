@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"github.com/NYTimes/gziphandler"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"io/ioutil"
 	"net/http"
 	"runtime"
@@ -22,15 +21,17 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r71"
+const appVersion = "0.6r89"
 
 var appConfig ConfigData
-var appCookieStore *sessions.CookieStore
+
+//var appCookieStore *sessions.CookieStore
 var appServer http.Server
 var appServerVer = fmt.Sprintf("ThkGargoyleWS %s", appVersion)
 var appOnShutdown = false
 var appOnRestart = false
-var appUsers LoggedUsers
+var appUsers UserController
+var appImageStreams ImageStreamList
 
 // Endpoint to perform application shutdown from http request.
 // Needs authentication to admin user.
@@ -67,8 +68,8 @@ func appMiddleware(next http.Handler) http.Handler {
 			http.Error(w, "Internal server error: server on shutdown", http.StatusInternalServerError)
 			return
 		}
-		if !strings.HasPrefix(r.URL.Path, "/assets") || !strings.HasPrefix(r.URL.Path, "/avatar") ||
-			!strings.HasPrefix(r.URL.Path, "/favicon.ico") {
+		if !strings.HasPrefix(r.URL.Path, "/assets") && !strings.HasPrefix(r.URL.Path, "/avatar") &&
+			!strings.HasPrefix(r.URL.Path, "/live") && !strings.HasPrefix(r.URL.Path, "/favicon.ico") {
 			log.Printf("Client %s accessing %s", r.RemoteAddr, r.URL.Path)
 		}
 		// All webservice endpoints are json-return
@@ -94,7 +95,7 @@ func appMiddleware(next http.Handler) http.Handler {
 func prepareConfig() {
 	// Get configuration data
 	appConfig = getConfigData()
-	appCookieStore = sessions.NewCookieStore([]byte(appConfig.SessionKey))
+	//appCookieStore = sessions.NewCookieStore([]byte(appConfig.SessionKey))
 }
 
 func prepareDatabase() {
@@ -114,7 +115,8 @@ func prepareDatabase() {
 }
 
 func prepareUserlist() {
-	appUsers = MakeLoggedUsersMap()
+	appUsers = MakeUserController()
+	appImageStreams = MakeImageStreamList()
 }
 
 func prepareHttpEndpoints() {
@@ -143,6 +145,8 @@ func prepareHttpEndpoints() {
 	//
 	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
 	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
+	r.HandleFunc("/live/capture", liveCapturePostEndpoint).Methods("POST")
+	r.HandleFunc("/live/imageStream/{id}", liveImageStreamGetEndpoint).Methods("GET")
 	// see firstsetup.go
 	r.HandleFunc("/gysetup", firstSetupGetEndpoint).Methods("GET")
 	r.HandleFunc("/gysetup", firstSetupPostEndpoint).Methods("POST")
