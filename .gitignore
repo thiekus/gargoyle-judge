@@ -10,3 +10,5 @@ work/gyslave.exe
 work/database.db
 work/cert/server.crt
 work/cert/server.key
+
+nul
