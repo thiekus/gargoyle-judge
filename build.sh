@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 @echo off
 echo Building Gargoyle Master...
-go build -v -i -o ./work/gymaster.exe ./gymaster
+go build -v -i -o ./work/gymaster ./gymaster
 echo Done! Press any key to exit...
