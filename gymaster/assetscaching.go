@@ -45,11 +45,11 @@ func setAssetsWithCaching(r *mux.Router) {
 				ext := filepath.Ext(localPath)
 				switch ext {
 				case ".js":
-					contentType = "application/javascript"
+					contentType = "application/javascript; charset=utf-8"
 				case ".css":
-					contentType = "text/css"
+					contentType = "text/css; charset=utf-8"
 				case ".svg":
-					contentType = "image/svg+xml"
+					contentType = "image/svg+xml; charset=utf-8"
 				default:
 					contentType = http.DetectContentType(fileData)
 				}

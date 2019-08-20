@@ -9,6 +9,7 @@ package main
 
 import (
 	"errors"
+	"sync"
 	"time"
 )
 
@@ -21,6 +22,7 @@ type ImageStreamData struct {
 type ImageStreamMap map[int]ImageStreamData
 
 type ImageStreamList struct {
+	m       sync.Mutex
 	streams ImageStreamMap
 }
 
@@ -44,12 +46,16 @@ func (isl *ImageStreamList) AddImageStream(id int, data []byte) error {
 	if _, ok := isl.streams[id]; ok {
 		return errors.New("stream already exists")
 	}
+	isl.m.Lock()
+	defer isl.m.Unlock()
 	isd := MakeImageStream(data)
 	isl.streams[id] = isd
 	return nil
 }
 
 func (isl *ImageStreamList) GetImageStream(id int) (*ImageStreamData, error) {
+	isl.m.Lock()
+	defer isl.m.Unlock()
 	if isd, ok := isl.streams[id]; ok {
 		return &isd, nil
 	} else {
@@ -67,9 +73,12 @@ func (isl *ImageStreamList) GetImageStreamAge(id int) int64 {
 }
 
 func (isl *ImageStreamList) UpdateImageStream(id int, data []byte) error {
-	if isd, ok := isl.streams[id]; ok {
-		isd.LastUpdate = time.Now().Unix()
-		isd.Data = data
+	// Not use old object, probably causing corruption while streaming
+	// Give up into Go GC to clean that
+	if _, ok := isl.streams[id]; ok {
+		isl.m.Lock()
+		defer isl.m.Unlock()
+		isd := MakeImageStream(data)
 		isl.streams[id] = isd
 		return nil
 	} else {

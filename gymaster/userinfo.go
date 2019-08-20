@@ -14,16 +14,26 @@ type UserAccess struct {
 	Operator   bool
 }
 
+type UserGroups struct {
+	GroupName string
+	GroupId   int
+}
+
 type UserInfo struct {
 	Id          int
 	Token       string
 	Username    string
 	Password    string
+	Salt        string
 	Email       string
-	IgUsername  string
 	DisplayName string
+	Gender      string
 	Address     string
+	Institution string
+	CountryId   string
 	Avatar      string
+	RoleId      int
 	Roles       UserAccess
+	Groups      []UserGroups
 	LastAccess  int
 }

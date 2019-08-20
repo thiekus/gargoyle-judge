@@ -8,10 +8,7 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"crypto/sha256"
-	"errors"
 	"fmt"
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"strings"
@@ -78,6 +75,14 @@ func (uc *UserController) GetLoggedUserToken(r *http.Request) string {
 	return ""
 }
 
+func (uc *UserController) GetLoggedUserId(r *http.Request) int {
+	if ui := uc.GetLoggedUserInfo(r); ui != nil {
+		return ui.Id
+	} else {
+		return 0
+	}
+}
+
 func (uc *UserController) GetLoggedUserInfo(r *http.Request) *UserInfo {
 	if token := uc.GetLoggedUserToken(r); token != "" {
 		return appUsers.GetUserByToken(token)
@@ -95,136 +100,58 @@ func (uc *UserController) SetLoggedUserInfo(w http.ResponseWriter, r *http.Reque
 func (uc *UserController) RefreshUser(userId int) error {
 	log := newLog()
 	log.Printf("Refreshing user id no %d", userId)
-	db, err := OpenDatabase(false)
+	udm, err := NewUserDbModel()
 	if err != nil {
+		log.Errorf("[uid:%d] Refresh error: %s", userId, err)
 		return err
 	}
-	defer db.Close()
-	stmt, err := db.Prepare(
-		`SELECT id, username, password, email, iguser, display_name, address, avatar, role
-        FROM %TABLEPREFIX%users WHERE id = ?`)
+	defer udm.Close()
+	ui, err := udm.GetUserById(userId)
 	if err != nil {
-		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
+		log.Errorf("[uid:%d] Refresh error: %s", userId, err)
 		return err
 	}
-	defer stmt.Close()
-	var ui UserInfo
-	var uid int
-	var roleId int
-	err = stmt.QueryRow(userId).Scan(
-		&uid,
-		&ui.Username,
-		&ui.Password,
-		&ui.Email,
-		&ui.IgUsername,
-		&ui.DisplayName,
-		&ui.Address,
-		&ui.Avatar,
-		&roleId,
-	)
-	if err != nil {
-		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
-		return errors.New("username or password either invalid or not exists")
-	}
-	ui.Id = uid
-	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?")
-	if err != nil {
-		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
-		return err
-	}
-	defer st2.Close()
-	var acsUser int
-	var acsJury int
-	var acsRoot int
-	err = st2.QueryRow(roleId).Scan(
-		&ui.Roles.RoleName,
-		&acsUser,
-		&acsJury,
-		&acsRoot,
-	)
-	if err != nil {
-		log.Errorf("[uid:%s] Refresh error: %s", userId, err)
-		return errors.New("invalid role id")
-	}
-	ui.Roles.Contestant = acsUser > 0
-	ui.Roles.Operator = acsJury > 0
-	ui.Roles.SysAdmin = acsRoot > 0
 	uc.umap[userId] = ui
 	return err
 }
 
-func (uc *UserController) UserLogin(w http.ResponseWriter, r *http.Request, username string, password string) error {
+func (uc *UserController) UserLogin(username string, password string) (string, error) {
 	log := newLog()
 	log.Printf("User %s trying to login...", username)
-	db, err := OpenDatabase(false)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-	stmt, err := db.Prepare(
-		`SELECT id, username, password, email, iguser, display_name, address, avatar, role
-        FROM %TABLEPREFIX%users WHERE username = ? AND password = ?`)
+	udm, err := NewUserDbModel()
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
-		return err
+		return "", err
 	}
-	defer stmt.Close()
-	passHash := fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
-	var ui UserInfo
-	var uid int
-	var roleId int
-	err = stmt.QueryRow(username, passHash).Scan(
-		&uid,
-		&ui.Username,
-		&ui.Password,
-		&ui.Email,
-		&ui.IgUsername,
-		&ui.DisplayName,
-		&ui.Address,
-		&ui.Avatar,
-		&roleId,
-	)
+	defer udm.Close()
+	ui, err := udm.GetUserByLogin(username, password)
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
-		return errors.New("username or password either invalid or not exists")
+		return "", err
 	}
-	ui.Id = uid
-	st2, err := db.Prepare("SELECT rolename, access_user, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?")
-	if err != nil {
-		log.Errorf("[%s] Login error: %s", username, err)
-		return err
-	}
-	defer st2.Close()
-	var acsUser int
-	var acsJury int
-	var acsRoot int
-	err = st2.QueryRow(roleId).Scan(
-		&ui.Roles.RoleName,
-		&acsUser,
-		&acsJury,
-		&acsRoot,
-	)
-	if err != nil {
-		log.Errorf("[%s] Login error: %s", username, err)
-		return errors.New("invalid role id")
-	}
-	ui.Roles.Contestant = acsUser > 0
-	ui.Roles.Operator = acsJury > 0
-	ui.Roles.SysAdmin = acsRoot > 0
 	var token string
 	// Avoid token collisions
 	for {
-		token = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
+		token = generateRandomToken()
 		if _, tokenExists := uc.tmap[token]; !tokenExists {
 			break
 		}
 	}
+	uid := ui.Id
 	ui.Token = token
 	uc.umap[uid] = ui
 	uc.tmap[token] = uid
+	log.Printf("User %s logged in with token %s", username, token)
+	return token, nil
+}
+
+func (uc *UserController) UserLoginFromWebsite(w http.ResponseWriter, r *http.Request, username string, password string) error {
+	token, err := uc.UserLogin(username, password)
+	if err != nil {
+		return err
+	}
 	// Set session
 	uc.SetLoggedUserInfo(w, r, token)
-	log.Printf("User %s logged in with token %s", username, token)
 	return nil
 }
 
@@ -233,9 +160,13 @@ func (uc *UserController) UserRemoveFromList(token string) {
 	delete(uc.tmap, token)
 }
 
-func (uc *UserController) UserLogout(w http.ResponseWriter, r *http.Request) {
-	token := uc.GetLoggedUserToken(r)
+func (uc *UserController) UserLogout(token string) {
 	uc.UserRemoveFromList(token)
+}
+
+func (uc *UserController) UserLogoutFromWebsite(w http.ResponseWriter, r *http.Request) {
+	token := uc.GetLoggedUserToken(r)
+	uc.UserLogout(token)
 	uc.SetLoggedUserInfo(w, r, "")
 }
 

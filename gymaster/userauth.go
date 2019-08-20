@@ -29,7 +29,7 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.PostFormValue("username")
 	password := r.PostFormValue("password")
-	err := appUsers.UserLogin(w, r, username, password)
+	err := appUsers.UserLoginFromWebsite(w, r, username, password)
 	target := r.PostFormValue("target")
 	if err != nil {
 		appUsers.AddFlashMessage(w, r, fmt.Sprintf("Error: %s", err), FlashError)
@@ -50,7 +50,7 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func logoutGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	appUsers.UserLogout(w, r)
+	appUsers.UserLogoutFromWebsite(w, r)
 	http.Redirect(w, r, getBaseUrl(r), 302)
 }
 

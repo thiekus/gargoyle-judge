@@ -56,7 +56,7 @@ type ProblemSet struct {
 
 func fetchContestList(r *http.Request, trainer bool) ContestList {
 	cl := ContestList{Count: 0}
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return cl
 	}
@@ -126,7 +126,7 @@ func fetchContestList(r *http.Request, trainer bool) ContestList {
 
 func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 	cd := ContestData{}
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return cd, err
 	}
@@ -183,7 +183,7 @@ func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 
 func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 	var qs []QuestionData
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return qs, err
 	}
@@ -221,7 +221,7 @@ func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 
 func fetchQuestion(r *http.Request, id int) (QuestionData, error) {
 	qd := QuestionData{}
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return qd, err
 	}

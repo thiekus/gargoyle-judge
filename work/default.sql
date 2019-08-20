@@ -7,11 +7,14 @@ CREATE TABLE %TABLEPREFIX%users (
     id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
+    salt VARCHAR(32) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
-    iguser VARCHAR(50) DEFAULT '',
     display_name VARCHAR(50) NOT NULL,
+    gender VARCHAR(5) NOT NULL,
     address VARCHAR(150) NOT NULL,
-    avatar VARCHAR(150) NOT NULL,
+    institution VARCHAR(150) NOT NULL,
+    country_id VARCHAR(10) NOT NULL,
+    avatar VARCHAR(250) NOT NULL,
     role INTEGER DEFAULT 2,
     verified INTEGER DEFAULT 0,
     banned INTEGER DEFAULT 0,
@@ -25,15 +28,30 @@ CREATE TABLE %TABLEPREFIX%roles (
     rolename VARCHAR(20) NOT NULL DEFAULT 'undefined',
     access_root INTEGER DEFAULT 0,
     access_jury INTEGER DEFAULT 0,
-    access_user INTEGER DEFAULT 1
+    access_contestant INTEGER DEFAULT 1
 );
 -- Default roles
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_user) VALUES
-    ('Peserta', 0, 0, 1);
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_user) VALUES
-    ('Admin', 1, 1, 1);
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_user) VALUES
-    ('Juri', 0, 1, 0);
+INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
+    ('Contestant', 0, 0, 1);
+INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
+    ('Admin', 1, 1, 0);
+INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
+    ('Jury', 0, 1, 0);
+
+-- Contestant Group
+DROP TABLE IF EXISTS %TABLEPREFIX%groups;
+CREATE TABLE %TABLEPREFIX%groups (
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+    name VARCHAR(50) NOT NULL
+);
+
+-- Contestant Group Member relations
+DROP TABLE IF EXISTS %TABLEPREFIX%group_members;
+CREATE TABLE %TABLEPREFIX%group_members (
+    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+    user_id INTEGER,
+    group_id INTEGER
+);
 
 -- News
 DROP TABLE IF EXISTS %TABLEPREFIX%news;
@@ -52,9 +70,11 @@ CREATE TABLE %TABLEPREFIX%contests (
     title VARCHAR(50) NOT NULL DEFAULT 'untitled',
     description TEXT DEFAULT '',
     quest_count INTEGER,
+    contest_group_id INTEGER,
     is_unlocked INTEGER,
-    is_private INTEGER,
+    is_public INTEGER,
     is_trainer INTEGER,
+    must_stream INTEGER,
     start_timestamp INTEGER,
     end_timestamp INTEGER,
     max_runtime INTEGER

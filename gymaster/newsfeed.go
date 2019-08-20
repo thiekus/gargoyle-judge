@@ -30,7 +30,7 @@ func fetchNewsFeed() NewsFeed {
 		Count: 0,
 		News:  nil,
 	}
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return nf
 	}

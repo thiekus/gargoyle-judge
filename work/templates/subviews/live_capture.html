@@ -122,26 +122,53 @@
         navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
     }
 
+    function appendZero(num) {
+        return num > 9? num: "0"+num;
+    }
+
+    function getDateTimeText() {
+        var currentdate = new Date();
+        var datetime = appendZero(currentdate.getDate()) + "/" +
+            appendZero(currentdate.getMonth() + 1) + "/" +
+            currentdate.getFullYear() + " @ " +
+            appendZero(currentdate.getHours()) + ":" +
+            appendZero(currentdate.getMinutes()) + ":" +
+            appendZero(currentdate.getSeconds());
+        return datetime;
+    }
+
     function videoCaptureToImage(video) {
         var canvas = document.createElement("canvas");
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         ctx = canvas.getContext("2d");
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Write OSD
+        osd1 = "{{.UserData.DisplayName}}";
+        osd2 = getDateTimeText();
+        ctx.font = "Arial 12px";
+        ctx.fillStyle = "white";
+        ctx.strokeText(osd1, 12, 16);
+        ctx.fillText(osd1, 12, 16);
+        ctx.strokeText(osd2, 12, 30);
+        ctx.fillText(osd2, 12, 30);
         return ctx.getImageData(0, 0, canvas.width, canvas.height);
     }
 
     function initializeCapture() {
         var jpeg = new pttJPEG();
 
+        function updateResultImg(data) {
+            var url = "data:image/jpeg;base64," + data
+            var dstImgElem = document.getElementById("captureResult");
+            dstImgElem.setAttribute("src", url);
+        }
+
         function captureLoop() {
             try {
                 var srcImg = new jpeg.pttImage(videoCaptureToImage(videoElement));
                 var bw = new jpeg.ByteWriter();
                 jpeg.encode(50, srcImg, bw);
-                var url = bw.getImgUrl();
-                var dstImgElem = document.getElementById("captureResult");
-                dstImgElem.setAttribute("src", url);
                 // Send data
                 var data = bw.getBase64Data();
                 var fd = new FormData();
@@ -155,9 +182,15 @@
                     processData: false,
                     contentType: false,
                     timeout: 5000,
-                    success: function (data) {
-                        console.log("Image sent!");
-                        setTimeout(captureLoop, 1000);
+                    success: function (result) {
+                        if (result.success) {
+                            updateResultImg(data)
+                            console.log("Image sent!");
+                            setTimeout(captureLoop, 1000);
+                        } else {
+                            console.log("Send error: " + result.message)
+                            setTimeout(captureLoop, 3000);
+                        }
                     },
                     error: function (xhr, textStatus, errorThrown) {
                         console.log("Failed: " + errorThrown);
@@ -166,7 +199,7 @@
                 });
             } catch (err) {
                 console.error("Capture error: " + err.message);
-                setTimeout(captureLoop, 5000);
+                setTimeout(captureLoop, 3000);
             }
         }
 

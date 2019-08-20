@@ -22,7 +22,7 @@ type DbContext struct {
 	driver string
 }
 
-func OpenDatabase(multiStatements bool) (DbContext, error) {
+func OpenDatabaseEx(multiStatements bool) (DbContext, error) {
 	ctx := DbContext{}
 	if appConfig.DbDriver == "mysql" {
 		ms := "false"
@@ -51,6 +51,10 @@ func OpenDatabase(multiStatements bool) (DbContext, error) {
 	}
 	ctx.driver = appConfig.DbDriver
 	return ctx, nil
+}
+
+func OpenDatabase() (DbContext, error) {
+	return OpenDatabaseEx(false)
 }
 
 func (d *DbContext) Close() error {
@@ -82,7 +86,7 @@ func (d *DbContext) Prepare(query string) (*sql.Stmt, error) {
 func CreateBlankDatabase() error {
 	log := newLog()
 	log.Print("Begin to create new database table")
-	db, err := OpenDatabase(true)
+	db, err := OpenDatabaseEx(true)
 	if err != nil {
 		log.Error(err)
 		return err

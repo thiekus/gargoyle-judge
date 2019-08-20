@@ -78,7 +78,7 @@ func liveImageStreamGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
 	if img, err := appImageStreams.GetImageStream(id); err == nil {
-		stream := mjpeg.NewStreamWithInterval(1 * time.Second)
+		stream := mjpeg.NewStreamWithInterval(500 * time.Millisecond)
 		defer stream.Close()
 		// Do first frame stream update
 		firstUpdate := img.LastUpdate
@@ -88,7 +88,7 @@ func liveImageStreamGetEndpoint(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		// Update stream on another goroutine
-		go func(stream *mjpeg.Stream, id int, firstUpdate int64){
+		go func(stream *mjpeg.Stream, id int, firstUpdate int64) {
 			lastUpdate := firstUpdate
 			for {
 				if img, err := appImageStreams.GetImageStream(id); err == nil {
@@ -105,7 +105,7 @@ func liveImageStreamGetEndpoint(w http.ResponseWriter, r *http.Request) {
 				}
 				time.Sleep(1 * time.Second)
 			}
-		} (stream, id, firstUpdate)
+		}(stream, id, firstUpdate)
 		stream.ServeHTTP(w, r)
 	} else {
 		http.Error(w, "404 Not Found", http.StatusNotFound)

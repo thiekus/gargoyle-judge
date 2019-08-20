@@ -8,8 +8,6 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"net/http"
 )
 
@@ -109,7 +107,9 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "gysetup", 302)
 			return
 		}
-		db, err := OpenDatabase(false)
+		ui := UserInfo{Email: adminEmail}
+		// Create role as admin
+		udm, err := NewUserDbModel()
 		if err != nil {
 			log := newLog()
 			log.Error(err)
@@ -117,20 +117,8 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "gysetup", 302)
 			return
 		}
-		defer db.Close()
-		query := `INSERT INTO %TABLEPREFIX%users (username, password, email, display_name, address, avatar, iguser, role, verified)
-			VALUES (?, ?, ?, ?, "unknown", "m:username", "", 1, 1)`
-		prep, err := db.Prepare(query)
-		if err != nil {
-			log := newLog()
-			log.Error(err)
-			appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-			http.Redirect(w, r, "gysetup", 302)
-			return
-		}
-		defer prep.Close()
-		passHash := fmt.Sprintf("%x", sha256.Sum256([]byte(adminPass1)))
-		_, err = prep.Exec(adminUser, passHash, adminEmail, adminUser)
+		defer udm.Close()
+		err = udm.CreateUserAccount(adminUser, adminPass1, 1, ui)
 		if err != nil {
 			log := newLog()
 			log.Error(err)

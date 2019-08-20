@@ -8,6 +8,7 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"compress/gzip"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -102,7 +103,7 @@ func prepareDatabase() {
 	log := newLog()
 	log.Print("Testing database connection...")
 	log.Printf("DB Driver: %s", appConfig.DbDriver)
-	db, err := OpenDatabase(false)
+	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		log.Error(err)
 	} else {
@@ -179,9 +180,30 @@ func prepareHttpEndpoints() {
 	log.Print("Routers have been initialized...")
 
 	// Establish our server
+	h := http.Handler(r)
+	if appConfig.CompressOnFly {
+		gzContentType := []string{
+			"text/html",
+			"application/javascript",
+			"text/javascript",
+			"application/ecmascript",
+			"text/ecmascript",
+			"text/css",
+			"text/json",
+			"application/json",
+		}
+		gzContentOpt := gziphandler.ContentTypes(gzContentType)
+		gh, err := gziphandler.GzipHandlerWithOpts(gzContentOpt,
+			gziphandler.CompressionLevel(gzip.DefaultCompression), gziphandler.MinSize(gziphandler.DefaultMinSize))
+		if err != nil {
+			log.Error("Error when setting gzip: %s", err.Error())
+			panic(err)
+		}
+		h = gh(r)
+	}
 	appServer = http.Server{
 		Addr:    fmt.Sprintf(":%d", appConfig.ListeningPort),
-		Handler: gziphandler.GzipHandler(r),
+		Handler: h,
 	}
 	if appConfig.UseTLS {
 		log.Print("Server will use TLS")

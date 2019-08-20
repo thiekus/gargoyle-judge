@@ -8,8 +8,6 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"crypto/sha256"
-	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
@@ -38,27 +36,30 @@ func dashboardProfilePostEndpoint(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	displayName := r.PostFormValue("display_name")
 	address := r.PostFormValue("address")
-	db, err := OpenDatabase(false)
+	udm, err := NewUserDbModel()
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrl(r)+"dashboard/profile", 302)
+		http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 		return
 	}
-	defer db.Close()
-	stmt, err := db.Prepare("UPDATE %TABLEPREFIX%users SET display_name = ?, address = ? WHERE id = ?")
+	defer udm.Close()
+	uid := user.Id
+	ui, err := udm.GetUserById(uid)
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrl(r)+"dashboard/profile", 302)
+		http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 		return
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(displayName, address, user.Id)
+	// Modify Profile here
+	ui.DisplayName = displayName
+	ui.Address = address
+	err = udm.ModifyUserAccount(uid, ui)
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrl(r)+"dashboard/profile", 302)
+		http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 		return
 	}
 	appUsers.RefreshUser(user.Id)
@@ -76,38 +77,44 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	user := appUsers.GetLoggedUserInfo(r)
 	r.ParseForm()
 	email := r.PostFormValue("email")
-	iguser := r.PostFormValue("iguser")
 	pass1 := r.PostFormValue("pass1")
 	pass2 := r.PostFormValue("pass2")
 	passHash := ""
+	passSalt := generateRandomSalt() // Assumed it's regenerated
 	if (pass1 == "") && (pass2 == "") {
+		// Preserve old password if supposed to not changed
 		passHash = user.Password
+		passSalt = user.Salt
 	} else {
 		if pass1 != pass2 {
 			appUsers.AddFlashMessage(w, r, "Password yang akan diganti harus sama!", FlashError)
 			http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 			return
 		} else {
-			passHash = fmt.Sprintf("%x", sha256.Sum256([]byte(pass1)))
+			passHash = calculateSaltedHash(pass1, passSalt)
 		}
 	}
-	db, err := OpenDatabase(false)
+	udm, err := NewUserDbModel()
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
 		http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 		return
 	}
-	defer db.Close()
-	stmt, err := db.Prepare("UPDATE gy_users SET password = ?, email = ?, iguser = ? WHERE id = ?")
+	defer udm.Close()
+	uid := user.Id
+	ui, err := udm.GetUserById(uid)
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
 		http.Redirect(w, r, getBaseUrl(r)+"dashboard/settings", 302)
 		return
 	}
-	defer stmt.Close()
-	_, err = stmt.Exec(passHash, email, iguser, user.Id)
+	// Modify here
+	ui.Email = email
+	ui.Password = passHash
+	ui.Salt = passSalt
+	err = udm.ModifyUserAccount(uid, ui)
 	if err != nil {
 		log.Error(err)
 		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)

@@ -38,5 +38,13 @@
             "iconClass": "fa fa-fw fas fa-check-square",
             "location": "dashboard/submissions"
         }
+    ],
+    "adminMenu": [
+        {
+            "name": "manageusers",
+            "title": "Manage Users",
+            "iconClass": "fa fa-fw fas fa-users",
+            "location": "manageUsers"
+        }
     ]
 }
