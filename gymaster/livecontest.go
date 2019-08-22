@@ -32,7 +32,7 @@ func liveCaptureGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	if user == nil {
 		appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
 		urlBase64 := base64.StdEncoding.EncodeToString([]byte(r.URL.Path))
-		http.Redirect(w, r, getBaseUrl(r)+"login?target="+urlBase64, 302)
+		http.Redirect(w, r, getBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
 		return
 	}
 	CompileDashboardPage(w, r, "live_base.html", "live_capture.html",

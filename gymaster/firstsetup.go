@@ -118,7 +118,8 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		defer udm.Close()
-		err = udm.CreateUserAccount(adminUser, adminPass1, 1, ui)
+		// Role id 2 is admin
+		err = udm.CreateUserAccount(adminUser, adminPass1, 2, ui)
 		if err != nil {
 			log := newLog()
 			log.Error(err)

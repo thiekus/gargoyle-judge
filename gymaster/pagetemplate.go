@@ -67,7 +67,7 @@ func ParsePageMessage(w http.ResponseWriter, r *http.Request, retrieveMsg bool) 
 	return "", ""
 }
 
-func GenerateMenuTOC(r *http.Request, selectedName string) (MenuTOC, error) {
+func GenerateMenuTOC(selectedName string) (MenuTOC, error) {
 	jsonData, err := ioutil.ReadFile("./templates/menutoc.json")
 	if err != nil {
 		return MenuTOC{}, err
@@ -78,10 +78,8 @@ func GenerateMenuTOC(r *http.Request, selectedName string) (MenuTOC, error) {
 		return MenuTOC{}, err
 	}
 	menu.SelectedTitle = ""
-	baseUrl := getBaseUrl(r)
 	// General menu
 	for i, n := range menu.GeneralMenu {
-		menu.GeneralMenu[i].Location = baseUrl + n.Location
 		menu.GeneralMenu[i].Selected = false
 		if n.Name == selectedName {
 			menu.GeneralMenu[i].Selected = true
@@ -90,7 +88,6 @@ func GenerateMenuTOC(r *http.Request, selectedName string) (MenuTOC, error) {
 	}
 	// Contestant menu
 	for i, n := range menu.ContestMenu {
-		menu.ContestMenu[i].Location = baseUrl + n.Location
 		menu.ContestMenu[i].Selected = false
 		if n.Name == selectedName {
 			menu.ContestMenu[i].Selected = true
@@ -109,7 +106,7 @@ func NewPageInfoData(w http.ResponseWriter, r *http.Request, pageData interface{
 	}
 	uas := r.UserAgent()
 	data := PageDataInfo{
-		BaseUrl:     getBaseUrl(r),
+		BaseUrl:     getBaseUrlWithSlash(r),
 		AppVersion:  appVersion,
 		GoVersion:   runtime.Version(),
 		GoPlatform:  fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH),
@@ -178,7 +175,7 @@ func CompileDashboardPage(w http.ResponseWriter, r *http.Request, templateDash s
 		return
 	}
 	tplDash := template.Must(template.ParseFiles(fmt.Sprintf("./templates/%s", templateDash)))
-	menuToc, _ := GenerateMenuTOC(r, pageName)
+	menuToc, _ := GenerateMenuTOC(pageName)
 	mainTitle := menuToc.SelectedTitle
 	if customTitle != "" {
 		mainTitle = customTitle

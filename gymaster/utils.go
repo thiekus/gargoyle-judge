@@ -18,6 +18,14 @@ import (
 
 func getBaseUrl(r *http.Request) string {
 	if r.TLS != nil {
+		return fmt.Sprintf("https://%s", r.Host)
+	} else {
+		return fmt.Sprintf("http://%s", r.Host)
+	}
+}
+
+func getBaseUrlWithSlash(r *http.Request) string {
+	if r.TLS != nil {
 		return fmt.Sprintf("https://%s/", r.Host)
 	} else {
 		return fmt.Sprintf("http://%s/", r.Host)
@@ -29,6 +37,15 @@ func isFileExists(file string) bool {
 		return true
 	}
 	return false
+}
+
+func isHexValue(s string) bool {
+	for _, c := range s {
+		if (c < 'a' || c > 'f') && (c < 'A' || c > 'F') && (c < '0' || c > '9') {
+			return false
+		}
+	}
+	return true
 }
 
 func newLog() *logrus.Logger {

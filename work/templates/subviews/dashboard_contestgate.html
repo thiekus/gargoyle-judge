@@ -13,6 +13,7 @@
                     <p>Terdapat {{.PageData.Count}} kontes atau latihan disini.</p>
                     <p>Kontes/latihan akan dimulai apabila anda memulai dengan memasuki kontes yang anda pilih.</p>
 
+                    {{$baseUrl := .BaseUrl}}
                     {{with .PageData.Contests}}
                     {{range .}}
                     <div class="card box-shadow-0 border-info">
@@ -27,7 +28,7 @@
                                 <p>{{.Description}}</p>
                                 {{.TimeDesc}}
                                 <div class="text-right">
-                                    <a href="{{.ContestUrl}}" class="btn btn-success">Mulai
+                                    <a href="{{$baseUrl}}{{.ContestUrl}}" class="btn btn-success">Mulai
                                         {{.ContestType}}</a>
                                 </div>
                             </div>

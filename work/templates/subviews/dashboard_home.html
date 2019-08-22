@@ -8,8 +8,8 @@
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
-                    {{if gt .PageData.Count 0}}
-                    {{with .PageData.News}}
+                    {{if gt .PageData.News.Count 0}}
+                    {{with .PageData.News.News}}
                     {{range .}}
                     <div class="card box-shadow-0 border-info">
                         <div class="card-header card-head-inverse bg-info">
@@ -37,14 +37,19 @@
         <div class="card">
             <div class="text-center">
                 <div class="card-body">
-                    <img src="{{.BaseUrl}}avatar" class="rounded-circle" alt="Card image" style="height:150px;">
+                    <img src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" class="rounded-circle" alt="Card image"
+                        style="height:150px;">
                 </div>
                 <div class="card-body">
                     <h4 class="card-title">
                         {{.UserData.DisplayName}}
                     </h4>
                     <h6 class="card-subtitle text-muted">
-                        {{.UserData.Address}}
+                        <i class="fas fa-university mr-1 mb-2"></i> {{.UserData.Institution}}
+                        <br />
+                        <i class="fas fa-map-marker-alt mr-1 mb-2"></i> {{.UserData.Address}}
+                        <br />
+                        <i class="fas fa-user-tie mr-1"></i> {{.UserData.Roles.RoleName}}
                     </h6>
                 </div>
                 <div class="text-center">
@@ -61,7 +66,42 @@
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
-                    <p>Ada 666 orang yang sedang online dalam 5 menit terakhir.</p>
+                    {{if gt .PageData.OnlineUsers.Count 0}}
+                    <p>Ada {{.PageData.OnlineUsers.Count}} pengguna yang sedang online dalam 5 menit terakhir ini.</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="onlineOverflow" class="overflow-auto" style="max-height:160px;">
+                                <style>
+                                    td {
+                                        padding: 6px;
+                                    }
+                                </style>
+                                <table>
+                                    <tbody>
+                                        {{$baseUrl:=.BaseUrl}}
+                                        {{with .PageData.OnlineUsers.Users}}
+                                        {{range .}}
+                                        <tr>
+                                            <td class="align-middle">
+                                                <img src="{{$baseUrl}}avatar/{{.Avatar}}" class="rounded-circle"
+                                                    alt="{{.DisplayName}}" style="width: 60px;">
+                                            </td>
+                                            <td class="align-middle">
+                                                {{.DisplayName}}<br />
+                                                <small><i class="fas fa-university mr-1"></i> {{.Institution}}</small><br />
+                                                <small><i class="fas fa-user-clock mr-1"></i> Since {{.TimeStatus}}</small>
+                                            </td>
+                                        </tr>
+                                        {{end}}
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {{else}}
+                    <p>Tidak ada user yang sedang online dalam 5 menit terakhir ini.</p>
+                    {{end}}
                 </div>
             </div>
         </div>

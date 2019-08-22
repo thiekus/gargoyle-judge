@@ -10,62 +10,37 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"net/http"
 	"strconv"
 	"time"
 )
 
-type ContestData struct {
-	Id          int
-	ContestType string
-	Title       string
-	Description template.HTML
-	TimeDesc    template.HTML
-	ContestUrl  string
-	QuestCount  int
-	Unlocked    bool
-	Private     bool
-	Trainer     bool
-	StartTime   int
-	EndTime     int
-	MaxTime     int
+type ContestDbModel struct {
+	db DbContext
 }
 
-type QuestionData struct {
-	Id          int
-	ContestId   int
-	Name        string
-	Description template.HTML
-	TimeLimit   int
-	MemLimit    int
-	MaxAttempts int
-	QuestUrl    string
-	ContestUrl  string
-}
-
-type ContestList struct {
-	Count    int
-	Contests []ContestData
-}
-
-type ProblemSet struct {
-	Count     int
-	Contest   ContestData
-	Questions []QuestionData
-}
-
-func fetchContestList(r *http.Request, trainer bool) ContestList {
-	cl := ContestList{Count: 0}
-	db, err := OpenDatabaseEx(false)
+func NewContestDbModel() (ContestDbModel, error) {
+	cdm := ContestDbModel{}
+	db, err := OpenDatabase()
 	if err != nil {
-		return cl
+		return cdm, err
 	}
-	defer db.Close()
-	query := `SELECT id, title, description, quest_count, is_unlocked, is_private, is_trainer,
-        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
+	cdm.db = db
+	return cdm, err
+}
+
+func (cdm *ContestDbModel) Close() error {
+	return cdm.db.Close()
+}
+
+func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (ContestList, error) {
+	ui := appUsers.GetUserById(uid)
+	cl := ContestList{Count: 0}
+	db := cdm.db
+	query := `SELECT id, title, description, quest_count, contest_group_id, is_unlocked, is_public, is_trainer,
+        must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return cl
+		return cl, err
 	}
 	defer stmt.Close()
 	trainInt := 0
@@ -74,35 +49,52 @@ func fetchContestList(r *http.Request, trainer bool) ContestList {
 	}
 	rows, err := stmt.Query(trainInt)
 	if err != nil {
-		return cl
+		return cl, err
 	}
 	for rows.Next() {
 		cd := ContestData{}
-		var unlockedInt, privateInt, trainerInt bool
+		var unlockedInt, publicInt, trainerInt, mustStreamInt bool
 		err = rows.Scan(
 			&cd.Id,
 			&cd.Title,
 			&cd.Description,
 			&cd.QuestCount,
+			&cd.GroupId,
 			&unlockedInt,
-			&privateInt,
+			&publicInt,
 			&trainerInt,
+			&mustStreamInt,
 			&cd.StartTime,
 			&cd.EndTime,
 			&cd.MaxTime,
 		)
 		if err != nil {
-			return cl
+			return cl, err
+		}
+		// Check group access if contest is restricted to certain group only
+		if cd.GroupId != 0 {
+			granted := false
+			for _, gr := range ui.Groups {
+				if gr.GroupId == cd.GroupId {
+					granted = true
+					break
+				}
+			}
+			if !granted {
+				// skip this contest
+				break
+			}
 		}
 		cd.Unlocked = unlockedInt
-		cd.Private = privateInt
+		cd.PublicView = publicInt
 		cd.Trainer = trainerInt
+		cd.MustStream = mustStreamInt
 		if !cd.Trainer {
 			cd.ContestType = "kontes"
 		} else {
 			cd.ContestType = "latihan"
 		}
-		cd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(cd.Id)
+		cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 		if (cd.StartTime != 0) && (cd.EndTime != 0) {
 			utStart := time.Unix(int64(cd.StartTime), 0)
 			utEnd := time.Unix(int64(cd.EndTime), 0)
@@ -121,32 +113,30 @@ func fetchContestList(r *http.Request, trainer bool) ContestList {
 		cl.Contests = append(cl.Contests, cd)
 		cl.Count++
 	}
-	return cl
+	return cl, nil
 }
 
-func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
+func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error) {
 	cd := ContestData{}
-	db, err := OpenDatabaseEx(false)
-	if err != nil {
-		return cd, err
-	}
-	defer db.Close()
-	query := `SELECT id, title, description, quest_count, is_unlocked, is_private, is_trainer,
-        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
+	db := cdm.db
+	query := `SELECT id, title, description, quest_count, contest_group_id, is_unlocked, is_public, is_trainer,
+        must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cd, err
 	}
 	defer stmt.Close()
-	var unlockedInt, privateInt, trainerInt bool
+	var unlockedInt, publicInt, trainerInt, mustStreamInt bool
 	err = stmt.QueryRow(contestId).Scan(
 		&cd.Id,
 		&cd.Title,
 		&cd.Description,
 		&cd.QuestCount,
+		&cd.GroupId,
 		&unlockedInt,
-		&privateInt,
+		&publicInt,
 		&trainerInt,
+		&mustStreamInt,
 		&cd.StartTime,
 		&cd.EndTime,
 		&cd.MaxTime,
@@ -155,14 +145,15 @@ func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 		return cd, err
 	}
 	cd.Unlocked = unlockedInt
-	cd.Private = privateInt
+	cd.PublicView = publicInt
 	cd.Trainer = trainerInt
+	cd.MustStream = mustStreamInt
 	if !cd.Trainer {
 		cd.ContestType = "kontes"
 	} else {
 		cd.ContestType = "latihan"
 	}
-	cd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(cd.Id)
+	cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 	if (cd.StartTime != 0) && (cd.EndTime != 0) {
 		utStart := time.Unix(int64(cd.StartTime), 0)
 		utEnd := time.Unix(int64(cd.EndTime), 0)
@@ -181,13 +172,9 @@ func fetchProblem(r *http.Request, contestId int) (ContestData, error) {
 	return cd, nil
 }
 
-func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
-	var qs []QuestionData
-	db, err := OpenDatabaseEx(false)
-	if err != nil {
-		return qs, err
-	}
-	defer db.Close()
+func (cdm *ContestDbModel) GetQuestionList(contestId int) ([]ProblemData, error) {
+	var qs []ProblemData
+	db := cdm.db
 	queryQuest := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts
 		FROM %TABLEPREFIX%quests WHERE contest_id = ?`
 	stmt, err := db.Prepare(queryQuest)
@@ -200,7 +187,7 @@ func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 		return qs, err
 	}
 	for rows.Next() {
-		qd := QuestionData{}
+		qd := ProblemData{}
 		err = rows.Scan(
 			&qd.Id,
 			&qd.ContestId,
@@ -213,14 +200,14 @@ func fetchQuestionList(r *http.Request, contestId int) ([]QuestionData, error) {
 		if err != nil {
 			return qs, err
 		}
-		qd.QuestUrl = getBaseUrl(r) + "dashboard/question/" + strconv.Itoa(qd.Id)
+		qd.QuestUrl = "dashboard/problem/" + strconv.Itoa(qd.Id)
 		qs = append(qs, qd)
 	}
 	return qs, nil
 }
 
-func fetchQuestion(r *http.Request, id int) (QuestionData, error) {
-	qd := QuestionData{}
+func (cdm *ContestDbModel) GetQuestionById(id int) (ProblemData, error) {
+	qd := ProblemData{}
 	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return qd, err
@@ -245,6 +232,6 @@ func fetchQuestion(r *http.Request, id int) (QuestionData, error) {
 	if err != nil {
 		return qd, err
 	}
-	qd.ContestUrl = getBaseUrl(r) + "dashboard/problem/" + strconv.Itoa(qd.ContestId)
+	qd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(qd.ContestId)
 	return qd, nil
 }

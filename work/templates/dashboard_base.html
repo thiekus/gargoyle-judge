@@ -18,9 +18,9 @@
     <link href="{{.BaseUrl}}assets/dashboard/vendor/fonts/circular-std/style.css" rel="stylesheet">
     <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/style.css">
     <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/colors.min.css">
-    <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/vendor/fonts/fontawesome/css/fontawesome-all.css">
-    <link rel="stylesheet"
-        href="{{.BaseUrl}}assets/dashboard/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="{{.BaseUrl}}assets/shared/fonts/fontawesome/css/all.min.css">
+    <!--<link rel="stylesheet"
+        href="{{.BaseUrl}}assets/dashboard/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">-->
     <!-- OverlayScollbars -->
     <link type="text/css" href="{{.BaseUrl}}assets/shared/overlay-scrollbars/css/OverlayScrollbars.min.css"
         rel="stylesheet" />
@@ -69,10 +69,84 @@
                 </button>
                 <div class="collapse navbar-collapse " id="navbarSupportedContent">
                     <ul class="navbar-nav ml-auto navbar-right-top">
+                        <!-- Jam atas -->
+                        <li id="gyClockContainer" class="nav-item" style="display: none;">
+                            <div class="text-white" style="padding-top: 18px; padding-left: 24px; padding-right: 24px;">
+                                <i class="far fa-clock mr-1"></i> <span id="gyClock">--:--:--</span>
+                            </div>
+                        </li>
+                        <!-- Notifikasi -->
+                        <li class="nav-item dropdown notification">
+                            <a class="nav-link nav-icons text-white" href="#" id="navbarDropdownMenuLink1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+                                    class="fas fa-fw fa-bell"></i> <span class="indicator"></span></a>
+                            <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
+                                <li>
+                                    <div class="notification-title"> Notification</div>
+                                    <div class="notification-list">
+                                        <div class="list-group">
+                                            <a href="#" class="list-group-item list-group-item-action active">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img
+                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
+                                                            class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span
+                                                            class="notification-list-user-name">Jeremy
+                                                            Rakestraw</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img
+                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
+                                                            class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span
+                                                            class="notification-list-user-name">John Abraham </span>is
+                                                        now following you
+                                                        <div class="notification-date">2 days ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img
+                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
+                                                            class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span
+                                                            class="notification-list-user-name">Monaan Pechi</span> is
+                                                        watching your main repository
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                            <a href="#" class="list-group-item list-group-item-action">
+                                                <div class="notification-info">
+                                                    <div class="notification-list-user-img"><img
+                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
+                                                            class="user-avatar-md rounded-circle"></div>
+                                                    <div class="notification-list-user-block"><span
+                                                            class="notification-list-user-name">Jessica
+                                                            Caruso</span>accepted your invitation to join the team.
+                                                        <div class="notification-date">2 min ago</div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="list-footer"> <a href="#">View all notifications</a></div>
+                                </li>
+                            </ul>
+                        </li>
+                        <!-- Menu dropdown user -->
                         <li class="nav-item dropdown nav-user">
                             <a class="nav-link nav-user-img" href="#" id="navbarDropdownMenuLink2"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><img
-                                    src="{{.BaseUrl}}avatar" alt="" class="user-avatar-md rounded-circle"></a>
+                                    src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
+                                    class="user-avatar-md rounded-circle"></a>
                             <div class="dropdown-menu dropdown-menu-right nav-user-dropdown"
                                 aria-labelledby="navbarDropdownMenuLink2">
                                 <div class="nav-user-info bg-blue">
@@ -109,10 +183,11 @@
                             <li class="nav-divider">
                                 Menu Utama
                             </li>
+                            {{$baseUrl := .BaseUrl}}
                             <li class="nav-item ">
                                 {{with .PageData.Menu.GeneralMenu}}
                                 {{range .}}
-                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{.Location}}"><i
+                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
                                         class="{{.IconClass}}"></i>{{.Title}}</a>
                                 {{end}}
                                 {{end}}
@@ -124,7 +199,7 @@
                             <li class="nav-item ">
                                 {{with .PageData.Menu.ContestMenu}}
                                 {{range .}}
-                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{.Location}}"><i
+                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
                                         class="{{.IconClass}}"></i>{{.Title}}</a>
                                 {{end}}
                                 {{end}}
@@ -174,19 +249,19 @@
                     {{if eq .MessageType "error"}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-danger">{{.MessageStr}}</div>
+                            <div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i> {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{else if eq .MessageType "success"}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-success">{{.MessageStr}}</div>
+                            <div class="alert alert-success"><i class="fas fa-info-circle mr-2"></i> {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{else}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-warning">{{.MessageStr}}</div>
+                            <div class="alert alert-warning"><i class="fas fa-exclamation-circle mr-2"></i> {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{end}}
@@ -281,6 +356,12 @@
             initReminderTimer();
         }
     </script>
+    {{else if eq .PageData.PageName "home"}}
+    <script>
+        function customInit() {
+            $('#onlineOverflow').overlayScrollbars({})
+        }
+    </script>
     {{else}}
     <script>
         // No custom initialization, do nothing
@@ -289,6 +370,19 @@
     {{end}}
     <!-- Main Page Initialization -->
     <script>
+        function appendZero(num) {
+            return num > 9 ? num : "0" + num;
+        }
+
+        function dashboardClock() {
+            var nowTime = new Date();
+            var timeStr = appendZero(nowTime.getHours()) + ":" +
+                appendZero(nowTime.getMinutes()) + ":" +
+                appendZero(nowTime.getSeconds());
+            $("#gyClock").html(timeStr);
+            setTimeout(dashboardClock, 1000);
+        }
+
         $(document).ready(function () {
             // Apply OverlayScrollbars and workarounds for BS Modal
             var osInstance = $('body').overlayScrollbars({}).overlayScrollbars();
@@ -314,6 +408,8 @@
                     }
                 });
             });
+            dashboardClock();
+            $("#gyClockContainer").show();
             // Page-defined custom initialization
             customInit();
         });

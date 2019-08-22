@@ -12,8 +12,8 @@
                     <form action="{{.BaseUrl}}dashboard/settings" method="POST">
                         <div class="form-group">
                             <label for="email">Alamat Email:</label>
-                            <input type="text" class="form-control" id="email" name="email"
-                                value="{{.UserData.Email}}" required>
+                            <input type="text" class="form-control" id="email" name="email" value="{{.UserData.Email}}"
+                                required>
                         </div>
                         <div class="row">
                             <div class="col-6 form-group">
@@ -41,7 +41,7 @@
         <div class="card">
             <div class="text-center">
                 <div class="card-body">
-                    <img src="{{.BaseUrl}}avatar" class="rounded-circle" alt="Card image"
+                    <img src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" class="rounded-circle" alt="Card image"
                         style="height:150px;">
                 </div>
                 <div class="card-body">
@@ -49,12 +49,16 @@
                         {{.UserData.DisplayName}}
                     </h4>
                     <h6 class="card-subtitle text-muted">
-                        {{.UserData.Address}}
+                        <i class="fas fa-university mr-1 mb-2"></i> {{.UserData.Institution}}
+                        <br />
+                        <i class="fas fa-map-marker-alt mr-1 mb-2"></i> {{.UserData.Address}}
+                        <br />
+                        <i class="fas fa-user-tie mr-1"></i> {{.UserData.Roles.RoleName}}
                     </h6>
                 </div>
                 <div class="text-center">
-                    <a href="{{.BaseUrl}}dashboard/profile" target="_blank"
-                        class="btn btn-info round btn-min-width mb-2">Ubah Profil</a>
+                    <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-info round btn-min-width mb-2">Ubah
+                        Profil</a>
                 </div>
                 <br />
             </div>

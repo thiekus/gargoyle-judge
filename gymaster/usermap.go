@@ -9,9 +9,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/dustin/go-humanize"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"strings"
+	"time"
 )
 
 type UsersMap map[int]UserInfo
@@ -41,6 +43,29 @@ func MakeUserController() UserController {
 	return luser
 }
 
+func (uc *UserController) CleanCookies(w http.ResponseWriter, r *http.Request) {
+	// GargoyleUserSession
+	gus := http.Cookie{
+		Name:     UserSessionName,
+		Value:    "",
+		Domain:   r.URL.Hostname(),
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &gus)
+	// GargoyleFlashMessage
+	gfm := http.Cookie{
+		Name:     FlashSessionName,
+		Value:    "",
+		Domain:   r.URL.Hostname(),
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &gfm)
+}
+
 func (uc *UserController) GetUserById(id int) *UserInfo {
 	if info, ok := uc.umap[id]; ok {
 		return &info
@@ -51,7 +76,15 @@ func (uc *UserController) GetUserById(id int) *UserInfo {
 
 func (uc *UserController) GetUserByToken(token string) *UserInfo {
 	if uid, ok := uc.tmap[token]; ok {
-		return uc.GetUserById(uid)
+		ui := uc.GetUserById(uid)
+		// Assume is real owner who access the account
+		if ui != nil {
+			userInfo := uc.umap[uid]
+			userInfo.RefreshLastAccess()
+			uc.umap[uid] = userInfo
+			ui = uc.GetUserById(uid)
+		}
+		return ui
 	} else {
 		return nil
 	}
@@ -88,6 +121,31 @@ func (uc *UserController) GetLoggedUserInfo(r *http.Request) *UserInfo {
 		return appUsers.GetUserByToken(token)
 	}
 	return nil
+}
+
+func (uc *UserController) GetOnlineUsers(maxLastTime int) UserOnlineList {
+	var onlineList []UserOnline
+	timeNow := time.Now().Unix()
+	for uid, ui := range uc.umap {
+		timeDiff := timeNow - ui.LastAccess
+		if (maxLastTime == 0) || (timeDiff < int64(maxLastTime)) {
+			online := UserOnline{
+				Id:           uid,
+				Username:     ui.Username,
+				DisplayName:  ui.DisplayName,
+				Institution:  ui.Institution,
+				Avatar:       ui.Avatar,
+				LastTimeDiff: timeDiff,
+				TimeStatus:   humanize.Time(time.Unix(ui.LastAccess, 0)),
+			}
+			onlineList = append(onlineList, online)
+		}
+	}
+	uol := UserOnlineList{
+		Count: len(onlineList),
+		Users: onlineList,
+	}
+	return uol
 }
 
 func (uc *UserController) SetLoggedUserInfo(w http.ResponseWriter, r *http.Request, token string) {
@@ -129,6 +187,12 @@ func (uc *UserController) UserLogin(username string, password string) (string, e
 		log.Errorf("[%s] Login error: %s", username, err)
 		return "", err
 	}
+	// Check token map if this user has logged in before, kick out :p
+	for tk, tv := range uc.tmap {
+		if tv == ui.Id {
+			uc.UserRemoveFromList(tk)
+		}
+	}
 	var token string
 	// Avoid token collisions
 	for {
@@ -139,6 +203,7 @@ func (uc *UserController) UserLogin(username string, password string) (string, e
 	}
 	uid := ui.Id
 	ui.Token = token
+	ui.LastAccess = time.Now().Unix()
 	uc.umap[uid] = ui
 	uc.tmap[token] = uid
 	log.Printf("User %s logged in with token %s", username, token)
@@ -156,6 +221,8 @@ func (uc *UserController) UserLoginFromWebsite(w http.ResponseWriter, r *http.Re
 }
 
 func (uc *UserController) UserRemoveFromList(token string) {
+	log := newLog()
+	log.Printf("Removing token %s from logged user", token)
 	delete(uc.umap, uc.tmap[token])
 	delete(uc.tmap, token)
 }
@@ -167,7 +234,9 @@ func (uc *UserController) UserLogout(token string) {
 func (uc *UserController) UserLogoutFromWebsite(w http.ResponseWriter, r *http.Request) {
 	token := uc.GetLoggedUserToken(r)
 	uc.UserLogout(token)
-	uc.SetLoggedUserInfo(w, r, "")
+	//uc.SetLoggedUserInfo(w, r, "")
+	// Manually delete Session Cookies, as broken cookies prevent anyone to login
+	uc.CleanCookies(w, r)
 }
 
 func (uc *UserController) GetFlashMessage(w http.ResponseWriter, r *http.Request) (string, string) {

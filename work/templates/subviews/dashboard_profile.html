@@ -16,9 +16,41 @@
                                 value="{{.UserData.DisplayName}}" required>
                         </div>
                         <div class="form-group">
+                            <label for="gender">Jenis Kelamin:</label>
+                            <select class="form-control" id="gender" name="gender">
+                                <option value="M" {{if eq .UserData.Gender "M"}}selected{{end}}>Laki - laki</option>
+                                <option value="F" {{if eq .UserData.Gender "F"}}selected{{end}}>Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label for="address">Alamat Asal:</label>
                             <input type="text" class="form-control" id="address" name="address"
                                 value="{{.UserData.Address}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="institution">Institusi:</label>
+                            <input type="text" class="form-control" id="institution" name="institution"
+                                value="{{.UserData.Institution}}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Negara Asal:</label>
+                            <select class="form-control" id="country" name="country">
+                                <option value="" selected>(Tidak diubah)</option>
+                                {{with .PageData.CountryList}}
+                                {{range $k, $v := .}}
+                                <option value="{{$k}}">{{$v}}</option>
+                                {{end}}
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="avatar">Avatar Profil:</label>
+                            <select class="form-control" id="avatar" name="avatarOption">
+                                <option value="" selected>(Tidak diubah)</option>
+                                <option value="genFaceUsername">Face Avatar (by username)</option>
+                                <option value="genFaceRandom">Face Avatar (random)</option>
+                                <option value="gravatar">Gravatar</option>
+                            </select>
                         </div>
 
                         <div class="text-right">
@@ -36,7 +68,7 @@
         <div class="card">
             <div class="text-center">
                 <div class="card-body">
-                    <img src="{{.BaseUrl}}avatar" class="rounded-circle" alt="Card image"
+                    <img src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" class="rounded-circle" alt="Card image"
                         style="height:150px;">
                 </div>
                 <div class="card-body">
@@ -44,7 +76,11 @@
                         {{.UserData.DisplayName}}
                     </h4>
                     <h6 class="card-subtitle text-muted">
-                        {{.UserData.Address}}
+                        <i class="fas fa-university mr-1 mb-2"></i> {{.UserData.Institution}}
+                        <br />
+                        <i class="fas fa-map-marker-alt mr-1 mb-2"></i> {{.UserData.Address}}
+                        <br />
+                        <i class="fas fa-user-tie mr-1"></i> {{.UserData.Roles.RoleName}}
                     </h6>
                 </div>
             </div>

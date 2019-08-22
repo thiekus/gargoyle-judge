@@ -54,11 +54,11 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	}
 	countryId := ui.CountryId
 	if countryId == "" {
-		countryId = "ID"
+		countryId = "id"
 	}
 	avatar := ui.Avatar
 	if avatar == "" {
-		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + getSHA256Hash(username)))
+		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + getMD5Hash(username)))
 	}
 	db := &udm.db
 	query := `INSERT INTO %TABLEPREFIX%users 
@@ -92,8 +92,8 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	return nil
 }
 
-func (udm *UserDbModel) GetUserAccess(id int) (UserAccess, error) {
-	ua := UserAccess{}
+func (udm *UserDbModel) GetUserAccess(id int) (UserRoleAccess, error) {
+	ua := UserRoleAccess{}
 	db := &udm.db
 	query := "SELECT rolename, access_contestant, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?"
 	stmt, err := db.Prepare(query)
@@ -152,6 +152,10 @@ func (udm *UserDbModel) GetUserById(userId int) (UserInfo, error) {
 	if err != nil {
 		return ui, err
 	}
+	ui.Groups, err = udm.GetUserGroupAccess(uid)
+	if err != nil {
+		return ui, err
+	}
 	return ui, nil
 }
 
@@ -193,6 +197,10 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 	if err != nil {
 		return ui, err
 	}
+	ui.Groups, err = udm.GetUserGroupAccess(uid)
+	if err != nil {
+		return ui, err
+	}
 	return ui, nil
 }
 
@@ -229,6 +237,31 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
 		userId,
 	)
 	return nil
+}
+
+func (udm *UserDbModel) GetUserGroupAccess(userId int) (UserGroupAccess, error) {
+	db := udm.db
+	query := `SELECT gm.group_id, (SELECT gr.name FROM %TABLEPREFIX%groups as gr WHERE id=gm.group_id) 
+        FROM %TABLEPREFIX%group_members as gm WHERE gm.user_id = ?`
+	prep, err := db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer prep.Close()
+	rows, err := prep.Query(userId)
+	if err != nil {
+		return nil, err
+	}
+	var groups UserGroupAccess
+	for rows.Next() {
+		ug := UserGroup{}
+		err = rows.Scan(
+			&ug.GroupId,
+			&ug.GroupName,
+		)
+		groups = append(groups, ug)
+	}
+	return groups, nil
 }
 
 func calculateSaltedHash(password string, salt string) string {

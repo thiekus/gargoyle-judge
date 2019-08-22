@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r89"
+const appVersion = "0.6r109"
 
 var appConfig ConfigData
 
@@ -38,7 +38,8 @@ var appImageStreams ImageStreamList
 // Needs authentication to admin user.
 func shutdownEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Check authentication before do shutdown
-	if /*checkAdminAuth(r)*/ true {
+	ui := appUsers.GetLoggedUserInfo(r)
+	if (ui != nil) && (ui.IsAdmin()) {
 		log := newLog()
 		log.Print("Requesting shutdown...")
 		appOnShutdown = true
@@ -64,6 +65,7 @@ func appMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log := newLog()
 		w.Header().Add("Server", appServerVer)
+		w.Header().Set("Access-Control-Allow-Origin", getBaseUrl(r))
 		if appOnShutdown {
 			log.Printf("Request for client %s to %s rejected on shutdown", r.RemoteAddr, r.URL.Path)
 			http.Error(w, "Internal server error: server on shutdown", http.StatusInternalServerError)
@@ -71,7 +73,8 @@ func appMiddleware(next http.Handler) http.Handler {
 		}
 		if !strings.HasPrefix(r.URL.Path, "/assets") && !strings.HasPrefix(r.URL.Path, "/avatar") &&
 			!strings.HasPrefix(r.URL.Path, "/live") && !strings.HasPrefix(r.URL.Path, "/favicon.ico") {
-			log.Printf("Client %s accessing %s", r.RemoteAddr, r.URL.Path)
+			uid := appUsers.GetLoggedUserId(r)
+			log.Printf("Client %s uid:%d accessing %s", r.RemoteAddr, uid, r.URL.Path)
 		}
 		// All webservice endpoints are json-return
 		if strings.HasPrefix(r.URL.Path, "/ws") {
@@ -83,10 +86,10 @@ func appMiddleware(next http.Handler) http.Handler {
 		if strings.HasPrefix(r.URL.Path, "/dashboard") && (user == nil) {
 			appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
 			urlBase64 := base64.StdEncoding.EncodeToString([]byte(r.URL.Path))
-			http.Redirect(w, r, getBaseUrl(r)+"login?target="+urlBase64, 302)
+			http.Redirect(w, r, getBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
 			return
 		} else if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
-			http.Redirect(w, r, getBaseUrl(r)+"dashboard", 302)
+			http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -96,7 +99,6 @@ func appMiddleware(next http.Handler) http.Handler {
 func prepareConfig() {
 	// Get configuration data
 	appConfig = getConfigData()
-	//appCookieStore = sessions.NewCookieStore([]byte(appConfig.SessionKey))
 }
 
 func prepareDatabase() {
@@ -141,8 +143,8 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/dashboard/settings", dashboardSettingsPostEndpoint).Methods("POST")
 	r.HandleFunc("/dashboard/contest", dashboardContestGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/training", dashboardTrainingGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/problemSet/{id}", dashboardProblemSetGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/question/{id}", dashboardQuestionGetEndpoint).Methods("GET")
 	//
 	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
 	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
@@ -170,7 +172,7 @@ func prepareHttpEndpoints() {
 			http.Error(w, "500 Internal Server Error", 500)
 		}
 	})
-	r.HandleFunc("/avatar", avatarGetEndpoint).Methods("GET")
+	r.HandleFunc("/avatar/{avatarInfo}", avatarGetEndpoint).Methods("GET")
 
 	// About contents endpoints
 	r.HandleFunc("/about", aboutEndpoint).Methods("GET")

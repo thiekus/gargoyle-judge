@@ -11,5 +11,7 @@ import "net/http"
 
 // Just simple homepage endpoint
 func homeGetEndpoint(w http.ResponseWriter, r *http.Request) {
+	// To avoid broken Secure Cookies, clean every want to login
+	appUsers.CleanCookies(w, r)
 	CompileSinglePage(w, r, "index.html", nil)
 }
