@@ -5,19 +5,26 @@
             <div class="card-header">
                 <h4 class="card-title text-center">Berita dan Pengumuman
                 </h4>
+                <div class="heading-elements float-right">
+                    <!-- Caption kanan -->
+                    <span id="tiktok"></span>
+                </div>
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
                     {{if gt .PageData.News.Count 0}}
                     {{with .PageData.News.News}}
                     {{range .}}
-                    <div class="card box-shadow-0 border-info">
-                        <div class="card-header card-head-inverse bg-info">
-                            <h4 class="card-title text-white">{{.Title}}</h4>
+                    <div class="card box-shadow-0 border-primary">
+                        <div class="card-header card-head-inverse bg-primary">
+                            <h4 class="card-title text-white float-left"><i class="fas fa-newspaper mr-1"></i> {{.Title}}</h4>
+                            <div class="heading-elements float-right">
+                                <i class="fas fa-user-edit mr-1"></i>{{.Author}}
+                            </div>
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <p>By <strong>{{.Author}}</strong> at {{.PostDate}}</p>
+                                <p><i class="fas fa-calendar-alt mr-2"></i> {{.PostDate}}</p>
                                 <p>{{.Contents}}</p>
                             </div>
                         </div>
@@ -53,8 +60,8 @@
                     </h6>
                 </div>
                 <div class="text-center">
-                    <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-info round btn-min-width mb-2"> Ubah
-                        Profil</a>
+                    <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-primary round btn-min-width mb-2"><i
+                            class="fas fa-user-edit mr-1"></i> Ubah Profil</a>
                 </div>
                 <br />
             </div>
@@ -72,7 +79,7 @@
                         <div class="card-body">
                             <div id="onlineOverflow" class="overflow-auto" style="max-height:160px;">
                                 <style>
-                                    td {
+                                    td.more-padding {
                                         padding: 6px;
                                     }
                                 </style>
@@ -82,14 +89,16 @@
                                         {{with .PageData.OnlineUsers.Users}}
                                         {{range .}}
                                         <tr>
-                                            <td class="align-middle">
+                                            <td class="more-padding align-middle">
                                                 <img src="{{$baseUrl}}avatar/{{.Avatar}}" class="rounded-circle"
                                                     alt="{{.DisplayName}}" style="width: 60px;">
                                             </td>
-                                            <td class="align-middle">
+                                            <td class="more-padding align-middle">
                                                 {{.DisplayName}}<br />
-                                                <small><i class="fas fa-university mr-1"></i> {{.Institution}}</small><br />
-                                                <small><i class="fas fa-user-clock mr-1"></i> Since {{.TimeStatus}}</small>
+                                                <small><i class="fas fa-university mr-1"></i>
+                                                    {{.Institution}}</small><br />
+                                                <small><i class="fas fa-user-clock mr-1"></i> Since
+                                                    {{.TimeStatus}}</small>
                                             </td>
                                         </tr>
                                         {{end}}

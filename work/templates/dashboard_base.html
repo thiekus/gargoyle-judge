@@ -47,6 +47,26 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #aaa;
         }
+
+        /* Fix useless margin in h4 of card title */
+        .card-header h4.card-title {
+            margin-bottom: 0px;
+        }
+
+        /* Use old good bootstrap 3 pre style */
+        pre {
+            display: block;
+            padding: 9.5px;
+            margin: 0 0 10px;
+            font-size: 13px;
+            line-height: 1.42857143;
+            color: #333;
+            word-break: break-all;
+            word-wrap: break-word;
+            background-color: #f5f5f5;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
     </style>
 
 </head>
@@ -249,23 +269,34 @@
                     {{if eq .MessageType "error"}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i> {{.MessageStr}}</div>
+                            <div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>
+                                {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{else if eq .MessageType "success"}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-success"><i class="fas fa-info-circle mr-2"></i> {{.MessageStr}}</div>
+                            <div class="alert alert-success"><i class="fas fa-info-circle mr-2"></i> {{.MessageStr}}
+                            </div>
                         </div>
                     </div>
                     {{else}}
                     <div class="row">
                         <div class="col-12 col-md-12">
-                            <div class="alert alert-warning"><i class="fas fa-exclamation-circle mr-2"></i> {{.MessageStr}}</div>
+                            <div class="alert alert-warning"><i class="fas fa-exclamation-circle mr-2"></i>
+                                {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{end}}
                     {{end}}
+                    <noscript>
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <div class="alert alert-warning"><i class="fas fa-exclamation-circle mr-2"></i>
+                                    Gargoyle Judge experience will be better if you turn on Javascript</div>
+                            </div>
+                        </div>
+                    </noscript>
 
                     <!-- Dashboard Content here -->
                     {{.PageData.Content}}

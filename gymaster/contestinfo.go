@@ -10,21 +10,21 @@ package main
 import "html/template"
 
 type ContestData struct {
-	Id          int
-	ContestType string
-	Title       string
-	Description template.HTML
-	TimeDesc    template.HTML
-	ContestUrl  string
-	QuestCount  int
-	GroupId     int
-	Unlocked    bool
-	PublicView  bool
-	Trainer     bool
-	MustStream  bool
-	StartTime   int
-	EndTime     int
-	MaxTime     int
+	Id           int
+	ContestType  string
+	Title        string
+	Description  template.HTML
+	TimeDesc     template.HTML
+	ContestUrl   string
+	ProblemCount int
+	GroupId      int
+	Unlocked     bool
+	PublicView   bool
+	Trainer      bool
+	MustStream   bool
+	StartTime    int
+	EndTime      int
+	MaxTime      int
 }
 
 type ProblemData struct {
@@ -35,7 +35,7 @@ type ProblemData struct {
 	TimeLimit   int
 	MemLimit    int
 	MaxAttempts int
-	QuestUrl    string
+	ProblemUrl  string
 	ContestUrl  string
 }
 

@@ -36,7 +36,7 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 	ui := appUsers.GetUserById(uid)
 	cl := ContestList{Count: 0}
 	db := cdm.db
-	query := `SELECT id, title, description, quest_count, contest_group_id, is_unlocked, is_public, is_trainer,
+	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, is_trainer,
         must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -58,7 +58,7 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 			&cd.Id,
 			&cd.Title,
 			&cd.Description,
-			&cd.QuestCount,
+			&cd.ProblemCount,
 			&cd.GroupId,
 			&unlockedInt,
 			&publicInt,
@@ -119,7 +119,7 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error) {
 	cd := ContestData{}
 	db := cdm.db
-	query := `SELECT id, title, description, quest_count, contest_group_id, is_unlocked, is_public, is_trainer,
+	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, is_trainer,
         must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -131,7 +131,7 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 		&cd.Id,
 		&cd.Title,
 		&cd.Description,
-		&cd.QuestCount,
+		&cd.ProblemCount,
 		&cd.GroupId,
 		&unlockedInt,
 		&publicInt,
@@ -172,12 +172,12 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 	return cd, nil
 }
 
-func (cdm *ContestDbModel) GetQuestionList(contestId int) ([]ProblemData, error) {
+func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]ProblemData, error) {
 	var qs []ProblemData
 	db := cdm.db
-	queryQuest := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts
-		FROM %TABLEPREFIX%quests WHERE contest_id = ?`
-	stmt, err := db.Prepare(queryQuest)
+	query := `SELECT id, contest_id, problem_name, description, time_limit, mem_limit, max_attempts
+		FROM %TABLEPREFIX%problems WHERE contest_id = ?`
+	stmt, err := db.Prepare(query)
 	if err != nil {
 		return qs, err
 	}
@@ -200,20 +200,20 @@ func (cdm *ContestDbModel) GetQuestionList(contestId int) ([]ProblemData, error)
 		if err != nil {
 			return qs, err
 		}
-		qd.QuestUrl = "dashboard/problem/" + strconv.Itoa(qd.Id)
+		qd.ProblemUrl = "dashboard/problem/" + strconv.Itoa(qd.Id)
 		qs = append(qs, qd)
 	}
 	return qs, nil
 }
 
-func (cdm *ContestDbModel) GetQuestionById(id int) (ProblemData, error) {
+func (cdm *ContestDbModel) GetProblemById(id int) (ProblemData, error) {
 	qd := ProblemData{}
 	db, err := OpenDatabaseEx(false)
 	if err != nil {
 		return qd, err
 	}
 	defer db.Close()
-	query := `SELECT id, contest_id, quest_name, description, time_limit, mem_limit, max_attempts FROM %TABLEPREFIX%quests
+	query := `SELECT id, contest_id, problem_name, description, time_limit, mem_limit, max_attempts FROM %TABLEPREFIX%problems
     	WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {

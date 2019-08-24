@@ -16,11 +16,12 @@
                     {{$baseUrl := .BaseUrl}}
                     {{with .PageData.Contests}}
                     {{range .}}
-                    <div class="card box-shadow-0 border-info">
-                        <div class="card-header card-head-inverse bg-info">
-                            <h4 class="card-title text-white float-left">{{.Title}}</h4>
+                    <div class="card box-shadow-0 border-primary">
+                        <div class="card-header card-head-inverse bg-primary">
+                            <h4 class="card-title text-white float-left"><i class="fas fa-book mr-1"></i> {{.Title}}
+                            </h4>
                             <div class="heading-elements float-right">
-                                Terdapat {{.QuestCount}} soal
+                                Terdapat {{.ProblemCount}} soal
                             </div>
                         </div>
                         <div class="card-content collapse show">
@@ -28,8 +29,8 @@
                                 <p>{{.Description}}</p>
                                 {{.TimeDesc}}
                                 <div class="text-right">
-                                    <a href="{{$baseUrl}}{{.ContestUrl}}" class="btn btn-success">Mulai
-                                        {{.ContestType}}</a>
+                                    <a href="{{$baseUrl}}{{.ContestUrl}}" class="btn btn-success"><i
+                                            class="fas fa-book-open mr-1"></i> Mulai {{.ContestType}}</a>
                                 </div>
                             </div>
                         </div>

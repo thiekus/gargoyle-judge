@@ -69,7 +69,7 @@ CREATE TABLE %TABLEPREFIX%contests (
     id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     title VARCHAR(50) NOT NULL DEFAULT 'untitled',
     description TEXT DEFAULT '',
-    quest_count INTEGER,
+    problem_count INTEGER,
     contest_group_id INTEGER,
     is_unlocked INTEGER,
     is_public INTEGER,
@@ -81,11 +81,11 @@ CREATE TABLE %TABLEPREFIX%contests (
 );
 
 -- Question List
-DROP TABLE IF EXISTS %TABLEPREFIX%quests;
-CREATE TABLE %TABLEPREFIX%quests (
+DROP TABLE IF EXISTS %TABLEPREFIX%problems;
+CREATE TABLE %TABLEPREFIX%problems (
     id INTEGER PRIMARY KEY %AUTOINCREMENT%,
     contest_id INTEGER,
-    quest_name VARCHAR(50) NOT NULL,
+    problem_name VARCHAR(50) NOT NULL,
     description TEXT,
     time_limit INTEGER,
     mem_limit INTEGER,

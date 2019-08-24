@@ -8,6 +8,7 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
@@ -100,9 +101,12 @@ func getConfigData() ConfigData {
 func saveConfigData(config ConfigData) {
 	configPath := "./" + ConfigFilename
 	if jsonData, err := json.Marshal(config); err == nil {
-		if err = ioutil.WriteFile(configPath, jsonData, os.ModePerm); err == nil {
-			log := newLog()
-			log.Print("Config data have been saved!")
+		var jsonBuf bytes.Buffer
+		if err = json.Indent(&jsonBuf, jsonData, "", "\t"); err == nil {
+			if err = ioutil.WriteFile(configPath, jsonBuf.Bytes(), os.ModePerm); err == nil {
+				log := newLog()
+				log.Print("Config data have been saved!")
+			}
 		}
 	}
 }

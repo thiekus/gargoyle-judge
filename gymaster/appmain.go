@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r109"
+const appVersion = "0.6r123"
 
 var appConfig ConfigData
 
@@ -145,6 +145,7 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/dashboard/training", dashboardTrainingGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problemSet/{id}", dashboardProblemSetGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/submissions", dashboardSubmissionsGetEndpoint).Methods("GET")
 	//
 	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
 	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")

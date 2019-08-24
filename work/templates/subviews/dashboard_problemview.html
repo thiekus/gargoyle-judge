@@ -1,0 +1,185 @@
+<div class="row">
+    <div class="col-12 col-md-12">
+        <div class="card">
+            <!--<div class="card-header">
+                <h4 class="card-title text-center">{{.PageData.Name}}
+                </h4>
+            </div>-->
+            <div class="card-content collapse show">
+                <div class="card-body">
+
+                    <div class="card box-shadow-0 border-primary">
+                        <div class="card-header card-head-inverse bg-primary">
+                            <h4 class="card-title text-white float-left"><i class="fas fa-puzzle-piece mr-1"></i>
+                                {{.PageData.Name}}</h4>
+                            <div class="heading-elements float-right">
+                                <!-- Caption kanan -->
+                                <i class="fas fa-stopwatch mr-1"></i><span id="tiktok"></span>
+                            </div>
+                        </div>
+                        <div class="card-content collapse show">
+                            <div class="card-body">
+                                <table>
+                                    <tr>
+                                        <td>Time limit</td>
+                                        <td> :
+                                            {{.PageData.TimeLimit}} detik</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Memory limit</td>
+                                        <td> :
+                                            {{.PageData.MemLimit}} MB</td>
+                                    </tr>
+                                </table>
+                                <p>
+                                    {{.PageData.Description}}
+                                </p>
+                                <br />
+
+                                <div class="card box-shadow-0 border-info">
+                                    <div class="card-header card-head-inverse bg-primary">
+                                        <h4 class="card-title text-white">
+                                            <i class="fas fa-file-upload mr-1"></i> Submit Solution
+                                        </h4>
+                                        <a class="heading-elements-toggle"><i
+                                                class="la la-ellipsis-v font-medium-3"></i></a>
+                                        <div class="heading-elements">
+                                            <!-- Caption kanan -->
+                                        </div>
+                                    </div>
+                                    <div class="card-content collapse show">
+                                        <div class="card-body">
+
+                                            <div class="tab-outline">
+                                                <ul class="nav nav-tabs" id="myTab2" role="tablist">
+                                                    <li class="nav-item">
+                                                        <a class="nav-link active" id="tab-outline-one"
+                                                            data-toggle="tab" href="#outline-one" role="tab"
+                                                            aria-controls="home" aria-selected="true">Upload Code
+                                                            File</a>
+                                                    </li>
+                                                    <li class="nav-item">
+                                                        <a class="nav-link" id="tab-outline-two" data-toggle="tab"
+                                                            href="#outline-two" role="tab" aria-controls="profile"
+                                                            aria-selected="false">Paste Code</a>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content" id="myTabContent2">
+                                                    <div class="tab-pane fade show active" id="outline-one"
+                                                        role="tabpanel" aria-labelledby="tab-outline-one">
+                                                        <!-- Form submissions by upload -->
+                                                        <form method="POST" action="{{.BaseUrl}}quest/submit"
+                                                            enctype="multipart/form-data">
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="problemId"
+                                                                    value="{{.PageData.Id}}" />
+                                                                <input type="hidden" name="problemSetId"
+                                                                    value="{{.PageData.ContestId}}" />
+                                                                <select class="form-control" name="lang">
+                                                                    <option value="c">C</option>
+                                                                    <option value="cpp">C++</option>
+                                                                    <option value="java">Java</option>
+                                                                </select>
+                                                                <br />
+                                                                <div class="custom-file">
+                                                                    <input type="file" class="custom-file-input"
+                                                                        id="inputSrc" name="source_code_file">
+                                                                    <label class="custom-file-label"
+                                                                        for="inputSrc">Choose
+                                                                        file</label>
+                                                                </div>
+                                                                <br /><br />
+                                                                <input class="btn btn-primary" type="submit"
+                                                                    value="Submit" />
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="outline-two" role="tabpanel"
+                                                        aria-labelledby="tab-outline-two">
+                                                        <!-- Form submissions by code -->
+                                                        <form method="POST" action="{{.BaseUrl}}quest/submit"
+                                                            enctype="multipart/form-data">
+                                                            <div class="form-group">
+                                                                <input type="hidden" name="problemId"
+                                                                    value="{{.PageData.Id}}" />
+                                                                <input type="hidden" name="problemSetId"
+                                                                    value="{{.PageData.ContestId}}" />
+                                                                <select class="form-control" name="lang">
+                                                                    <option value="c">C</option>
+                                                                    <option value="cpp">C++</option>
+                                                                    <option value="java">Java</option>
+                                                                </select>
+                                                                <br />
+                                                                <textarea rows="16" name="source_code_text"></textarea>
+                                                                <div id="sourceCodeEditor" style="min-height:300px;">
+                                                                </div>
+                                                                <br />
+                                                                <input class="btn btn-primary" type="submit"
+                                                                    value="Submit" />
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="{{.BaseUrl}}{{.PageData.ContestUrl}}">Kembali ke daftar soal</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Ace Code Highlighting -->
+<script src="{{.BaseUrl}}assets/shared/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+    var scEditor, scTextarea;
+
+    function timeConverter(waktu) {
+        var hour = ("0" + (Math.floor(waktu / 3600))).slice(-2);
+        var min = ("0" + Math.floor((waktu - (hour * 3600)) / 60)).slice(-2);
+        var sec = ("0" + Math.floor(waktu - (hour * 3600) - (min * 60))).slice(-2);
+        var time = hour + ':' + min + ':' + sec;
+        return time;
+    }
+
+    function tickTock(waktu) {
+        var waktuSisa = timeConverter(waktu);
+        //console.log(waktuSisa);
+        $("#tiktok").html(waktuSisa);
+        if (waktu > 0) {
+            setTimeout(function () {
+                tickTock(waktu - 1);
+            }, 1000);
+        } else {
+            window.location.replace("{{.BaseUrl}}dashboard?timeOut=yes");
+        }
+    }
+
+    function initializeEditor() {
+        // Set source code editor
+        scEditor = ace.edit("sourceCodeEditor");
+        scEditor.setOptions({
+            maxLines: Infinity
+        });
+        scEditor.setTheme("ace/theme/monokai");
+        scEditor.session.setMode("ace/mode/javascript");
+        // Initialize reference to real textarea
+        scTextarea = $('textarea[name="source_code_text"]').hide();
+    }
+
+    function initReminderTimer() {
+        tickTock(600)
+        initializeEditor();
+    }
+</script>

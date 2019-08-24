@@ -212,7 +212,7 @@ func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
 		return
 	}
-	qs, err := cdm.GetQuestionList(id)
+	qs, err := cdm.GetProblemSet(id)
 	ps := ProblemSet{
 		Contest:  cd,
 		Problems: qs,
@@ -222,7 +222,7 @@ func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	if cd.Trainer {
 		pageName = "training"
 	}
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problem.html",
+	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemset.html",
 		pageName, ps, cd.Title)
 }
 
@@ -235,7 +235,7 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer cdm.Close()
-	qd, err := cdm.GetQuestionById(id)
+	qd, err := cdm.GetProblemById(id)
 	if err != nil {
 		log := newLog()
 		log.Error(err)
@@ -247,6 +247,11 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	/*if ps.Contest.Trainer {
 		pageName = "training"
 	}*/
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_quest.html",
+	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemview.html",
 		pageName, qd, qd.Name)
+}
+
+func dashboardSubmissionsGetEndpoint(w http.ResponseWriter, r *http.Request) {
+	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_submissions.html",
+		"submissions", nil, "")
 }
