@@ -214,7 +214,7 @@
                             </li>
                             {{if .UserData.Roles.Contestant}}
                             <li class="nav-divider">
-                                Kontes dan Latihan
+                                Menu Kontestan
                             </li>
                             <li class="nav-item ">
                                 {{with .PageData.Menu.ContestMenu}}
@@ -225,6 +225,21 @@
                                 {{end}}
                             </li>
                             {{end}}
+                            {{if .UserData.Roles.SysAdmin}}
+                            <li class="nav-divider">
+                                Administrasi
+                            </li>
+                            <li class="nav-item ">
+                                {{with .PageData.Menu.AdminMenu}}
+                                {{range .}}
+                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
+                                        class="{{.IconClass}}"></i>{{.Title}}</a>
+                                {{end}}
+                                {{end}}
+                            </li>
+                            {{end}}
+                            <!-- Fix overflow scrollbar not enough :( -->
+                            <div style="height:72px;"></div>
                         </ul>
                     </div>
                 </nav>
@@ -310,15 +325,14 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                            GargoyleWS v{{.AppVersion}}. Copyright © 2019 <a href="http://www.khayalan.id"
+                            <a href="https://github.com/thiekus/gargoyle-judge" target="_blank">Gargoyle Judge
+                                v{{.AppVersion}}</a>. Copyright © 2019 <a href="http://www.khayalan.id"
                                 target="_blank">Thiekus</a>.
                         </div>
                         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
                             <div class="text-md-right footer-links d-none d-sm-block">
                                 <a href="#aboutApp" id="aboutAppLink" data-toggle="modal">About Gargoyle</a>
                                 <a href="{{.BaseUrl}}logout">Logout</a>
-                                <!--<a href="http://www.khayalan.id" target="_blank">Thiekus Home</a>
-                                <a href="http://www.infestunsyiah.com" target="_blank">INFEST Home</a>-->
                             </div>
                         </div>
                     </div>
@@ -375,13 +389,7 @@
     </div>
 
     <!-- Custom initialization-->
-    {{if eq .PageData.PageName "contest"}}
-    <script>
-        function customInit() {
-            initReminderTimer();
-        }
-    </script>
-    {{else if eq .PageData.PageName "training"}}
+    {{if eq .PageData.PageName "contests"}}
     <script>
         function customInit() {
             initReminderTimer();

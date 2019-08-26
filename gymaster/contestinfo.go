@@ -11,7 +11,6 @@ import "html/template"
 
 type ContestData struct {
 	Id           int
-	ContestType  string
 	Title        string
 	Description  template.HTML
 	TimeDesc     template.HTML
@@ -20,10 +19,9 @@ type ContestData struct {
 	GroupId      int
 	Unlocked     bool
 	PublicView   bool
-	Trainer      bool
 	MustStream   bool
-	StartTime    int
-	EndTime      int
+	StartTime    int64
+	EndTime      int64
 	MaxTime      int
 }
 
@@ -37,6 +35,16 @@ type ProblemData struct {
 	MaxAttempts int
 	ProblemUrl  string
 	ContestUrl  string
+}
+
+type ContestAccess struct {
+	Id         int
+	UserId     int
+	ContestId  int
+	StartTime  int64
+	EndTime    int64
+	Allowed    bool
+	RemainTime int // Used for written in page
 }
 
 type ContestList struct {

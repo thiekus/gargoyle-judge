@@ -52,7 +52,9 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 }
 
 func logoutGetEndpoint(w http.ResponseWriter, r *http.Request) {
+	uid := appUsers.GetLoggedUserId(r)
 	appUsers.UserLogoutFromWebsite(w, r)
+	appContestAccess.ReleaseMapOfUser(uid)
 	http.Redirect(w, r, getBaseUrlWithSlash(r), 302)
 }
 

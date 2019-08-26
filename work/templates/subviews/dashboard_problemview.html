@@ -14,23 +14,34 @@
                                 {{.PageData.Name}}</h4>
                             <div class="heading-elements float-right">
                                 <!-- Caption kanan -->
-                                <i class="fas fa-stopwatch mr-1"></i><span id="tiktok"></span>
+                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i><span id="tiktok"></span></span>
                             </div>
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <table>
-                                    <tr>
-                                        <td>Time limit</td>
-                                        <td> :
-                                            {{.PageData.TimeLimit}} detik</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Memory limit</td>
-                                        <td> :
-                                            {{.PageData.MemLimit}} MB</td>
-                                    </tr>
-                                </table>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <table>
+                                            <tr>
+                                                <td><i class="fas fa-stopwatch mr-1"></i></td>
+                                                <td>Time limit</td>
+                                                <td> : {{.PageData.TimeLimit}} detik</td>
+                                            </tr>
+                                            <tr>
+                                                <td><i class="fas fa-memory mr-1"></i></td>
+                                                <td>Memory limit</td>
+                                                <td> : {{.PageData.MemLimit}} MB</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-6 text-right">
+                                        <a class="btn btn-info" href="{{.BaseUrl}}{{.PageData.ContestUrl}}"><i
+                                                class="fas fa-arrow-circle-left mr-1"></i> Kembali</a>
+                                        <a class="btn btn-success" href="{{.BaseUrl}}dashboard/userSubmissions"><i
+                                                class="far fa-eye mr-1"></i> Riwayat Masukan</a>
+                                    </div>
+                                </div>
+
                                 <p>
                                     {{.PageData.Description}}
                                 </p>
@@ -55,13 +66,15 @@
                                                     <li class="nav-item">
                                                         <a class="nav-link active" id="tab-outline-one"
                                                             data-toggle="tab" href="#outline-one" role="tab"
-                                                            aria-controls="home" aria-selected="true">Upload Code
+                                                            aria-controls="home" aria-selected="true"><i
+                                                                class="fas fa-file-import mr-1"></i> Upload Code
                                                             File</a>
                                                     </li>
                                                     <li class="nav-item">
                                                         <a class="nav-link" id="tab-outline-two" data-toggle="tab"
                                                             href="#outline-two" role="tab" aria-controls="profile"
-                                                            aria-selected="false">Paste Code</a>
+                                                            aria-selected="false"><i class="fas fa-code mr-1"></i> Paste
+                                                            Code</a>
                                                     </li>
                                                 </ul>
                                                 <div class="tab-content" id="myTabContent2">
@@ -75,13 +88,16 @@
                                                                     value="{{.PageData.Id}}" />
                                                                 <input type="hidden" name="problemSetId"
                                                                     value="{{.PageData.ContestId}}" />
-                                                                <select class="form-control" name="lang">
+                                                                <label for="langSelectFile">Bahasa Pemrograman:</label>
+                                                                <select id="langSelectFile" class="form-control"
+                                                                    name="lang">
                                                                     <option value="c">C</option>
                                                                     <option value="cpp">C++</option>
                                                                     <option value="java">Java</option>
                                                                 </select>
                                                                 <br />
-                                                                <div class="custom-file">
+                                                                <label for="langFile">Source Code Program:</label>
+                                                                <div id="langFile" class="custom-file">
                                                                     <input type="file" class="custom-file-input"
                                                                         id="inputSrc" name="source_code_file">
                                                                     <label class="custom-file-label"
@@ -89,8 +105,11 @@
                                                                         file</label>
                                                                 </div>
                                                                 <br /><br />
-                                                                <input class="btn btn-primary" type="submit"
-                                                                    value="Submit" />
+                                                                <div class="text-right">
+                                                                    <button type="submit" class="btn btn-success"><i
+                                                                            class="fas fa-check-circle"></i>
+                                                                        Submit</button>
+                                                                </div>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -104,18 +123,25 @@
                                                                     value="{{.PageData.Id}}" />
                                                                 <input type="hidden" name="problemSetId"
                                                                     value="{{.PageData.ContestId}}" />
-                                                                <select class="form-control" name="lang">
+                                                                <label for="langSelectCode">Bahasa Pemrograman:</label>
+                                                                <select id="langSelectCode" class="form-control"
+                                                                    name="lang">
                                                                     <option value="c">C</option>
                                                                     <option value="cpp">C++</option>
                                                                     <option value="java">Java</option>
                                                                 </select>
                                                                 <br />
-                                                                <textarea rows="16" name="source_code_text"></textarea>
+                                                                <label for="sourceCodeEditor">Source Code
+                                                                    Program:</label>
+                                                                <textarea name="source_code_text"></textarea>
                                                                 <div id="sourceCodeEditor" style="min-height:300px;">
                                                                 </div>
                                                                 <br />
-                                                                <input class="btn btn-primary" type="submit"
-                                                                    value="Submit" />
+                                                                <div class="text-right">
+                                                                    <button type="submit" class="btn btn-success"><i
+                                                                            class="fas fa-check-circle"></i>
+                                                                        Submit</button>
+                                                                </div>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -129,8 +155,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <a href="{{.BaseUrl}}{{.PageData.ContestUrl}}">Kembali ke daftar soal</a>
 
                 </div>
             </div>
@@ -179,7 +203,11 @@
     }
 
     function initReminderTimer() {
-        tickTock(600)
+        var remainTime = {{.PageData.RemainingTime}};
+        if (remainTime >= 0) {
+            $("#tiktokContainer").show();
+            tickTock(remainTime);
+        }
         initializeEditor();
     }
 </script>

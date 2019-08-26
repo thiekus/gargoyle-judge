@@ -32,12 +32,53 @@ func (cdm *ContestDbModel) Close() error {
 	return cdm.db.Close()
 }
 
-func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (ContestList, error) {
+func (cdm *ContestDbModel) GetContestAccessCount(contestId int, userId int) (int, error) {
+	db := cdm.db
+	query := `SELECT COUNT(*) FROM %TABLEPREFIX%contest_access
+        WHERE id_user = ? AND id_contest = ?`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+	var count int
+	err = stmt.QueryRow(userId, contestId).Scan(&count)
+	if err != nil {
+		return 0, nil
+	}
+	return count, nil
+}
+
+func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (ContestAccess, error) {
+	db := cdm.db
+	ca := ContestAccess{}
+	query := `SELECT id, id_user, id_contest, start_time, end_time, allowed FROM %TABLEPREFIX%contest_access
+        WHERE id_user = ? AND id_contest = ?`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return ca, err
+	}
+	defer stmt.Close()
+	err = stmt.QueryRow(userId, contestId).Scan(
+		&ca.Id,
+		&ca.UserId,
+		&ca.ContestId,
+		&ca.StartTime,
+		&ca.EndTime,
+		&ca.Allowed,
+	)
+	if err != nil {
+		return ca, err
+	}
+	return ca, nil
+}
+
+func (cdm *ContestDbModel) GetContestListOfUserId(uid int, trainer bool) (ContestList, error) {
 	ui := appUsers.GetUserById(uid)
 	cl := ContestList{Count: 0}
 	db := cdm.db
-	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, is_trainer,
-        must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
+	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, must_stream, 
+        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE is_trainer = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cl, err
@@ -53,7 +94,7 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 	}
 	for rows.Next() {
 		cd := ContestData{}
-		var unlockedInt, publicInt, trainerInt, mustStreamInt bool
+		var unlockedInt, publicInt, mustStreamInt bool
 		err = rows.Scan(
 			&cd.Id,
 			&cd.Title,
@@ -62,7 +103,6 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 			&cd.GroupId,
 			&unlockedInt,
 			&publicInt,
-			&trainerInt,
 			&mustStreamInt,
 			&cd.StartTime,
 			&cd.EndTime,
@@ -87,13 +127,7 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 		}
 		cd.Unlocked = unlockedInt
 		cd.PublicView = publicInt
-		cd.Trainer = trainerInt
 		cd.MustStream = mustStreamInt
-		if !cd.Trainer {
-			cd.ContestType = "kontes"
-		} else {
-			cd.ContestType = "latihan"
-		}
 		cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 		if (cd.StartTime != 0) && (cd.EndTime != 0) {
 			utStart := time.Unix(int64(cd.StartTime), 0)
@@ -119,14 +153,14 @@ func (cdm *ContestDbModel) GetContestListByUserId(uid int, trainer bool) (Contes
 func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error) {
 	cd := ContestData{}
 	db := cdm.db
-	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, is_trainer,
-        must_stream, start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
+	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, must_stream, 
+        start_timestamp, end_timestamp, max_runtime FROM %TABLEPREFIX%contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cd, err
 	}
 	defer stmt.Close()
-	var unlockedInt, publicInt, trainerInt, mustStreamInt bool
+	var unlockedInt, publicInt, mustStreamInt bool
 	err = stmt.QueryRow(contestId).Scan(
 		&cd.Id,
 		&cd.Title,
@@ -135,7 +169,6 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 		&cd.GroupId,
 		&unlockedInt,
 		&publicInt,
-		&trainerInt,
 		&mustStreamInt,
 		&cd.StartTime,
 		&cd.EndTime,
@@ -146,13 +179,6 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 	}
 	cd.Unlocked = unlockedInt
 	cd.PublicView = publicInt
-	cd.Trainer = trainerInt
-	cd.MustStream = mustStreamInt
-	if !cd.Trainer {
-		cd.ContestType = "kontes"
-	} else {
-		cd.ContestType = "latihan"
-	}
 	cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 	if (cd.StartTime != 0) && (cd.EndTime != 0) {
 		utStart := time.Unix(int64(cd.StartTime), 0)
@@ -206,13 +232,9 @@ func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]ProblemData, error) {
 	return qs, nil
 }
 
-func (cdm *ContestDbModel) GetProblemById(id int) (ProblemData, error) {
+func (cdm *ContestDbModel) GetProblemById(problemId int) (ProblemData, error) {
 	qd := ProblemData{}
-	db, err := OpenDatabaseEx(false)
-	if err != nil {
-		return qd, err
-	}
-	defer db.Close()
+	db := cdm.db
 	query := `SELECT id, contest_id, problem_name, description, time_limit, mem_limit, max_attempts FROM %TABLEPREFIX%problems
     	WHERE id = ?`
 	stmt, err := db.Prepare(query)
@@ -220,7 +242,7 @@ func (cdm *ContestDbModel) GetProblemById(id int) (ProblemData, error) {
 		return qd, err
 	}
 	defer stmt.Close()
-	err = stmt.QueryRow(id).Scan(
+	err = stmt.QueryRow(problemId).Scan(
 		&qd.Id,
 		&qd.ContestId,
 		&qd.Name,
@@ -234,4 +256,26 @@ func (cdm *ContestDbModel) GetProblemById(id int) (ProblemData, error) {
 	}
 	qd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(qd.ContestId)
 	return qd, nil
+}
+
+func (cdm *ContestDbModel) InsertContestAccess(access ContestAccess) error {
+	db := cdm.db
+	query := `INSERT INTO %TABLEPREFIX%contest_access (id_user, id_contest, start_time, end_time, allowed) 
+        VALUES (?, ?, ?, ?, ?)`
+	prep, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer prep.Close()
+	_, err = prep.Exec(
+		access.UserId,
+		access.ContestId,
+		access.StartTime,
+		access.EndTime,
+		access.Allowed,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }

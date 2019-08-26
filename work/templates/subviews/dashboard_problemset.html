@@ -13,7 +13,7 @@
                             <h4 class="card-title text-white float-left"><i class="fas fa-book-open mr-1"></i> {{.PageData.Contest.Title}}</h4>
                             <div class="heading-elements float-right">
                                 <!-- Caption kanan -->
-                                <i class="fas fa-stopwatch mr-1"></i> <span id="tiktok"></span>
+                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i> <span id="tiktok"></span></span>
                             </div>
                         </div>
                         <div class="card-content collapse show">
@@ -73,6 +73,10 @@
     }
 
     function initReminderTimer() {
-        tickTock(300)
+        var remainTime = {{.PageData.RemainingTime}};
+        if (remainTime >= 0) {
+            $("#tiktokContainer").show();
+            tickTock(remainTime);
+        }
     }
 </script>

@@ -22,6 +22,16 @@ type DashboardProfileData struct {
 	CountryList CountryListName
 }
 
+type DashboardProblemData struct {
+	ProblemData
+	RemainingTime int
+}
+
+type DashboardProblemSetData struct {
+	ProblemSet
+	RemainingTime int
+}
+
 func dashboardHomeGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if r.FormValue("timeOut") == "yes" {
@@ -157,14 +167,14 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard/settings", 302)
 }
 
-func dashboardContestGetEndpoint(w http.ResponseWriter, r *http.Request) {
+func dashboardContestsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	cdm, err := NewContestDbModel()
 	if err != nil {
 		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
 		return
 	}
 	defer cdm.Close()
-	cl, err := cdm.GetContestListByUserId(appUsers.GetLoggedUserId(r), false)
+	cl, err := cdm.GetContestListOfUserId(appUsers.GetLoggedUserId(r), false)
 	if err != nil {
 		log := newLog()
 		log.Error(err)
@@ -173,31 +183,29 @@ func dashboardContestGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_contestgate.html",
-		"contest", cl, "")
-}
-
-func dashboardTrainingGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	cdm, err := NewContestDbModel()
-	if err != nil {
-		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
-		return
-	}
-	defer cdm.Close()
-	cl, err := cdm.GetContestListByUserId(appUsers.GetLoggedUserId(r), true)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_contestgate.html",
-		"training", cl, "")
+		"contests", cl, "")
 }
 
 func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
+	// Check access
+	ca, err := appContestAccess.GetAccessInfoOfUser(appUsers.GetLoggedUserId(r), id)
+	if err != nil {
+		log := newLog()
+		log.Error(err)
+		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
+		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
+		return
+	}
+	err = appContestAccess.CheckAccessInfo(ca)
+	if err != nil {
+		log := newLog()
+		log.Error(err)
+		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
+		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
+		return
+	}
 	cdm, err := NewContestDbModel()
 	if err != nil {
 		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
@@ -218,17 +226,34 @@ func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		Problems: qs,
 		Count:    len(qs),
 	}
-	pageName := "contest"
-	if cd.Trainer {
-		pageName = "training"
+	dps := DashboardProblemSetData{
+		ProblemSet:    ps,
+		RemainingTime: ca.RemainTime,
 	}
 	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemset.html",
-		pageName, ps, cd.Title)
+		"contests", dps, cd.Title)
 }
 
 func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.Atoi(vars["id"])
+	// Check access
+	ca, err := appContestAccess.GetAccessInfoOfUser(appUsers.GetLoggedUserId(r), id)
+	if err != nil {
+		log := newLog()
+		log.Error(err)
+		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
+		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
+		return
+	}
+	err = appContestAccess.CheckAccessInfo(ca)
+	if err != nil {
+		log := newLog()
+		log.Error(err)
+		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
+		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
+		return
+	}
 	cdm, err := NewContestDbModel()
 	if err != nil {
 		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
@@ -243,15 +268,15 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
 		return
 	}
-	pageName := "contest"
-	/*if ps.Contest.Trainer {
-		pageName = "training"
-	}*/
+	pd := DashboardProblemData{
+		ProblemData:   qd,
+		RemainingTime: ca.RemainTime,
+	}
 	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemview.html",
-		pageName, qd, qd.Name)
+		"contests", pd, qd.Name)
 }
 
-func dashboardSubmissionsGetEndpoint(w http.ResponseWriter, r *http.Request) {
+func dashboardUserSubmissionsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_submissions.html",
-		"submissions", nil, "")
+		"usersubmissions", nil, "")
 }

@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r123"
+const appVersion = "0.6r137"
 
 var appConfig ConfigData
 
@@ -32,6 +32,7 @@ var appServerVer = fmt.Sprintf("ThkGargoyleWS %s", appVersion)
 var appOnShutdown = false
 var appOnRestart = false
 var appUsers UserController
+var appContestAccess ContestAccessController
 var appImageStreams ImageStreamList
 
 // Endpoint to perform application shutdown from http request.
@@ -119,6 +120,7 @@ func prepareDatabase() {
 
 func prepareUserlist() {
 	appUsers = MakeUserController()
+	appContestAccess = MakeContestAccessController()
 	appImageStreams = MakeImageStreamList()
 }
 
@@ -141,11 +143,10 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/dashboard/profile", dashboardProfilePostEndpoint).Methods("POST")
 	r.HandleFunc("/dashboard/settings", dashboardSettingsGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/settings", dashboardSettingsPostEndpoint).Methods("POST")
-	r.HandleFunc("/dashboard/contest", dashboardContestGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/training", dashboardTrainingGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/contests", dashboardContestsGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problemSet/{id}", dashboardProblemSetGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/submissions", dashboardSubmissionsGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/userSubmissions", dashboardUserSubmissionsGetEndpoint).Methods("GET")
 	//
 	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
 	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")

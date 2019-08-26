@@ -7,6 +7,12 @@
             "location": "dashboard"
         },
         {
+            "name": "notifications",
+            "title": "Notifikasi",
+            "iconClass": "fa fa-fw fa-bell",
+            "location": "dashboard/notifications"
+        },
+        {
             "name": "profile",
             "title": "Profil Anda",
             "iconClass": "fa fa-fw fa-user-circle",
@@ -21,30 +27,36 @@
     ],
     "contestMenu": [
         {
-            "name": "contest",
-            "title": "Soal Kontes",
-            "iconClass": "fa fa-fw fas fa-graduation-cap",
-            "location": "dashboard/contest"
+            "name": "contests",
+            "title": "Kontes",
+            "iconClass": "fa fa-fw fas fa-fire",
+            "location": "dashboard/contests"
         },
         {
-            "name": "training",
-            "title": "Soal Latihan",
-            "iconClass": "fa fa-fw fas fa-pencil-alt",
-            "location": "dashboard/training"
-        },
-        {
-            "name": "submissions",
+            "name": "usersubmissions",
             "title": "Hasil Masukan",
             "iconClass": "fa fa-fw fas fa-check-square",
-            "location": "dashboard/submissions"
+            "location": "dashboard/userSubmissions"
         }
     ],
     "adminMenu": [
         {
             "name": "manageusers",
-            "title": "Manage Users",
+            "title": "Manajemen Users",
             "iconClass": "fa fa-fw fas fa-users",
-            "location": "manageUsers"
+            "location": "dashboard/manageUsers"
+        },
+        {
+            "name": "managecontests",
+            "title": "Manajemen Kontes",
+            "iconClass": "fa fa-fw fas fa-fire",
+            "location": "dashboard/manageContests"
+        },
+        {
+            "name": "manageproblems",
+            "title": "Manajemen Problems",
+            "iconClass": "fa fa-fw fas fa-book",
+            "location": "dashboard/manageProblems"
         }
     ]
 }

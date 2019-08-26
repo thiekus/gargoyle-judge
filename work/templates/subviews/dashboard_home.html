@@ -12,6 +12,13 @@
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
+                    {{if eq .UserData.Institution "NERV"}}
+                    <!-- Anthem begin -->
+                    <div id="nervPlay"></div><br />
+                    <script>
+                        document.getElementById("nervPlay").innerHTML = atob("PGlmcmFtZSB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC9OYWZpaTg3Z2R6cyIgZnJhbWVib3JkZXI9IjAiIGFsbG93PSJhY2NlbGVyb21ldGVyOyBhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhOyBneXJvc2NvcGU7IHBpY3R1cmUtaW4tcGljdHVyZSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPg==");
+                    </script>
+                    {{end}}
                     {{if gt .PageData.News.Count 0}}
                     {{with .PageData.News.News}}
                     {{range .}}
