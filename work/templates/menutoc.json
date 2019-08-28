@@ -28,7 +28,7 @@
     "contestMenu": [
         {
             "name": "contests",
-            "title": "Kontes",
+            "title": "Area Kontes",
             "iconClass": "fa fa-fw fas fa-fire",
             "location": "dashboard/contests"
         },

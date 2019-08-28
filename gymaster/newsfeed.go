@@ -35,8 +35,9 @@ func fetchNewsFeed() NewsFeed {
 		return nf
 	}
 	defer db.Close()
-	newsQuery := `SELECT n.id, (SELECT u.display_name FROM %TABLEPREFIX%users AS u WHERE u.id = n.author_id),
-       n.post_time, n.title, n.body FROM %TABLEPREFIX%news AS n`
+	newsQuery := `SELECT n.id, u.display_name, n.post_time, n.title, n.body 
+       FROM {{.TablePrefix}}news AS n INNER JOIN {{.TablePrefix}}users AS u 
+       ON u.id = n.author_id`
 	stmt, err := db.Prepare(newsQuery)
 	if err != nil {
 		return nf

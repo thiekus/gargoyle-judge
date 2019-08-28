@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.6r137"
+const appVersion = "0.6r151"
 
 var appConfig ConfigData
 
@@ -86,7 +86,12 @@ func appMiddleware(next http.Handler) http.Handler {
 		// Restrict dashboard from stranger
 		if strings.HasPrefix(r.URL.Path, "/dashboard") && (user == nil) {
 			appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
-			urlBase64 := base64.StdEncoding.EncodeToString([]byte(r.URL.Path))
+			path := r.URL.Path
+			query := r.URL.RawQuery
+			if query != "" {
+				path += "?" + query
+			}
+			urlBase64 := base64.StdEncoding.EncodeToString([]byte(path))
 			http.Redirect(w, r, getBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
 			return
 		} else if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
@@ -106,7 +111,7 @@ func prepareDatabase() {
 	log := newLog()
 	log.Print("Testing database connection...")
 	log.Printf("DB Driver: %s", appConfig.DbDriver)
-	db, err := OpenDatabaseEx(false)
+	db, err := OpenDatabaseEx(appConfig.DbDriver, false)
 	if err != nil {
 		log.Error(err)
 	} else {
@@ -137,12 +142,13 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/login", loginPostEndpoint).Methods("POST")
 	r.HandleFunc("/logout", logoutGetEndpoint).Methods("GET")
 	r.HandleFunc("/forgotPass", forgotPassGetEndpoint).Methods("GET")
-	// see dashboard.go
+	// see dashboard_basic.go
 	r.HandleFunc("/dashboard", dashboardHomeGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/profile", dashboardProfileGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/profile", dashboardProfilePostEndpoint).Methods("POST")
 	r.HandleFunc("/dashboard/settings", dashboardSettingsGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/settings", dashboardSettingsPostEndpoint).Methods("POST")
+	// see dashboard_contestant.go
 	r.HandleFunc("/dashboard/contests", dashboardContestsGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problemSet/{id}", dashboardProblemSetGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")

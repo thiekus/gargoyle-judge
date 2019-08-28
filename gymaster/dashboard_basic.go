@@ -8,9 +8,7 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 )
 
 type DashboardHomeData struct {
@@ -20,16 +18,6 @@ type DashboardHomeData struct {
 
 type DashboardProfileData struct {
 	CountryList CountryListName
-}
-
-type DashboardProblemData struct {
-	ProblemData
-	RemainingTime int
-}
-
-type DashboardProblemSetData struct {
-	ProblemSet
-	RemainingTime int
 }
 
 func dashboardHomeGetEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -165,118 +153,4 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	appUsers.RefreshUser(user.Id)
 	appUsers.AddFlashMessage(w, r, "Sukes mengupdate pengaturan akun anda!", FlashInformation)
 	http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard/settings", 302)
-}
-
-func dashboardContestsGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	cdm, err := NewContestDbModel()
-	if err != nil {
-		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
-		return
-	}
-	defer cdm.Close()
-	cl, err := cdm.GetContestListOfUserId(appUsers.GetLoggedUserId(r), false)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_contestgate.html",
-		"contests", cl, "")
-}
-
-func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-	// Check access
-	ca, err := appContestAccess.GetAccessInfoOfUser(appUsers.GetLoggedUserId(r), id)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	err = appContestAccess.CheckAccessInfo(ca)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	cdm, err := NewContestDbModel()
-	if err != nil {
-		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
-		return
-	}
-	defer cdm.Close()
-	cd, err := cdm.GetContestDetails(id)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	qs, err := cdm.GetProblemSet(id)
-	ps := ProblemSet{
-		Contest:  cd,
-		Problems: qs,
-		Count:    len(qs),
-	}
-	dps := DashboardProblemSetData{
-		ProblemSet:    ps,
-		RemainingTime: ca.RemainTime,
-	}
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemset.html",
-		"contests", dps, cd.Title)
-}
-
-func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, _ := strconv.Atoi(vars["id"])
-	// Check access
-	ca, err := appContestAccess.GetAccessInfoOfUser(appUsers.GetLoggedUserId(r), id)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	err = appContestAccess.CheckAccessInfo(ca)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, "Access denied: "+err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	cdm, err := NewContestDbModel()
-	if err != nil {
-		http.Error(w, "500 Internal Server Error: "+err.Error(), 500)
-		return
-	}
-	defer cdm.Close()
-	qd, err := cdm.GetProblemById(id)
-	if err != nil {
-		log := newLog()
-		log.Error(err)
-		appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
-		return
-	}
-	pd := DashboardProblemData{
-		ProblemData:   qd,
-		RemainingTime: ca.RemainTime,
-	}
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_problemview.html",
-		"contests", pd, qd.Name)
-}
-
-func dashboardUserSubmissionsGetEndpoint(w http.ResponseWriter, r *http.Request) {
-	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_submissions.html",
-		"usersubmissions", nil, "")
 }

@@ -12,12 +12,13 @@ import (
 )
 
 type FirstSetupData struct {
-	DbDone bool
-	DbHost string
-	DbUser string
-	DbPass string
-	DbName string
-	DbFile string
+	DbDone   bool
+	DbDriver string
+	DbHost   string
+	DbUser   string
+	DbPass   string
+	DbName   string
+	DbFile   string
 }
 
 // In the case you was created DB schema successfully, but not user
@@ -29,12 +30,13 @@ func firstSetupGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		done := r.FormValue("done") != ""
 		if !done {
 			fd := FirstSetupData{
-				DbDone: doneDbSetup,
-				DbHost: appConfig.DbHost,
-				DbUser: appConfig.DbUsername,
-				DbPass: appConfig.DbPassword,
-				DbName: appConfig.DbName,
-				DbFile: appConfig.DbFile,
+				DbDone:   doneDbSetup,
+				DbDriver: appConfig.DbDriver,
+				DbHost:   appConfig.DbHost,
+				DbUser:   appConfig.DbUsername,
+				DbPass:   appConfig.DbPassword,
+				DbName:   appConfig.DbName,
+				DbFile:   appConfig.DbFile,
 			}
 			CompileSinglePage(w, r, "first_setup.html", fd)
 		} else {

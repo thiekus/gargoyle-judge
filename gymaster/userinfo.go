@@ -13,7 +13,7 @@ type UserRoleAccess struct {
 	RoleName   string
 	Contestant bool
 	SysAdmin   bool
-	Operator   bool
+	Jury       bool
 }
 
 type UserGroup struct {
@@ -39,7 +39,7 @@ type UserInfo struct {
 	RoleId      int
 	Roles       UserRoleAccess
 	Groups      UserGroupAccess
-	LastAccess  int64
+	LastAccess  time.Time
 }
 
 type UserOnline struct {
@@ -48,7 +48,7 @@ type UserOnline struct {
 	DisplayName  string
 	Institution  string
 	Avatar       string
-	LastAccess   int64
+	LastAccess   time.Time
 	LastTimeDiff int64
 	TimeStatus   string
 }
@@ -63,7 +63,7 @@ func (ui *UserInfo) IsAdmin() bool {
 }
 
 func (ui *UserInfo) IsJury() bool {
-	return ui.Roles.Operator
+	return ui.Roles.Jury
 }
 
 func (ui *UserInfo) IsContestant() bool {
@@ -71,5 +71,5 @@ func (ui *UserInfo) IsContestant() bool {
 }
 
 func (ui *UserInfo) RefreshLastAccess() {
-	ui.LastAccess = time.Now().Unix()
+	ui.LastAccess = time.Now()
 }

@@ -7,7 +7,10 @@ package main
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import "html/template"
+import (
+	"html/template"
+	"time"
+)
 
 type ContestData struct {
 	Id           int
@@ -20,8 +23,8 @@ type ContestData struct {
 	Unlocked     bool
 	PublicView   bool
 	MustStream   bool
-	StartTime    int64
-	EndTime      int64
+	StartTime    time.Time
+	EndTime      time.Time
 	MaxTime      int
 }
 
@@ -41,8 +44,8 @@ type ContestAccess struct {
 	Id         int
 	UserId     int
 	ContestId  int
-	StartTime  int64
-	EndTime    int64
+	StartTime  time.Time
+	EndTime    time.Time
 	Allowed    bool
 	RemainTime int // Used for written in page
 }

@@ -8,13 +8,18 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"bytes"
 	"database/sql"
 	"errors"
 	"fmt"
+	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
 	"io/ioutil"
+	"net/url"
+	"strconv"
 	"strings"
+	"text/template"
 )
 
 type DbContext struct {
@@ -22,9 +27,18 @@ type DbContext struct {
 	driver string
 }
 
-func OpenDatabaseEx(multiStatements bool) (DbContext, error) {
+type DbParseVariables struct {
+	Driver        string
+	DatabaseName  string
+	AutoIncrement string
+	TablePrefix   string
+}
+
+func OpenDatabaseEx(driver string, multiStatements bool) (DbContext, error) {
 	ctx := DbContext{}
-	if appConfig.DbDriver == "mysql" {
+	switch driver {
+	// MySQL or MariaDB
+	case "mysql":
 		ms := "false"
 		if multiStatements {
 			ms = "true"
@@ -38,7 +52,9 @@ func OpenDatabaseEx(multiStatements bool) (DbContext, error) {
 			return ctx, err
 		}
 		ctx.db = db
-	} else if appConfig.DbDriver == "sqlite3" {
+
+	// SQLite 3.x
+	case "sqlite3":
 		db, err := sql.Open("sqlite3", appConfig.DbFile)
 		if err != nil {
 			log := newLog()
@@ -46,15 +62,33 @@ func OpenDatabaseEx(multiStatements bool) (DbContext, error) {
 			return ctx, err
 		}
 		ctx.db = db
-	} else {
-		return ctx, errors.New("invalid db driver")
+
+	// Microsoft SQL Server
+	case "sqlserver":
+		u := &url.URL{
+			Scheme:   "sqlserver",
+			User:     url.UserPassword(appConfig.DbUsername, appConfig.DbPassword),
+			Host:     appConfig.DbHost,
+			RawQuery: fmt.Sprintf("database=%s&encrypt=disable", appConfig.DbName),
+		}
+		db, err := sql.Open("sqlserver", u.String())
+		if err != nil {
+			log := newLog()
+			log.Error(err)
+			return ctx, err
+		}
+		ctx.db = db
+
+	default:
+		return ctx, errors.New("unsupported db driver")
+
 	}
-	ctx.driver = appConfig.DbDriver
+	ctx.driver = driver
 	return ctx, nil
 }
 
 func OpenDatabase() (DbContext, error) {
-	return OpenDatabaseEx(false)
+	return OpenDatabaseEx(appConfig.DbDriver, false)
 }
 
 func (d *DbContext) Close() error {
@@ -66,27 +100,61 @@ func (d *DbContext) Db() *sql.DB {
 }
 
 func (d *DbContext) Exec(query string, args ...interface{}) (sql.Result, error) {
-	return d.db.Exec(d.ParsePreprocessor(query), args...)
+	if q, err := d.ParsePreprocessor(query); err != nil {
+		return nil, err
+	} else {
+		return d.db.Exec(q, args...)
+	}
 }
 
-func (d *DbContext) ParsePreprocessor(query string) string {
-	strBuf := strings.ReplaceAll(query, "%TABLEPREFIX%", "gy_")
-	if d.driver == "sqlite3" {
-		strBuf = strings.ReplaceAll(strBuf, "%AUTOINCREMENT%", "")
-	} else {
-		strBuf = strings.ReplaceAll(strBuf, "%AUTOINCREMENT%", "AUTO_INCREMENT")
+func (d *DbContext) ParsePreprocessor(query string) (string, error) {
+	vars := DbParseVariables{
+		Driver:       d.driver,
+		DatabaseName: appConfig.DbName,
+		TablePrefix:  appConfig.DbTablePrefix,
 	}
-	return strBuf
+	switch d.driver {
+	case "mysql":
+		vars.AutoIncrement = "AUTO_INCREMENT"
+	case "sqlite3":
+		vars.AutoIncrement = "" // No Auto Increment keyword in sqlite
+	case "sqlserver":
+		vars.AutoIncrement = "IDENTITY(1,1)"
+	default:
+		return "", errors.New("unsupported db driver")
+	}
+	tpl, err := template.New("").Parse(query)
+	if err != nil {
+		return "", err
+	}
+	var b bytes.Buffer
+	err = tpl.Execute(&b, vars)
+	if err != nil {
+		return "", err
+	}
+	return string(b.Bytes()), nil
 }
 
 func (d *DbContext) Prepare(query string) (*sql.Stmt, error) {
-	return d.db.Prepare(d.ParsePreprocessor(query))
+	if d.driver == "sqlserver" {
+		// Dirty job for Ms SQL Server: prepare statement param are differ than MySQL and sqlite
+		c := 1
+		for strings.Index(query, "?") >= 0 {
+			query = strings.Replace(query, "?", "@p"+strconv.Itoa(c), 1)
+			c++
+		}
+	}
+	if q, err := d.ParsePreprocessor(query); err != nil {
+		return nil, err
+	} else {
+		return d.db.Prepare(q)
+	}
 }
 
 func CreateBlankDatabase() error {
 	log := newLog()
 	log.Print("Begin to create new database table")
-	db, err := OpenDatabaseEx(true)
+	db, err := OpenDatabaseEx(appConfig.DbDriver, true)
 	if err != nil {
 		log.Error(err)
 		return err

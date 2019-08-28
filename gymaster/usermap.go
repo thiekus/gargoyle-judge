@@ -127,7 +127,7 @@ func (uc *UserController) GetOnlineUsers(maxLastTime int) UserOnlineList {
 	var onlineList []UserOnline
 	timeNow := time.Now().Unix()
 	for uid, ui := range uc.umap {
-		timeDiff := timeNow - ui.LastAccess
+		timeDiff := timeNow - ui.LastAccess.Unix()
 		if (maxLastTime == 0) || (timeDiff < int64(maxLastTime)) {
 			online := UserOnline{
 				Id:           uid,
@@ -136,7 +136,7 @@ func (uc *UserController) GetOnlineUsers(maxLastTime int) UserOnlineList {
 				Institution:  ui.Institution,
 				Avatar:       ui.Avatar,
 				LastTimeDiff: timeDiff,
-				TimeStatus:   humanize.Time(time.Unix(ui.LastAccess, 0)),
+				TimeStatus:   humanize.Time(ui.LastAccess),
 			}
 			onlineList = append(onlineList, online)
 		}
@@ -203,7 +203,7 @@ func (uc *UserController) UserLogin(username string, password string) (string, e
 	}
 	uid := ui.Id
 	ui.Token = token
-	ui.LastAccess = time.Now().Unix()
+	ui.LastAccess = time.Now()
 	uc.umap[uid] = ui
 	uc.tmap[token] = uid
 	log.Printf("User %s logged in with token %s", username, token)

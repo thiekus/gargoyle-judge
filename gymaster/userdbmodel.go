@@ -61,7 +61,7 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + getMD5Hash(username)))
 	}
 	db := &udm.db
-	query := `INSERT INTO %TABLEPREFIX%users 
+	query := `INSERT INTO {{.TablePrefix}}users 
             (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role, verified, banned, create_time)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`
 	prep, err := db.Prepare(query)
@@ -95,27 +95,21 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 func (udm *UserDbModel) GetUserAccess(id int) (UserRoleAccess, error) {
 	ua := UserRoleAccess{}
 	db := &udm.db
-	query := "SELECT rolename, access_contestant, access_jury, access_root FROM %TABLEPREFIX%roles WHERE id = ?"
+	query := "SELECT rolename, access_contestant, access_jury, access_root FROM {{.TablePrefix}}roles WHERE id = ?"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return ua, err
 	}
 	defer stmt.Close()
-	var acsUser int
-	var acsJury int
-	var acsRoot int
 	err = stmt.QueryRow(id).Scan(
 		&ua.RoleName,
-		&acsUser,
-		&acsJury,
-		&acsRoot,
+		&ua.Contestant,
+		&ua.Jury,
+		&ua.SysAdmin,
 	)
 	if err != nil {
 		return ua, errors.New("invalid role id")
 	}
-	ua.Contestant = acsUser > 0
-	ua.Operator = acsJury > 0
-	ua.SysAdmin = acsRoot > 0
 	return ua, nil
 }
 
@@ -124,7 +118,7 @@ func (udm *UserDbModel) GetUserById(userId int) (UserInfo, error) {
 	db := &udm.db
 	stmt, err := db.Prepare(
 		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role
-        FROM %TABLEPREFIX%users WHERE id = ?`)
+        FROM {{.TablePrefix}}users WHERE id = ?`)
 	if err != nil {
 		return ui, err
 	}
@@ -164,7 +158,7 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 	db := &udm.db
 	stmt, err := db.Prepare(
 		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role
-        FROM %TABLEPREFIX%users WHERE username = ?`)
+        FROM {{.TablePrefix}}users WHERE username = ?`)
 	if err != nil {
 		return ui, err
 	}
@@ -186,10 +180,14 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 		&roleId,
 	)
 	if err != nil {
+		log := newLog()
+		log.Errorf("[%s] Select error: %s", username, err.Error())
 		return ui, errors.New("username invalid or not exists")
 	}
 	passHash := calculateSaltedHash(password, ui.Salt)
 	if passHash != ui.Password {
+		log := newLog()
+		log.Errorf("[%s] Password error: %s", username, err.Error())
 		return ui, errors.New("password for this username is invalid")
 	}
 	ui.Id = uid
@@ -206,7 +204,7 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 
 func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
 	db := &udm.db
-	query := `UPDATE %TABLEPREFIX%users SET 
+	query := `UPDATE {{.TablePrefix}}users SET 
         password = ?,
         salt = ?,
         email = ?,
@@ -241,8 +239,8 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
 
 func (udm *UserDbModel) GetUserGroupAccess(userId int) (UserGroupAccess, error) {
 	db := udm.db
-	query := `SELECT gm.group_id, (SELECT gr.name FROM %TABLEPREFIX%groups as gr WHERE id=gm.group_id) 
-        FROM %TABLEPREFIX%group_members as gm WHERE gm.user_id = ?`
+	query := `SELECT gm.group_id, (SELECT gr.name FROM {{.TablePrefix}}groups as gr WHERE id=gm.group_id) 
+        FROM {{.TablePrefix}}group_members as gm WHERE gm.user_id = ?`
 	prep, err := db.Prepare(query)
 	if err != nil {
 		return nil, err

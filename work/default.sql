@@ -2,9 +2,13 @@
 -- Copyright (C) Thiekus 2019
 
 -- User table
-DROP TABLE IF EXISTS %TABLEPREFIX%users;
-CREATE TABLE %TABLEPREFIX%users (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}users', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}users; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}users;
+{{end}}
+CREATE TABLE {{.TablePrefix}}users (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(64) NOT NULL,
     salt VARCHAR(32) NOT NULL,
@@ -22,41 +26,57 @@ CREATE TABLE %TABLEPREFIX%users (
 );
 
 -- User roles
-DROP TABLE IF EXISTS %TABLEPREFIX%roles;
-CREATE TABLE %TABLEPREFIX%roles (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}roles', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}roles; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}roles;
+{{end}}
+CREATE TABLE {{.TablePrefix}}roles (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     rolename VARCHAR(20) NOT NULL DEFAULT 'undefined',
     access_root INTEGER NOT NULL DEFAULT 0,
     access_jury INTEGER NOT NULL DEFAULT 0,
     access_contestant INTEGER NOT NULL DEFAULT 1
 );
 -- Default roles
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
+INSERT INTO {{.TablePrefix}}roles (rolename, access_root, access_jury, access_contestant) VALUES
     ('Contestant', 0, 0, 1);
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
-    ('Admin', 1, 1, 0);
-INSERT INTO %TABLEPREFIX%roles (rolename, access_root, access_jury, access_contestant) VALUES
+INSERT INTO {{.TablePrefix}}roles (rolename, access_root, access_jury, access_contestant) VALUES
+    ('Administrator', 1, 1, 0);
+INSERT INTO {{.TablePrefix}}roles (rolename, access_root, access_jury, access_contestant) VALUES
     ('Jury', 0, 1, 0);
 
 -- Contestant Group
-DROP TABLE IF EXISTS %TABLEPREFIX%groups;
-CREATE TABLE %TABLEPREFIX%groups (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}groups', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}groups; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}groups;
+{{end}}
+CREATE TABLE {{.TablePrefix}}groups (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Contestant Group Member relations
-DROP TABLE IF EXISTS %TABLEPREFIX%group_members;
-CREATE TABLE %TABLEPREFIX%group_members (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}group_members', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}group_members; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}group_members;
+{{end}}
+CREATE TABLE {{.TablePrefix}}group_members (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     user_id INTEGER NOT NULL,
     group_id INTEGER NOT NULL
 );
 
 -- News
-DROP TABLE IF EXISTS %TABLEPREFIX%news;
-CREATE TABLE %TABLEPREFIX%news (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}news', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}news; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}news;
+{{end}}
+CREATE TABLE {{.TablePrefix}}news (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     author_id INTEGER NOT NULL,
     post_time INTEGER NOT NULL DEFAULT 0,
     title VARCHAR(50) NOT NULL DEFAULT 'Untitled',
@@ -64,11 +84,15 @@ CREATE TABLE %TABLEPREFIX%news (
 );
 
 -- Contest List
-DROP TABLE IF EXISTS %TABLEPREFIX%contests;
-CREATE TABLE %TABLEPREFIX%contests (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}contests', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contests; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}contests;
+{{end}}
+CREATE TABLE {{.TablePrefix}}contests (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     title VARCHAR(50) NOT NULL DEFAULT 'Untitled',
-    description TEXT DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
     problem_count INTEGER NOT NULL DEFAULT 0,
     contest_group_id INTEGER NOT NULL DEFAULT 0,
     is_unlocked INTEGER NOT NULL DEFAULT 1,
@@ -80,9 +104,13 @@ CREATE TABLE %TABLEPREFIX%contests (
 );
 
 -- Problem List
-DROP TABLE IF EXISTS %TABLEPREFIX%problems;
-CREATE TABLE %TABLEPREFIX%problems (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}problems', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}problems; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}problems;
+{{end}}
+CREATE TABLE {{.TablePrefix}}problems (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     contest_id INTEGER NOT NULL,
     problem_name VARCHAR(50) NOT NULL DEFAULT 'Untitled Problem',
     description TEXT NOT NULL DEFAULT '',
@@ -92,12 +120,38 @@ CREATE TABLE %TABLEPREFIX%problems (
 );
 
 -- Contest Access
-DROP TABLE IF EXISTS %TABLEPREFIX%contest_access;
-CREATE TABLE %TABLEPREFIX%contest_access (
-    id INTEGER PRIMARY KEY %AUTOINCREMENT%,
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}contest_access', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contest_access; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}contest_access;
+{{end}}
+CREATE TABLE {{.TablePrefix}}contest_access (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_user INTEGER NOT NULL,
     id_contest INTEGER NOT NULL,
     start_time INTEGER NOT NULL DEFAULT 0,
     end_time INTEGER NOT NULL DEFAULT 0,
     allowed INTEGER NOT NULL DEFAULT 1
+);
+
+-- Contest Submissions
+{{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}submissions', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}submissions; 
+{{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}submissions;
+{{end}}
+CREATE TABLE {{.TablePrefix}}submissions (
+    id INTEGER PRIMARY KEY {{.AutoIncrement}},
+    id_problem INTEGER NOT NULL,
+    id_user INTEGER NOT NULL,
+    id_cache VARCHAR(64) NOT NULL UNIQUE,
+    lang VARCHAR(50) NOT NULL DEFAULT 'c',
+    code TEXT NOT NULL DEFAULT '',
+    status VARCHAR(4) NOT NULL DEFAULT 'QU',
+    details TEXT NOT NULL DEFAULT '',
+    score INTEGER NOT NULL DEFAULT 0,
+    submit_time INTEGER NOT NULL DEFAULT 0,
+    compile_time REAL NOT NULL DEFAULT 0,
+    compile_stdout TEXT NOT NULL DEFAULT '',
+    compile_stderr TEXT NOT NULL DEFAULT ''
 );

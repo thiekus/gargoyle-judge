@@ -20,12 +20,13 @@ func MakeContestAccessController() ContestAccessController {
 }
 
 func (cac *ContestAccessController) CalculateRemainingTime(ca *ContestAccess) int {
-	if ca.EndTime == 0 {
+	utEndTime := ca.EndTime.Unix()
+	if utEndTime == 0 {
 		// Not counted, given negative value
 		return -1
 	}
 	nowTime := time.Now().Unix()
-	delta := int(ca.EndTime - nowTime)
+	delta := int(utEndTime - nowTime)
 	if delta < 0 {
 		delta = 0
 	}
@@ -37,7 +38,8 @@ func (cac *ContestAccessController) CheckAccessInfo(ca *ContestAccess) error {
 	if !ca.Allowed {
 		return errors.New("you not allowed to attend this contest")
 	}
-	if (ca.EndTime > 0) && (nowTime > ca.EndTime) {
+	utEndTime := ca.EndTime.Unix()
+	if (utEndTime > 0) && (nowTime > utEndTime) {
 		return errors.New("your time is over")
 	}
 	return nil
@@ -94,15 +96,17 @@ func (cac *ContestAccessController) GetAccessInfoOfUser(userId int, contestId in
 			// Check time
 			nowTime := time.Now().Unix()
 			endTime := nowTime + int64(cd.MaxTime) // Maximum end time
-			if endTime > cd.EndTime {
-				endTime = cd.EndTime // Keep not over schedule
+			utStartTime := cd.StartTime.Unix()
+			utEndTime := cd.EndTime.Unix()
+			if endTime > utEndTime {
+				endTime = utEndTime // Keep not over schedule
 			}
 			// Time prevention
-			if (cd.StartTime > 0) && (cd.EndTime > 0) {
-				if nowTime < cd.StartTime {
+			if (utStartTime > 0) && (utEndTime > 0) {
+				if nowTime < utStartTime {
 					return nil, errors.New("contest not yet started")
 				}
-				if nowTime > cd.EndTime {
+				if nowTime > utEndTime {
 					return nil, errors.New("contest is over")
 				}
 			} else {
@@ -111,8 +115,8 @@ func (cac *ContestAccessController) GetAccessInfoOfUser(userId int, contestId in
 			ca = ContestAccess{
 				UserId:    userId,
 				ContestId: contestId,
-				StartTime: nowTime,
-				EndTime:   endTime,
+				StartTime: time.Unix(nowTime, 0),
+				EndTime:   time.Unix(endTime, 0),
 				Allowed:   true,
 			}
 			err = cdm.InsertContestAccess(ca)
