@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-md-12">
+    <div class="col-12 col-md-9">
         <div class="card">
             <!--<div class="card-header">
                 <h4 class="card-title text-center">{{.PageData.Name}}
@@ -14,32 +14,25 @@
                                 {{.PageData.Name}}</h4>
                             <div class="heading-elements float-right">
                                 <!-- Caption kanan -->
-                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i><span id="tiktok"></span></span>
+                                <span id="tiktokContainer" style="display:none;"><i
+                                        class="fas fa-stopwatch mr-1"></i><span id="tiktok"></span></span>
                             </div>
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <table>
-                                            <tr>
-                                                <td><i class="fas fa-stopwatch mr-1"></i></td>
-                                                <td>Time limit</td>
-                                                <td> : {{.PageData.TimeLimit}} detik</td>
-                                            </tr>
-                                            <tr>
-                                                <td><i class="fas fa-memory mr-1"></i></td>
-                                                <td>Memory limit</td>
-                                                <td> : {{.PageData.MemLimit}} MB</td>
-                                            </tr>
-                                        </table>
-                                    </div>
-                                    <div class="col-6 text-right">
-                                        <a class="btn btn-info" href="{{.BaseUrl}}{{.PageData.ContestUrl}}"><i
-                                                class="fas fa-arrow-circle-left mr-1"></i> Kembali</a>
-                                        <a class="btn btn-success" href="{{.BaseUrl}}dashboard/userSubmissions"><i
-                                                class="far fa-eye mr-1"></i> Riwayat Masukan</a>
-                                    </div>
+                                <div class="d-flex justify-content-center">
+                                    <table>
+                                        <tr>
+                                            <td><i class="fas fa-stopwatch mr-1"></i></td>
+                                            <td>Time limit</td>
+                                            <td> : {{.PageData.TimeLimit}} detik</td>
+                                        </tr>
+                                        <tr>
+                                            <td><i class="fas fa-memory mr-1"></i></td>
+                                            <td>Memory limit</td>
+                                            <td> : {{.PageData.MemLimit}} MB</td>
+                                        </tr>
+                                    </table>
                                 </div>
 
                                 <p>
@@ -81,9 +74,10 @@
                                                     <div class="tab-pane fade show active" id="outline-one"
                                                         role="tabpanel" aria-labelledby="tab-outline-one">
                                                         <!-- Form submissions by upload -->
-                                                        <form method="POST" action="{{.BaseUrl}}quest/submit"
+                                                        <form method="POST" action="{{.BaseUrl}}dashboard/problem"
                                                             enctype="multipart/form-data">
                                                             <div class="form-group">
+                                                                <input type="hidden" name="inputType" value="file" />
                                                                 <input type="hidden" name="problemId"
                                                                     value="{{.PageData.Id}}" />
                                                                 <input type="hidden" name="problemSetId"
@@ -91,15 +85,17 @@
                                                                 <label for="langSelectFile">Bahasa Pemrograman:</label>
                                                                 <select id="langSelectFile" class="form-control"
                                                                     name="lang">
-                                                                    <option value="c">C</option>
-                                                                    <option value="cpp">C++</option>
-                                                                    <option value="java">Java</option>
+                                                                    {{with .PageData.AllowedLang}}
+                                                                    {{range .}}
+                                                                    <option value="{{.Id}}">{{.DisplayName}}</option>
+                                                                    {{end}}
+                                                                    {{end}}
                                                                 </select>
                                                                 <br />
                                                                 <label for="langFile">Source Code Program:</label>
                                                                 <div id="langFile" class="custom-file">
                                                                     <input type="file" class="custom-file-input"
-                                                                        id="inputSrc" name="source_code_file">
+                                                                        id="inputSrc" name="sourceCodeFile">
                                                                     <label class="custom-file-label"
                                                                         for="inputSrc">Choose
                                                                         file</label>
@@ -116,25 +112,31 @@
                                                     <div class="tab-pane fade" id="outline-two" role="tabpanel"
                                                         aria-labelledby="tab-outline-two">
                                                         <!-- Form submissions by code -->
-                                                        <form method="POST" action="{{.BaseUrl}}quest/submit"
+                                                        <form method="POST" action="{{.BaseUrl}}dashboard/problem"
                                                             enctype="multipart/form-data">
                                                             <div class="form-group">
+                                                                <input type="hidden" name="inputType" value="text" />
                                                                 <input type="hidden" name="problemId"
                                                                     value="{{.PageData.Id}}" />
                                                                 <input type="hidden" name="problemSetId"
                                                                     value="{{.PageData.ContestId}}" />
-                                                                <label for="langSelectCode">Bahasa Pemrograman:</label>
+                                                                <label for="langSelectCode">Programming Language:</label>
                                                                 <select id="langSelectCode" class="form-control"
                                                                     name="lang">
-                                                                    <option value="c">C</option>
-                                                                    <option value="cpp">C++</option>
-                                                                    <option value="java">Java</option>
+                                                                    {{with .PageData.AllowedLang}}
+                                                                    {{range .}}
+                                                                    <option value="{{.Id}}"
+                                                                        syntaxName="{{.SyntaxName}}">{{.DisplayName}}
+                                                                    </option>
+                                                                    {{end}}
+                                                                    {{end}}
                                                                 </select>
                                                                 <br />
                                                                 <label for="sourceCodeEditor">Source Code
                                                                     Program:</label>
-                                                                <textarea name="source_code_text"></textarea>
-                                                                <div id="sourceCodeEditor" style="min-height:300px;">
+                                                                <textarea name="sourceCodeText"></textarea>
+                                                                <div id="sourceCodeEditor" class="codeblock"
+                                                                    style="min-height:300px;">
                                                                 </div>
                                                                 <br />
                                                                 <div class="text-right">
@@ -161,34 +163,64 @@
         </div>
     </div>
 
+    <div class="col-12 col-md-3">
+        <!-- Navigation -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Navigation</h4>
+            </div>
+            <div class="card-body">
+                <!-- Navs button groups -->
+                <div class="btn-group-vertical" style="width:100%;">
+                    <a class="btn btn-outline-dark text-left" href="{{.BaseUrl}}{{.PageData.ContestUrl}}"><i
+                            class="fas fa-arrow-circle-left mr-2"></i> Back to Details</a>
+                    <a class="btn btn-outline-dark text-left"
+                        href="{{.BaseUrl}}dashboard/userSubmissions?problem={{.PageData.Id}}"><i
+                            class="far fa-eye mr-2"></i> Submission History</a>
+                    <a class="btn btn-outline-dark text-left" href="{{.BaseUrl}}dashboard/scoreboard/{{.PageData.ContestId}}"><i
+                            class="fas fa-chalkboard mr-2"></i> Scoreboard</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problemlist -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Problem Set</h4>
+            </div>
+            <div class="card-body">
+                {{if gt .PageData.ProblemCount 0}}
+                <!-- Problem button groups -->
+                <div class="btn-group-vertical" style="width:100%;">
+                    {{$thisProblemId := .PageData.Id}}
+                    {{$baseUrl := .BaseUrl}}
+                    {{with .PageData.Problems}}
+                    {{range .}}
+                    {{$active := ""}}
+                    {{if eq .Id $thisProblemId}}
+                    {{$active = "active"}}
+                    {{end}}
+                    <a href="{{$baseUrl}}{{.ProblemUrl}}"
+                        class="btn btn-outline-primary text-left {{$active}}"><i
+                            class="fas fa-puzzle-piece mr-2"></i>
+                        {{.Name}}</a>
+                    {{end}}
+                    {{end}}
+                </div>
+                {{else}}
+                <p>No problem found!</p>
+                {{end}}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <!-- Ace Code Highlighting -->
 <script src="{{.BaseUrl}}assets/shared/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 
-<script>
+<script id="gySubviewScript">
     var scEditor, scTextarea;
-
-    function timeConverter(waktu) {
-        var hour = ("0" + (Math.floor(waktu / 3600))).slice(-2);
-        var min = ("0" + Math.floor((waktu - (hour * 3600)) / 60)).slice(-2);
-        var sec = ("0" + Math.floor(waktu - (hour * 3600) - (min * 60))).slice(-2);
-        var time = hour + ':' + min + ':' + sec;
-        return time;
-    }
-
-    function tickTock(waktu) {
-        var waktuSisa = timeConverter(waktu);
-        //console.log(waktuSisa);
-        $("#tiktok").html(waktuSisa);
-        if (waktu > 0) {
-            setTimeout(function () {
-                tickTock(waktu - 1);
-            }, 1000);
-        } else {
-            window.location.replace("{{.BaseUrl}}dashboard?timeOut=yes");
-        }
-    }
 
     function initializeEditor() {
         // Set source code editor
@@ -196,18 +228,28 @@
         scEditor.setOptions({
             maxLines: Infinity
         });
-        scEditor.setTheme("ace/theme/monokai");
-        scEditor.session.setMode("ace/mode/javascript");
+        scEditor.setTheme("ace/theme/{{.UserData.SyntaxTheme}}");
+        var syntaxName = $("#langSelectCode").children("option:selected").attr("syntaxName");
+        scEditor.session.setMode("ace/mode/" + syntaxName);
         // Initialize reference to real textarea
-        scTextarea = $('textarea[name="source_code_text"]').hide();
+        scTextarea = $('textarea[name="sourceCodeText"]');
+        scTextarea.hide();
+        scTextarea.closest("form").submit(function () {
+            scTextarea.val(scEditor.getSession().getValue());
+        });
     }
 
-    function initReminderTimer() {
-        var remainTime = {{.PageData.RemainingTime}};
+    function subviewInit() {
+        var remainTime = parseInt("{{.PageData.RemainingTime}}");
         if (remainTime >= 0) {
             $("#tiktokContainer").show();
             tickTock(remainTime);
         }
+        $("#langSelectCode").change(function () {
+            var syntaxName = $(this).children("option:selected").attr("syntaxName");
+            //console.log(syntaxName);
+            scEditor.session.setMode("ace/mode/" + syntaxName);
+        });
         initializeEditor();
     }
 </script>

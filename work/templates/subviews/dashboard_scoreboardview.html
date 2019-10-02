@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="{{.BaseUrl}}assets/shared/gargoyle/css/scoreboard.css">
+<div class="row">
+
+    <div class="col-12 col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Scoreboard
+                </h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    <p>There are {{.PageData.Scoreboard.ContestantCount}} contestant here.</p>
+                    {{if eq .PageData.Scoreboard.ContestStyle "ICPC"}}
+                    <!-- ICPC style scoreboard -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th width="75px"><i class="fas fa-trophy mr-1"></i> Rank</th>
+                                    <th style="min-width: 300px;"><i class="fas fa-user mr-1"></i> Contestant</th>
+                                    <th width="80px"><i class="fas fa-coins mr-1"></i> Score</th>
+                                    <th width="140px"><i class="fas fa-clock mr-1"></i> Total Penalty</th>
+                                    {{with .PageData.Scoreboard.Problems}}
+                                    {{range .}}
+                                    <th width="90px">
+                                        <div class="scoreboard-head-circle mr-1"
+                                            style="background-color: {{.CircleColor}};"></div> {{.ShortName}}
+                                    </th>
+                                    {{end}}
+                                    {{end}}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{$baseUrl := .BaseUrl}}
+                                {{with .PageData.Scoreboard.Contestant}}
+                                {{range .}}
+                                <tr>
+                                    <td>{{.RankNumber}}</td>
+                                    <td>
+                                        <table class="borderless">
+                                            <tbody>
+                                                <tr>
+                                                    <td style="border: none;"><img src="{{$baseUrl}}avatar/{{.Avatar}}"
+                                                            class="rounded-circle" alt="avatar" style="width: 40px;">
+                                                    </td>
+                                                    <td style="border: none;">
+                                                        {{.Name}}<br /><small>{{.Institution}}</small></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                    <td class="text-center">{{.TotalScore}}</td>
+                                    <td class="text-center">{{.PenaltyTimeStr}}</td>
+                                    {{with .Problems}}
+                                    {{range .}}
+                                    {{if gt .AcceptedTime 0}}
+                                    <td class="text-center scoreboard-solved">{{.AcceptedTimeStr}}<br/><small><i class="fas fa-running mr-1"></i> {{.SubmissionCount}}</small></td>
+                                    {{else if gt .SubmissionCount 0}}
+                                    <td class="text-center scoreboard-incorrect"><i class="fas fa-running mr-1"></i> {{.SubmissionCount}}</td>
+                                    {{else}}
+                                    <td class="text-center"></td>
+                                    {{end}}
+                                    {{end}}
+                                    {{end}}
+                                </tr>
+                                {{end}}
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script id="gySubviewScript">
+    function subviewInit() {}
+</script>

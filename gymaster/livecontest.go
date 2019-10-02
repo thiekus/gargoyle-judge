@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +12,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	mjpeg "github.com/mattn/go-mjpeg"
+	"github.com/mattn/go-mjpeg"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"net/http"
 	"strconv"
 	"time"
@@ -32,7 +34,7 @@ func liveCaptureGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	if user == nil {
 		appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
 		urlBase64 := base64.StdEncoding.EncodeToString([]byte(r.URL.Path))
-		http.Redirect(w, r, getBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+		http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
 		return
 	}
 	CompileDashboardPage(w, r, "live_base.html", "live_capture.html",

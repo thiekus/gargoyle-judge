@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-md-12">
+    <div class="col-12 col-md-9">
         <div class="card">
             <!--<div class="card-header">
                 <h4 class="card-title text-center">Soal - {{.PageData.Contest.Title}}
@@ -10,35 +10,18 @@
 
                     <div class="card box-shadow-0 border-primary">
                         <div class="card-header card-head-inverse bg-primary">
-                            <h4 class="card-title text-white float-left"><i class="fas fa-book-open mr-1"></i> {{.PageData.Contest.Title}}</h4>
+                            <h4 class="card-title text-white float-left"><i class="fas fa-book-open mr-1"></i>
+                                {{.PageData.Contest.Title}}</h4>
                             <div class="heading-elements float-right">
                                 <!-- Caption kanan -->
-                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i> <span id="tiktok"></span></span>
+                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i>
+                                    <span id="tiktok"></span></span>
                             </div>
                         </div>
                         <div class="card-content collapse show">
                             <div class="card-body">
                                 <p>{{.PageData.Contest.Description}}</p>
-                                <!-- Problems cards -->
-
                                 {{.PageData.Contest.TimeDesc}}
-                                <br />
-
-                                {{if gt .PageData.Count 0}}
-                                {{$baseUrl := .BaseUrl}}
-                                {{with .PageData.Problems}}
-                                {{range .}}
-                                <a href="{{$baseUrl}}{{.ProblemUrl}}">
-                                    <div class="card bg-primary border-primary">
-                                        <div class="card-body"><i class="fas fa-puzzle-piece mr-2"></i> {{.Name}}</div>
-                                    </div>
-                                </a>
-                                {{end}}
-                                {{end}}
-                                {{else}}
-                                <p>Tidak ada soal ditemukan!</p>
-                                {{end}}
-
                             </div>
                         </div>
                     </div>
@@ -48,32 +31,50 @@
         </div>
     </div>
 
+    <div class="col-12 col-md-3">
+        <!-- Navigation -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Navigation</h4>
+            </div>
+            <div class="card-body">
+                <!-- Navs button groups -->
+                <div class="btn-group-vertical" style="width:100%;">
+                    <a class="btn btn-outline-dark text-left" href="{{.BaseUrl}}dashboard/scoreboard/{{.PageData.Contest.Id}}"><i
+                            class="fas fa-chalkboard mr-2"></i> Scoreboard</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Problemlist -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Problem Set</h4>
+            </div>
+            <div class="card-body">
+                {{if gt .PageData.Count 0}}
+                <!-- Problem button groups -->
+                <div class="btn-group-vertical" style="width:100%;">
+                    {{$baseUrl := .BaseUrl}}
+                    {{with .PageData.Problems}}
+                    {{range .}}
+                    <a href="{{$baseUrl}}{{.ProblemUrl}}" class="btn btn-outline-primary text-left"><i
+                            class="fas fa-puzzle-piece mr-2"></i>
+                        {{.Name}}</a>
+                    {{end}}
+                    {{end}}
+                </div>
+                {{else}}
+                <p>No problem found!</p>
+                {{end}}
+            </div>
+        </div>
+    </div>
 </div>
 
-<script>
-    function timeConverter(waktu) {
-        var hour = ("0" + (Math.floor(waktu / 3600))).slice(-2);
-        var min = ("0" + Math.floor((waktu - (hour * 3600)) / 60)).slice(-2);
-        var sec = ("0" + Math.floor(waktu - (hour * 3600) - (min * 60))).slice(-2);
-        var time = hour + ':' + min + ':' + sec;
-        return time;
-    }
-
-    function tickTock(waktu) {
-        var waktuSisa = timeConverter(waktu);
-        //console.log(waktuSisa);
-        $("#tiktok").html(waktuSisa);
-        if (waktu > 0) {
-            setTimeout(function () {
-                tickTock(waktu - 1);
-            }, 1000);
-        } else {
-            window.location.replace("{{.BaseUrl}}dashboard?timeOut=yes");
-        }
-    }
-
-    function initReminderTimer() {
-        var remainTime = {{.PageData.RemainingTime}};
+<script id="gySubviewScript">
+    function subviewInit() {
+        var remainTime = parseInt("{{.PageData.RemainingTime}}");
         if (remainTime >= 0) {
             $("#tiktokContainer").show();
             tickTock(remainTime);

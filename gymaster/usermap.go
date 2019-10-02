@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,13 +12,23 @@ import (
 	"fmt"
 	"github.com/dustin/go-humanize"
 	"github.com/gorilla/sessions"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
-type UsersMap map[int]UserInfo
-type UsersTokenMap map[string]int
+//type UsersMap map[int]UserInfo
+type UsersMap struct {
+	sync.Map
+}
+
+//type UsersTokenMap map[string]int
+type UsersTokenMap struct {
+	sync.Map
+}
 
 const UserSessionName = "GargoyleUserSession"
 const FlashSessionName = "GargoyleFlashMessage"
@@ -26,6 +37,7 @@ const (
 	FlashInformation = 0
 	FlashWarning     = 1
 	FlashError       = 2
+	FlashSuccess     = 3
 )
 
 type UserController struct {
@@ -37,10 +49,56 @@ type UserController struct {
 func MakeUserController() UserController {
 	luser := UserController{
 		sessionStore: sessions.NewCookieStore([]byte(appConfig.SessionKey)),
-		umap:         make(UsersMap),
-		tmap:         make(UsersTokenMap),
+		umap:         UsersMap{},
+		tmap:         UsersTokenMap{},
 	}
 	return luser
+}
+
+func (uc *UserController) deleteUserMap(key int) {
+	uc.umap.Delete(key)
+}
+
+func (uc *UserController) loadUserMap(key int) (gytypes.UserInfo, bool) {
+	ui, exists := uc.umap.Load(key)
+	uiResult := gytypes.UserInfo{}
+	if ui != nil {
+		uiResult = ui.(gytypes.UserInfo)
+	}
+	return uiResult, exists
+}
+
+func (uc *UserController) rangeUserMap(f func(key int, value gytypes.UserInfo) bool) {
+	uc.umap.Range(func(key, value interface{}) bool {
+		return f(key.(int), value.(gytypes.UserInfo))
+	})
+}
+
+func (uc *UserController) storeUserMap(key int, ui gytypes.UserInfo) {
+	uc.umap.Store(key, ui)
+}
+
+func (uc *UserController) deleteTokenMap(key string) {
+	uc.tmap.Delete(key)
+}
+
+func (uc *UserController) loadTokenMap(key string) (int, bool) {
+	ti, exists := uc.tmap.Load(key)
+	tiResult := 0
+	if ti != nil {
+		tiResult = ti.(int)
+	}
+	return tiResult, exists
+}
+
+func (uc *UserController) rangeTokenMap(f func(key string, value int) bool) {
+	uc.tmap.Range(func(key, value interface{}) bool {
+		return f(key.(string), value.(int))
+	})
+}
+
+func (uc *UserController) storeTokenMap(key string, val int) {
+	uc.tmap.Store(key, val)
 }
 
 func (uc *UserController) CleanCookies(w http.ResponseWriter, r *http.Request) {
@@ -66,22 +124,22 @@ func (uc *UserController) CleanCookies(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &gfm)
 }
 
-func (uc *UserController) GetUserById(id int) *UserInfo {
-	if info, ok := uc.umap[id]; ok {
+func (uc *UserController) GetUserById(id int) *gytypes.UserInfo {
+	if info, ok := uc.loadUserMap(id); ok {
 		return &info
 	} else {
 		return nil
 	}
 }
 
-func (uc *UserController) GetUserByToken(token string) *UserInfo {
-	if uid, ok := uc.tmap[token]; ok {
+func (uc *UserController) GetUserByToken(token string) *gytypes.UserInfo {
+	if uid, ok := uc.loadTokenMap(token); ok {
 		ui := uc.GetUserById(uid)
 		// Assume is real owner who access the account
 		if ui != nil {
-			userInfo := uc.umap[uid]
+			userInfo, _ := uc.loadUserMap(uid)
 			userInfo.RefreshLastAccess()
-			uc.umap[uid] = userInfo
+			uc.storeUserMap(uid, userInfo)
 			ui = uc.GetUserById(uid)
 		}
 		return ui
@@ -116,20 +174,20 @@ func (uc *UserController) GetLoggedUserId(r *http.Request) int {
 	}
 }
 
-func (uc *UserController) GetLoggedUserInfo(r *http.Request) *UserInfo {
+func (uc *UserController) GetLoggedUserInfo(r *http.Request) *gytypes.UserInfo {
 	if token := uc.GetLoggedUserToken(r); token != "" {
 		return appUsers.GetUserByToken(token)
 	}
 	return nil
 }
 
-func (uc *UserController) GetOnlineUsers(maxLastTime int) UserOnlineList {
-	var onlineList []UserOnline
+func (uc *UserController) GetOnlineUsers(maxLastTime int) gytypes.UserOnlineList {
+	var onlineList []gytypes.UserOnline
 	timeNow := time.Now().Unix()
-	for uid, ui := range uc.umap {
+	uc.rangeUserMap(func(uid int, ui gytypes.UserInfo) bool {
 		timeDiff := timeNow - ui.LastAccess.Unix()
 		if (maxLastTime == 0) || (timeDiff < int64(maxLastTime)) {
-			online := UserOnline{
+			online := gytypes.UserOnline{
 				Id:           uid,
 				Username:     ui.Username,
 				DisplayName:  ui.DisplayName,
@@ -140,8 +198,9 @@ func (uc *UserController) GetOnlineUsers(maxLastTime int) UserOnlineList {
 			}
 			onlineList = append(onlineList, online)
 		}
-	}
-	uol := UserOnlineList{
+		return true
+	})
+	uol := gytypes.UserOnlineList{
 		Count: len(onlineList),
 		Users: onlineList,
 	}
@@ -156,56 +215,59 @@ func (uc *UserController) SetLoggedUserInfo(w http.ResponseWriter, r *http.Reque
 }
 
 func (uc *UserController) RefreshUser(userId int) error {
-	log := newLog()
+	log := gylib.GetStdLog()
 	log.Printf("Refreshing user id no %d", userId)
-	udm, err := NewUserDbModel()
+	db, err := OpenDatabase()
 	if err != nil {
 		log.Errorf("[uid:%d] Refresh error: %s", userId, err)
 		return err
 	}
-	defer udm.Close()
+	defer db.Close()
+	udm := NewUserDbModel(db)
 	ui, err := udm.GetUserById(userId)
 	if err != nil {
 		log.Errorf("[uid:%d] Refresh error: %s", userId, err)
 		return err
 	}
-	uc.umap[userId] = ui
+	uc.storeUserMap(userId, ui)
 	return err
 }
 
 func (uc *UserController) UserLogin(username string, password string) (string, error) {
-	log := newLog()
+	log := gylib.GetStdLog()
 	log.Printf("User %s trying to login...", username)
-	udm, err := NewUserDbModel()
+	db, err := OpenDatabase()
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
 		return "", err
 	}
-	defer udm.Close()
+	defer db.Close()
+	udm := NewUserDbModel(db)
 	ui, err := udm.GetUserByLogin(username, password)
 	if err != nil {
 		log.Errorf("[%s] Login error: %s", username, err)
 		return "", err
 	}
 	// Check token map if this user has logged in before, kick out :p
-	for tk, tv := range uc.tmap {
+	uc.rangeTokenMap(func(tk string, tv int) bool {
 		if tv == ui.Id {
 			uc.UserRemoveFromList(tk)
 		}
-	}
+		return true
+	})
 	var token string
 	// Avoid token collisions
 	for {
-		token = generateRandomToken()
-		if _, tokenExists := uc.tmap[token]; !tokenExists {
+		token = gylib.GenerateRandomToken()
+		if _, tokenExists := uc.loadTokenMap(token); !tokenExists {
 			break
 		}
 	}
 	uid := ui.Id
 	ui.Token = token
 	ui.LastAccess = time.Now()
-	uc.umap[uid] = ui
-	uc.tmap[token] = uid
+	uc.storeUserMap(uid, ui)
+	uc.storeTokenMap(token, uid)
 	log.Printf("User %s logged in with token %s", username, token)
 	return token, nil
 }
@@ -221,10 +283,13 @@ func (uc *UserController) UserLoginFromWebsite(w http.ResponseWriter, r *http.Re
 }
 
 func (uc *UserController) UserRemoveFromList(token string) {
-	log := newLog()
+	log := gylib.GetStdLog()
 	log.Printf("Removing token %s from logged user", token)
-	delete(uc.umap, uc.tmap[token])
-	delete(uc.tmap, token)
+	uid, _ := uc.loadTokenMap(token)
+	uc.deleteUserMap(uid)
+	uc.deleteTokenMap(token)
+	appContestAccess.deleteContestMap(uid)
+	appNotifications.deleteNotificationMap(uid)
 }
 
 func (uc *UserController) UserLogout(token string) {
@@ -262,6 +327,8 @@ func (uc *UserController) AddFlashMessage(w http.ResponseWriter, r *http.Request
 			flashType = "warning"
 		case FlashError:
 			flashType = "error"
+		case FlashSuccess:
+			flashType = "success"
 		}
 		flashData := fmt.Sprintf("%s;%s", flashType, message)
 		sess.AddFlash(flashData)

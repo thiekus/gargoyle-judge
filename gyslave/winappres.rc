@@ -1,0 +1,29 @@
+﻿1 ICON DISCARDABLE "appicon.ico"
+1 24 "gyslave.manifest"
+
+1 VERSIONINFO
+FILEVERSION 1,0,0,1
+PRODUCTVERSION 1,0,0,1
+FILEOS 0x40004
+FILETYPE 0x1
+{
+BLOCK "StringFileInfo"
+{
+	BLOCK "380904b0"
+	{
+		VALUE "CompanyName", "Thiekus"
+		VALUE "FileDescription", "Gargoyle Judge Slave Server"
+		VALUE "FileVersion", "0.7.0.1"
+		VALUE "InternalName", "Gargoyle"
+		VALUE "LegalCopyright", "Copyright © Thiekus 2019"
+		VALUE "OriginalFilename", "gyslave.exe"
+		VALUE "ProductName", "Gargoyle Judge"
+		VALUE "ProductVersion", "0.7.0.1"
+	}
+}
+
+BLOCK "VarFileInfo"
+{
+	VALUE "Translation", 0x3809, 0x04B0  
+}
+}

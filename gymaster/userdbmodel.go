@@ -2,18 +2,18 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"crypto/md5"
-	"crypto/sha256"
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/gorilla/securecookie"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"time"
 )
 
@@ -21,21 +21,14 @@ type UserDbModel struct {
 	db DbContext
 }
 
-func NewUserDbModel() (UserDbModel, error) {
-	udm := UserDbModel{}
-	db, err := OpenDatabase()
-	if err != nil {
-		return udm, err
+func NewUserDbModel(db DbContext) UserDbModel {
+	udm := UserDbModel{
+		db: db,
 	}
-	udm.db = db
-	return udm, err
+	return udm
 }
 
-func (udm *UserDbModel) Close() error {
-	return udm.db.Close()
-}
-
-func (udm *UserDbModel) CreateUserAccount(username string, password string, roleId int, ui UserInfo) error {
+func (udm *UserDbModel) CreateUserAccount(username string, password string, roleId int, ui gytypes.UserInfo) error {
 	displayName := ui.DisplayName
 	if displayName == "" {
 		displayName = username
@@ -56,20 +49,24 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	if countryId == "" {
 		countryId = "id"
 	}
+	syntaxTheme := ui.SyntaxTheme
+	if syntaxTheme == "" {
+		syntaxTheme = "eclipse"
+	}
 	avatar := ui.Avatar
 	if avatar == "" {
-		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + getMD5Hash(username)))
+		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + gylib.GetMD5Hash(username)))
 	}
 	db := &udm.db
 	query := `INSERT INTO {{.TablePrefix}}users 
-            (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role, verified, banned, create_time)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?)`
+            (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role, verified, banned, create_time, lastaccess_time)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer prep.Close()
-	passSalt := generateRandomSalt()
+	passSalt := gylib.GenerateRandomSalt()
 	passHash := calculateSaltedHash(password, passSalt)
 	createTime := time.Now().Unix()
 	_, err = prep.Exec(
@@ -83,7 +80,9 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 		institution,
 		countryId,
 		avatar,
+		syntaxTheme,
 		roleId,
+		createTime,
 		createTime,
 	)
 	if err != nil {
@@ -92,8 +91,8 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	return nil
 }
 
-func (udm *UserDbModel) GetUserAccess(id int) (UserRoleAccess, error) {
-	ua := UserRoleAccess{}
+func (udm *UserDbModel) GetUserAccess(id int) (gytypes.UserRoleAccess, error) {
+	ua := gytypes.UserRoleAccess{}
 	db := &udm.db
 	query := "SELECT rolename, access_contestant, access_jury, access_root FROM {{.TablePrefix}}roles WHERE id = ?"
 	stmt, err := db.Prepare(query)
@@ -113,11 +112,11 @@ func (udm *UserDbModel) GetUserAccess(id int) (UserRoleAccess, error) {
 	return ua, nil
 }
 
-func (udm *UserDbModel) GetUserById(userId int) (UserInfo, error) {
-	ui := UserInfo{}
+func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
+	ui := gytypes.UserInfo{}
 	db := &udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role
         FROM {{.TablePrefix}}users WHERE id = ?`)
 	if err != nil {
 		return ui, err
@@ -136,6 +135,7 @@ func (udm *UserDbModel) GetUserById(userId int) (UserInfo, error) {
 		&ui.Institution,
 		&ui.CountryId,
 		&ui.Avatar,
+		&ui.SyntaxTheme,
 		&ui.RoleId,
 	)
 	if err != nil {
@@ -153,11 +153,11 @@ func (udm *UserDbModel) GetUserById(userId int) (UserInfo, error) {
 	return ui, nil
 }
 
-func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserInfo, error) {
-	ui := UserInfo{}
+func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytypes.UserInfo, error) {
+	ui := gytypes.UserInfo{}
 	db := &udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, role
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role
         FROM {{.TablePrefix}}users WHERE username = ?`)
 	if err != nil {
 		return ui, err
@@ -177,18 +177,20 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 		&ui.Institution,
 		&ui.CountryId,
 		&ui.Avatar,
+		&ui.SyntaxTheme,
 		&roleId,
 	)
 	if err != nil {
-		log := newLog()
+		log := gylib.GetStdLog()
 		log.Errorf("[%s] Select error: %s", username, err.Error())
 		return ui, errors.New("username invalid or not exists")
 	}
 	passHash := calculateSaltedHash(password, ui.Salt)
 	if passHash != ui.Password {
-		log := newLog()
+		err = errors.New("password authentication for this username is invalid")
+		log := gylib.GetStdLog()
 		log.Errorf("[%s] Password error: %s", username, err.Error())
-		return ui, errors.New("password for this username is invalid")
+		return ui, err
 	}
 	ui.Id = uid
 	ui.Roles, err = udm.GetUserAccess(roleId)
@@ -199,10 +201,20 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (UserIn
 	if err != nil {
 		return ui, err
 	}
+	// For security reason, unsalted password will be re-encrypted again by same login passphrase
+	if ui.Salt == "" {
+		ui.Salt = gylib.GenerateRandomSalt()
+		ui.Password = calculateSaltedHash(password, ui.Salt)
+		ui.RoleId = roleId // catch this bug since updating password would null its role id
+		err = udm.ModifyUserAccount(ui.Id, ui)
+		if err != nil {
+			return ui, err
+		}
+	}
 	return ui, nil
 }
 
-func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
+func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error {
 	db := &udm.db
 	query := `UPDATE {{.TablePrefix}}users SET 
         password = ?,
@@ -214,6 +226,7 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
         institution = ?,
         country_id = ?,
         avatar = ?,
+        syntax_theme = ?,
         role = ?
         WHERE id = ?`
 	prep, err := db.Prepare(query)
@@ -231,13 +244,14 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui UserInfo) error {
 		ui.Institution,
 		ui.CountryId,
 		ui.Avatar,
+		ui.SyntaxTheme,
 		ui.RoleId,
 		userId,
 	)
 	return nil
 }
 
-func (udm *UserDbModel) GetUserGroupAccess(userId int) (UserGroupAccess, error) {
+func (udm *UserDbModel) GetUserGroupAccess(userId int) (gytypes.UserGroupAccess, error) {
 	db := udm.db
 	query := `SELECT gm.group_id, (SELECT gr.name FROM {{.TablePrefix}}groups as gr WHERE id=gm.group_id) 
         FROM {{.TablePrefix}}group_members as gm WHERE gm.user_id = ?`
@@ -250,9 +264,9 @@ func (udm *UserDbModel) GetUserGroupAccess(userId int) (UserGroupAccess, error) 
 	if err != nil {
 		return nil, err
 	}
-	var groups UserGroupAccess
+	var groups gytypes.UserGroupAccess
 	for rows.Next() {
-		ug := UserGroup{}
+		ug := gytypes.UserGroup{}
 		err = rows.Scan(
 			&ug.GroupId,
 			&ug.GroupName,
@@ -263,25 +277,15 @@ func (udm *UserDbModel) GetUserGroupAccess(userId int) (UserGroupAccess, error) 
 }
 
 func calculateSaltedHash(password string, salt string) string {
-	full := len(salt)
-	half := full / 2
-	left := salt[:half]
-	right := salt[half:full]
-	return getSHA256Hash(fmt.Sprintf("$%s$%s$%s$", left, password, right))
-}
-
-func getSHA256Hash(password string) string {
-	return fmt.Sprintf("%x", sha256.Sum256([]byte(password)))
-}
-
-func getMD5Hash(password string) string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(password)))
-}
-
-func generateRandomSalt() string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
-}
-
-func generateRandomToken() string {
-	return fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
+	// For ease for compatibility with Infest registration info, allow unsalted password
+	// GetUserByLogin method will be responsible to reset into salted form to avoid password leak while first login
+	if salt != "" {
+		full := len(salt)
+		half := full / 2
+		left := salt[:half]
+		right := salt[half:full]
+		return gylib.GetSHA256Hash(fmt.Sprintf("$%s$%s$%s$", left, password, right))
+	} else {
+		return gylib.GetSHA256Hash(password)
+	}
 }

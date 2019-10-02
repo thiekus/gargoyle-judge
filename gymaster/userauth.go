@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,6 +11,7 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"net/http"
 )
 
@@ -36,17 +38,17 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		appUsers.AddFlashMessage(w, r, fmt.Sprintf("Error: %s", err), FlashError)
 		if target != "" {
-			http.Redirect(w, r, getBaseUrlWithSlash(r)+"login?target="+target, 302)
+			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+target, 302)
 		} else {
-			http.Redirect(w, r, getBaseUrlWithSlash(r)+"login", 302)
+			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login", 302)
 		}
 	} else {
 		// Login success
 		if target != "" {
 			targetDec, _ := base64.StdEncoding.DecodeString(target)
-			http.Redirect(w, r, getBaseUrl(r)+string(targetDec), 302)
+			http.Redirect(w, r, gylib.GetBaseUrl(r)+string(targetDec), 302)
 		} else {
-			http.Redirect(w, r, getBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
 		}
 	}
 }
@@ -55,7 +57,7 @@ func logoutGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	uid := appUsers.GetLoggedUserId(r)
 	appUsers.UserLogoutFromWebsite(w, r)
 	appContestAccess.ReleaseMapOfUser(uid)
-	http.Redirect(w, r, getBaseUrlWithSlash(r), 302)
+	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r), 302)
 }
 
 func forgotPassGetEndpoint(w http.ResponseWriter, r *http.Request) {

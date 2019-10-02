@@ -2,12 +2,15 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"net/http"
 )
 
@@ -80,7 +83,7 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	appConfig = getConfigData()
 	if dbCreate && !doneDbSetup {
 		if err := CreateBlankDatabase(); err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
 			http.Redirect(w, r, "gysetup", 302)
@@ -109,21 +112,22 @@ func firstSetupPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "gysetup", 302)
 			return
 		}
-		ui := UserInfo{Email: adminEmail}
+		ui := gytypes.UserInfo{Email: adminEmail}
 		// Create role as admin
-		udm, err := NewUserDbModel()
+		db, err := OpenDatabase()
 		if err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
 			http.Redirect(w, r, "gysetup", 302)
 			return
 		}
-		defer udm.Close()
+		defer db.Close()
+		udm := NewUserDbModel(db)
 		// Role id 2 is admin
 		err = udm.CreateUserAccount(adminUser, adminPass1, 2, ui)
 		if err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, err.Error(), FlashError)
 			http.Redirect(w, r, "gysetup", 302)

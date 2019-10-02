@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +16,7 @@ import (
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"net/url"
 	"strconv"
@@ -47,7 +49,7 @@ func OpenDatabaseEx(driver string, multiStatements bool) (DbContext, error) {
 			appConfig.DbUsername, appConfig.DbPassword, appConfig.DbHost, appConfig.DbName, ms)
 		db, err := sql.Open("mysql", sqlConnectionString)
 		if err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			return ctx, err
 		}
@@ -55,9 +57,9 @@ func OpenDatabaseEx(driver string, multiStatements bool) (DbContext, error) {
 
 	// SQLite 3.x
 	case "sqlite3":
-		db, err := sql.Open("sqlite3", appConfig.DbFile)
+		db, err := sql.Open("sqlite3", gylib.ConcatByWorkDir(appConfig.DbFile))
 		if err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			return ctx, err
 		}
@@ -73,7 +75,7 @@ func OpenDatabaseEx(driver string, multiStatements bool) (DbContext, error) {
 		}
 		db, err := sql.Open("sqlserver", u.String())
 		if err != nil {
-			log := newLog()
+			log := gylib.GetStdLog()
 			log.Error(err)
 			return ctx, err
 		}
@@ -97,6 +99,10 @@ func (d *DbContext) Close() error {
 
 func (d *DbContext) Db() *sql.DB {
 	return d.db
+}
+
+func (d *DbContext) DriverName() string {
+	return d.driver
 }
 
 func (d *DbContext) Exec(query string, args ...interface{}) (sql.Result, error) {
@@ -132,7 +138,18 @@ func (d *DbContext) ParsePreprocessor(query string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(b.Bytes()), nil
+	queryResult := b.String()
+	if d.driver == "sqlserver" {
+		if strings.Index(query, "\\{") >= 0 {
+			queryResult = strings.ReplaceAll(queryResult, "\\{", "{")
+			queryResult = strings.ReplaceAll(queryResult, "\\}", "}")
+		}
+	}
+	return queryResult, nil
+}
+
+func (d *DbContext) Ping() error {
+	return d.db.Ping()
 }
 
 func (d *DbContext) Prepare(query string) (*sql.Stmt, error) {
@@ -151,8 +168,16 @@ func (d *DbContext) Prepare(query string) (*sql.Stmt, error) {
 	}
 }
 
+func (d *DbContext) Query(query string, args ...interface{}) (*sql.Rows, error) {
+	if q, err := d.ParsePreprocessor(query); err != nil {
+		return nil, err
+	} else {
+		return d.db.Query(q, args...)
+	}
+}
+
 func CreateBlankDatabase() error {
-	log := newLog()
+	log := gylib.GetStdLog()
 	log.Print("Begin to create new database table")
 	db, err := OpenDatabaseEx(appConfig.DbDriver, true)
 	if err != nil {
@@ -160,7 +185,7 @@ func CreateBlankDatabase() error {
 		return err
 	}
 	defer db.Close()
-	createSql, err := ioutil.ReadFile("./default.sql")
+	createSql, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./default.sql"))
 	if _, err = db.Exec(fmt.Sprintf("%s", createSql)); err != nil {
 		log.Error(err)
 		return err

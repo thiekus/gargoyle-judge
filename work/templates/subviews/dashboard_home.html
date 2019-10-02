@@ -1,14 +1,10 @@
 <div class="row">
 
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-9">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title text-center">Berita dan Pengumuman
+                <h4 class="card-title text-center">News and Announcement
                 </h4>
-                <div class="heading-elements float-right">
-                    <!-- Caption kanan -->
-                    <span id="tiktok"></span>
-                </div>
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
@@ -16,7 +12,9 @@
                     <!-- Anthem begin -->
                     <div id="nervPlay"></div><br />
                     <script>
-                        document.getElementById("nervPlay").innerHTML = atob("PGlmcmFtZSB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC9OYWZpaTg3Z2R6cyIgZnJhbWVib3JkZXI9IjAiIGFsbG93PSJhY2NlbGVyb21ldGVyOyBhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhOyBneXJvc2NvcGU7IHBpY3R1cmUtaW4tcGljdHVyZSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPg==");
+                        document.getElementById("nervPlay").innerHTML = atob(
+                            "PGlmcmFtZSB3aWR0aD0iNjQwIiBoZWlnaHQ9IjQ4MCIgc3JjPSJodHRwczovL3d3dy55b3V0dWJlLmNvbS9lbWJlZC9OYWZpaTg3Z2R6cyIgZnJhbWVib3JkZXI9IjAiIGFsbG93PSJhY2NlbGVyb21ldGVyOyBhdXRvcGxheTsgZW5jcnlwdGVkLW1lZGlhOyBneXJvc2NvcGU7IHBpY3R1cmUtaW4tcGljdHVyZSIgYWxsb3dmdWxsc2NyZWVuPjwvaWZyYW1lPg=="
+                        );
                     </script>
                     {{end}}
                     {{if gt .PageData.News.Count 0}}
@@ -24,9 +22,10 @@
                     {{range .}}
                     <div class="card box-shadow-0 border-primary">
                         <div class="card-header card-head-inverse bg-primary">
-                            <h4 class="card-title text-white float-left"><i class="fas fa-newspaper mr-1"></i> {{.Title}}</h4>
+                            <h4 class="card-title text-white float-left"><i class="fas fa-newspaper mr-1"></i>
+                                {{.Title}}</h4>
                             <div class="heading-elements float-right">
-                                <i class="fas fa-user-edit mr-1"></i>{{.Author}}
+                                <i class="fas fa-user-tie mr-1"></i>{{.Author}}
                             </div>
                         </div>
                         <div class="card-content collapse show">
@@ -39,14 +38,14 @@
                     {{end}}
                     {{end}}
                     {{else}}
-                    <p>Belum ada sesuatu yang diberitahukan atau diumumkan!</p>
+                    <p>No news or announcement for this moment!</p>
                     {{end}}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <!-- Profil Kanan -->
         <div class="card">
             <div class="text-center">
@@ -59,16 +58,16 @@
                         {{.UserData.DisplayName}}
                     </h4>
                     <h6 class="card-subtitle text-muted">
+                        <div class="badge badge-primary mb-2">{{.UserData.Roles.RoleName}}</div>
+                        <br />
                         <i class="fas fa-university mr-1 mb-2"></i> {{.UserData.Institution}}
                         <br />
                         <i class="fas fa-map-marker-alt mr-1 mb-2"></i> {{.UserData.Address}}
-                        <br />
-                        <i class="fas fa-user-tie mr-1"></i> {{.UserData.Roles.RoleName}}
                     </h6>
                 </div>
                 <div class="text-center">
                     <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-primary round btn-min-width mb-2"><i
-                            class="fas fa-user-edit mr-1"></i> Ubah Profil</a>
+                            class="fas fa-user-edit mr-1"></i> Edit Profile</a>
                 </div>
                 <br />
             </div>
@@ -76,12 +75,12 @@
         <!-- Onlyn card -->
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title text-center">Pengguna Aktif</h4>
+                <h4 class="card-title text-center">Online Users</h4>
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
                     {{if gt .PageData.OnlineUsers.Count 0}}
-                    <p>Ada {{.PageData.OnlineUsers.Count}} pengguna yang sedang online dalam 5 menit terakhir ini.</p>
+                    <p>There are {{.PageData.OnlineUsers.Count}} online users from last 5 minutes.</p>
                     <div class="card">
                         <div class="card-body">
                             <div id="onlineOverflow" class="overflow-auto" style="max-height:160px;">
@@ -114,11 +113,16 @@
                         </div>
                     </div>
                     {{else}}
-                    <p>Tidak ada user yang sedang online dalam 5 menit terakhir ini.</p>
+                    <p>No online users from last 5 minutes!</p>
                     {{end}}
                 </div>
             </div>
         </div>
+        <!-- Onlyn card end -->
     </div>
 
 </div>
+
+<script id="gySubviewScript">
+    function subviewInit() {}
+</script>

@@ -1,0 +1,150 @@
+[
+    {
+        "name": "Ambiance",
+        "themeName": "ambiance"
+    },
+    {
+        "name": "Chaos",
+        "themeName": "chaos"
+    },
+    {
+        "name": "Chrome",
+        "themeName": "chrome"
+    },
+    {
+        "name": "Clouds",
+        "themeName": "clouds"
+    },
+    {
+        "name": "Clouds Midnight",
+        "themeName": "clouds_midnight"
+    },
+    {
+        "name": "Cobalt",
+        "themeName": "cobalt"
+    },
+    {
+        "name": "Crimson Editor",
+        "themeName": "crimson_editor"
+    },
+    {
+        "name": "Dawn",
+        "themeName": "dawn"
+    },
+    {
+        "name": "Dracula",
+        "themeName": "dracula"
+    },
+    {
+        "name": "Dreamweaver",
+        "themeName": "dreamweaver"
+    },
+    {
+        "name": "Eclipse",
+        "themeName": "eclipse"
+    },
+    {
+        "name": "Github",
+        "themeName": "github"
+    },
+    {
+        "name": "Gob",
+        "themeName": "gob"
+    },
+    {
+        "name": "Gruvbox",
+        "themeName": "gruvbox"
+    },
+    {
+        "name": "Idle Fingers",
+        "themeName": "idle_fingers"
+    },
+    {
+        "name": "iPlastic",
+        "themeName": "iplastic"
+    },
+    {
+        "name": "Katzenmilch",
+        "themeName": "katzenmilch"
+    },
+    {
+        "name": "Kr Theme",
+        "themeName": "kr_theme"
+    },
+    {
+        "name": "Kuroir",
+        "themeName": "kuroir"
+    },
+    {
+        "name": "Merbivore",
+        "themeName": "merbivore"
+    },
+    {
+        "name": "Merbivore Soft",
+        "themeName": "merbivore_soft"
+    },
+    {
+        "name": "Mono Industrial",
+        "themeName": "mono_industrial"
+    },
+    {
+        "name": "Monokai",
+        "themeName": "monokai"
+    },
+    {
+        "name": "Pastel on Dark",
+        "themeName": "pastel_on_dark"
+    },
+    {
+        "name": "Solarized Dark",
+        "themeName": "solarized_dark"
+    },
+    {
+        "name": "Solarized Light",
+        "themeName": "solarized_light"
+    },
+    {
+        "name": "SQL Server",
+        "themeName": "sqlserver"
+    },
+    {
+        "name": "Terminal",
+        "themeName": "terminal"
+    },
+    {
+        "name": "Textmate",
+        "themeName": "textmate"
+    },
+    {
+        "name": "Tomorrow",
+        "themeName": "tomorrow"
+    },
+    {
+        "name": "Tomorrow Night",
+        "themeName": "tomorrow_night"
+    },
+    {
+        "name": "Tomorrow Night Blue",
+        "themeName": "tomorrow_night_blue"
+    },
+    {
+        "name": "Tomorrow Night Bright",
+        "themeName": "tomorrow_night_bright"
+    },
+    {
+        "name": "Tomorrow Night Eighties",
+        "themeName": "tomorrow_night_eighties"
+    },
+    {
+        "name": "Twilight",
+        "themeName": "twilight"
+    },
+    {
+        "name": "Vibrant Ink",
+        "themeName": "vibrant_ink"
+    },
+    {
+        "name": "XCode",
+        "themeName": "xcode"
+    }
+]

@@ -1,8 +1,8 @@
 <div class="row">
-    <div class="col-12 col-md-8">
+    <div class="col-12 col-md-9">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title text-center">Ubah Pengaturan Akun
+                <h4 class="card-title text-center">Change Account Settings
                 </h4>
             </div>
             <div class="card-content collapse show">
@@ -11,23 +11,40 @@
                     <!-- -->
                     <form action="{{.BaseUrl}}dashboard/settings" method="POST">
                         <div class="form-group">
-                            <label for="email">Alamat Email:</label>
-                            <input type="text" class="form-control" id="email" name="email" value="{{.UserData.Email}}"
+                            <label for="email">Email Address:</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{.UserData.Email}}"
                                 required>
                         </div>
                         <div class="row">
                             <div class="col-6 form-group">
-                                <label for="pass1">Ubah Password:</label>
+                                <label for="pass1">Change Password:</label>
                                 <input type="password" class="form-control" id="pass1" name="pass1">
                             </div>
                             <div class="col-6 form-group">
-                                <label for="pass2">Ulangi Password:</label>
+                                <label for="pass2">Repeat Password:</label>
                                 <input type="password" class="form-control" id="pass2" name="pass2">
                             </div>
                         </div>
+                        <div class="form-group">
+                            <label for="syntaxTheme">Syntax Theme:</label>
+                            <select class="form-control" id="syntaxTheme" name="syntax_theme">
+                                {{$usedThemeName := .UserData.SyntaxTheme}}
+                                {{with .PageData.SyntaxThemeList}}
+                                {{range .}}
+                                {{$selectedTheme := ""}}
+                                {{if eq .ThemeName $usedThemeName}}
+                                {{$selectedTheme = "selected"}}
+                                {{end}}
+                                <option value="{{.ThemeName}}" {{$selectedTheme}}>{{.Name}}</option>
+                                {{end}}
+                                {{end}}
+                            </select>
+                        </div>
+                        <pre id="previewSyntaxTheme">{{.PageData.SyntaxTest}}</pre>
 
                         <div class="text-right">
-                            <button type="submit" class="btn btn-success"><i class="fas fa-user-cog"></i> Ubah Pengaturan</button>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-user-cog"></i> Change
+                                Settings</button>
                         </div>
                     </form>
 
@@ -36,7 +53,7 @@
         </div>
     </div>
 
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-3">
         <!-- Profil Avatar -->
         <div class="card">
             <div class="text-center">
@@ -49,20 +66,90 @@
                         {{.UserData.DisplayName}}
                     </h4>
                     <h6 class="card-subtitle text-muted">
+                        <div class="badge badge-primary mb-2">{{.UserData.Roles.RoleName}}</div>
+                        <br />
                         <i class="fas fa-university mr-1 mb-2"></i> {{.UserData.Institution}}
                         <br />
                         <i class="fas fa-map-marker-alt mr-1 mb-2"></i> {{.UserData.Address}}
-                        <br />
-                        <i class="fas fa-user-tie mr-1"></i> {{.UserData.Roles.RoleName}}
                     </h6>
                 </div>
                 <div class="text-center">
                     <a href="{{.BaseUrl}}dashboard/profile" class="btn btn-primary round btn-min-width mb-2"><i
-                            class="fas fa-user-edit mr-1"></i>Ubah Profil</a>
+                            class="fas fa-user-edit mr-1"></i> Edit Profile</a>
                 </div>
                 <br />
             </div>
         </div>
+        <!-- Onlyn card -->
+        <div class="card">
+            <div class="card-header">
+                <h4 class="card-title text-center">Online Users</h4>
+            </div>
+            <div class="card-content collapse show">
+                <div class="card-body">
+                    {{if gt .PageData.OnlineUsers.Count 0}}
+                    <p>There are {{.PageData.OnlineUsers.Count}} online users from last 5 minutes.</p>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="onlineOverflow" class="overflow-auto" style="max-height:160px;">
+                                <style>
+                                    td.more-padding {
+                                        padding: 6px;
+                                    }
+                                </style>
+                                <table>
+                                    <tbody>
+                                        {{$baseUrl:=.BaseUrl}}
+                                        {{with .PageData.OnlineUsers.Users}}
+                                        {{range .}}
+                                        <tr>
+                                            <td class="more-padding align-middle">
+                                                <img src="{{$baseUrl}}avatar/{{.Avatar}}" class="rounded-circle"
+                                                    alt="{{.DisplayName}}" style="width: 40px;">
+                                            </td>
+                                            <td class="more-padding align-middle">
+                                                {{.DisplayName}}<br />
+                                                <small><i class="fas fa-user-clock mr-1"></i> Since
+                                                    {{.TimeStatus}}</small>
+                                            </td>
+                                        </tr>
+                                        {{end}}
+                                        {{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    {{else}}
+                    <p>No online users from last 5 minutes!</p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+        <!-- Onlyn card end -->
     </div>
 
 </div>
+
+<!-- Ace Code Highlighting -->
+<script src="{{.BaseUrl}}assets/shared/ace/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+
+<script id="gySubviewScript">
+    function initializeEditor() {
+        scEditor = ace.edit("previewSyntaxTheme");
+        scEditor.setReadOnly(true);
+        scEditor.setOptions({
+            maxLines: Infinity
+        });
+        scEditor.setTheme("ace/theme/{{.UserData.SyntaxTheme}}");
+        scEditor.session.setMode("ace/mode/c_cpp");
+        $("#syntaxTheme").change(function () {
+            var newTheme = $(this).val();
+            scEditor.setTheme("ace/theme/" + newTheme);
+        });
+    }
+
+    function subviewInit() {
+        initializeEditor();
+    }
+</script>

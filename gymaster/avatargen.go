@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,6 +16,7 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/o1egl/govatar"
 	"github.com/patrickmn/go-cache"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"image/jpeg"
 	"io/ioutil"
 	"net/http"
@@ -36,16 +38,16 @@ func getPersonalizedUserAvatar(uid int, avatarType string) string {
 	switch avatarType {
 	case "genFaceUsername":
 		ui := appUsers.GetUserById(uid)
-		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", ui.Gender, getMD5Hash(ui.Username))))
+		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", ui.Gender, gylib.GetMD5Hash(ui.Username))))
 		return avatarStr
 	case "gravatar":
 		ui := appUsers.GetUserById(uid)
-		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("G:%s", getMD5Hash(ui.Email))))
+		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("G:%s", gylib.GetMD5Hash(ui.Email))))
 		return avatarStr
 	default:
 		// genFaceRandom
 		ui := appUsers.GetUserById(uid)
-		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", ui.Gender, generateRandomSalt())))
+		avatarStr := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", ui.Gender, gylib.GenerateRandomSalt())))
 		return avatarStr
 	}
 }
@@ -53,7 +55,7 @@ func getPersonalizedUserAvatar(uid int, avatarType string) string {
 // Force clean cached avatar if user desired
 func dropUserAvatarCache(avatarStr string) {
 	initializeAvatarCache()
-	avatarHash := getMD5Hash(avatarStr)
+	avatarHash := gylib.GetMD5Hash(avatarStr)
 	// Must be checked if exists before deleting
 	if _, cached := avatarCache.Get(avatarHash); cached {
 		avatarCache.Delete(avatarHash)
@@ -66,7 +68,7 @@ func generateAvatar(cacheHash string, w http.ResponseWriter, r *http.Request, ge
 	if gender == "F" {
 		genderSel = govatar.FEMALE
 	}
-	img, err := govatar.GenerateFromUsername(genderSel, seed)
+	img, err := govatar.GenerateForUsername(genderSel, seed)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		return
@@ -91,7 +93,7 @@ func generateAvatar(cacheHash string, w http.ResponseWriter, r *http.Request, ge
 
 func getGravatarAvatar(cacheHash string, w http.ResponseWriter, r *http.Request, emailHash string) {
 	// Prevent someone to abuse gravatar request point
-	if !isHexValue(emailHash) {
+	if !gylib.IsHexValue(emailHash) {
 		http.Error(w, "500 Internal Server Error: invalid gravatar hash", http.StatusInternalServerError)
 		return
 	}
@@ -120,7 +122,7 @@ func avatarGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	initializeAvatarCache()
 	vars := mux.Vars(r)
 	avatarInfo := vars["avatarInfo"]
-	cacheHash := getMD5Hash(avatarInfo)
+	cacheHash := gylib.GetMD5Hash(avatarInfo)
 	if avatarData, cached := avatarCache.Get(cacheHash); cached {
 		contentType, _ := avatarCache.Get(cacheHash + ":type")
 		w.Header().Set("Content-Type", contentType.(string))

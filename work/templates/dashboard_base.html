@@ -17,61 +17,20 @@
     <link rel="stylesheet" href="{{.BaseUrl}}assets/shared/bootstrap/css/bootstrap.min.css">
     <link href="{{.BaseUrl}}assets/dashboard/vendor/fonts/circular-std/style.css" rel="stylesheet">
     <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/style.css">
-    <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/colors.min.css">
     <link rel="stylesheet" href="{{.BaseUrl}}assets/shared/fonts/fontawesome/css/all.min.css">
-    <!--<link rel="stylesheet"
-        href="{{.BaseUrl}}assets/dashboard/vendor/fonts/material-design-iconic-font/css/materialdesignicons.min.css">-->
     <!-- OverlayScollbars -->
     <link type="text/css" href="{{.BaseUrl}}assets/shared/overlay-scrollbars/css/OverlayScrollbars.min.css"
         rel="stylesheet" />
+    <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/gydash.css">
     <title>Coding INFEST 2019</title>
-
-    <style>
-        /* width */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        /* Track */
-        ::-webkit-scrollbar-track {
-            background: #0074d9;
-            /* As defined in colors.css */
-        }
-
-        /* Handle */
-        ::-webkit-scrollbar-thumb {
-            background: #ccc;
-        }
-
-        /* Handle on hover */
-        ::-webkit-scrollbar-thumb:hover {
-            background: #aaa;
-        }
-
-        /* Fix useless margin in h4 of card title */
-        .card-header h4.card-title {
-            margin-bottom: 0px;
-        }
-
-        /* Use old good bootstrap 3 pre style */
-        pre {
-            display: block;
-            padding: 9.5px;
-            margin: 0 0 10px;
-            font-size: 13px;
-            line-height: 1.42857143;
-            color: #333;
-            word-break: break-all;
-            word-wrap: break-word;
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
-
 </head>
 
 <body>
+    <!-- Ping sound -->
+    <audio id="gyPingAudio">
+        <source src="{{.BaseUrl}}assets/shared/gargoyle/sound/ping.ogg" type="audio/ogg">
+        <source src="{{.BaseUrl}}assets/shared/gargoyle/sound/ping.mp3" type="audio/mpeg">
+    </audio>
     <!-- ============================================================== -->
     <!-- main wrapper -->
     <!-- ============================================================== -->
@@ -80,7 +39,7 @@
         <!-- navbar -->
         <!-- ============================================================== -->
         <div class="dashboard-header">
-            <nav class="navbar navbar-expand-lg bg-blue fixed-top">
+            <nav class="navbar navbar-expand-lg bg-navbar fixed-top">
                 <a class="navbar-brand" style="color:#fff !important" href="{{.BaseUrl}}">Coding INFEST</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -97,67 +56,21 @@
                         </li>
                         <!-- Notifikasi -->
                         <li class="nav-item dropdown notification">
-                            <a class="nav-link nav-icons text-white" href="#" id="navbarDropdownMenuLink1"
+                            <a class="nav-link nav-icons text-white" href="#" id="gyNotificationIcon"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-                                    class="fas fa-fw fa-bell"></i> <span class="indicator"></span></a>
+                                    class="fas fa-fw fa-bell"></i> <span id="gyNotificationNew" class="indicator"
+                                    style="display: none;"></span></a>
                             <ul class="dropdown-menu dropdown-menu-right notification-dropdown">
                                 <li>
                                     <div class="notification-title"> Notification</div>
                                     <div class="notification-list">
-                                        <div class="list-group">
-                                            <a href="#" class="list-group-item list-group-item-action active">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Jeremy
-                                                            Rakestraw</span>accepted your invitation to join the team.
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">John Abraham </span>is
-                                                        now following you
-                                                        <div class="notification-date">2 days ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Monaan Pechi</span> is
-                                                        watching your main repository
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a href="#" class="list-group-item list-group-item-action">
-                                                <div class="notification-info">
-                                                    <div class="notification-list-user-img"><img
-                                                            src="{{.BaseUrl}}avatar/{{.UserData.Avatar}}" alt=""
-                                                            class="user-avatar-md rounded-circle"></div>
-                                                    <div class="notification-list-user-block"><span
-                                                            class="notification-list-user-name">Jessica
-                                                            Caruso</span>accepted your invitation to join the team.
-                                                        <div class="notification-date">2 min ago</div>
-                                                    </div>
-                                                </div>
-                                            </a>
+                                        <div id="gyNotificationList" class="list-group">
+                                            <p class="text-muted text-center">No new notification</p>
                                         </div>
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="list-footer"> <a href="#">View all notifications</a></div>
+                                    <div class="list-footer"> <a href="{{.BaseUrl}}dashboard/notifications">View all notifications</a></div>
                                 </li>
                             </ul>
                         </li>
@@ -169,15 +82,15 @@
                                     class="user-avatar-md rounded-circle"></a>
                             <div class="dropdown-menu dropdown-menu-right nav-user-dropdown"
                                 aria-labelledby="navbarDropdownMenuLink2">
-                                <div class="nav-user-info bg-blue">
+                                <div class="nav-user-info bg-navbar">
                                     <h5 class="mb-0 text-white nav-user-name">{{.UserData.DisplayName}}</h5>
                                 </div>
                                 <a class="dropdown-item" href="{{.BaseUrl}}dashboard/profile"><i
-                                        class="fas fa-user mr-2"></i>Ubah Profil</a>
+                                        class="fas fa-user mr-2"></i> Edit Profile</a>
                                 <a class="dropdown-item" href="{{.BaseUrl}}dashboard/settings"><i
-                                        class="fas fa-cog mr-2"></i>Pengaturan</a>
+                                        class="fas fa-cog mr-2"></i> Settings</a>
                                 <a class="dropdown-item" href="{{.BaseUrl}}logout"><i
-                                        class="fas fa-power-off mr-2"></i>Logout</a>
+                                        class="fas fa-power-off mr-2"></i> Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -198,42 +111,45 @@
                         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
+                    <div id="gyDashboardMenus" class="collapse navbar-collapse" id="navbarNav">
                         <ul class="navbar-nav flex-column">
                             <li class="nav-divider">
-                                Menu Utama
+                                <span class="nav-div-label">Main Menu</span>
                             </li>
                             {{$baseUrl := .BaseUrl}}
                             <li class="nav-item ">
                                 {{with .PageData.Menu.GeneralMenu}}
                                 {{range .}}
-                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
-                                        class="{{.IconClass}}"></i>{{.Title}}</a>
+                                <a id="menu-{{.Name}}" class="nav-link {{if .Selected}}active{{end}}"
+                                    href="{{$baseUrl}}{{.Location}}"><i class="{{.IconClass}}"></i><span
+                                        class="nav-link-label">{{.Title}}</span></a>
                                 {{end}}
                                 {{end}}
                             </li>
                             {{if .UserData.Roles.Contestant}}
                             <li class="nav-divider">
-                                Menu Kontestan
+                                <span class="nav-div-label">Contestant Menu</span>
                             </li>
                             <li class="nav-item ">
                                 {{with .PageData.Menu.ContestMenu}}
                                 {{range .}}
-                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
-                                        class="{{.IconClass}}"></i>{{.Title}}</a>
+                                <a id="menu-{{.Name}}" class="nav-link {{if .Selected}}active{{end}}"
+                                    href="{{$baseUrl}}{{.Location}}"><i class="{{.IconClass}}"></i><span
+                                        class="nav-link-label">{{.Title}}</span></a>
                                 {{end}}
                                 {{end}}
                             </li>
                             {{end}}
                             {{if .UserData.Roles.SysAdmin}}
                             <li class="nav-divider">
-                                Administrasi
+                                <span class="nav-div-label">Administration Menu</span>
                             </li>
                             <li class="nav-item ">
                                 {{with .PageData.Menu.AdminMenu}}
                                 {{range .}}
-                                <a class="nav-link {{if .Selected}}active{{end}}" href="{{$baseUrl}}{{.Location}}"><i
-                                        class="{{.IconClass}}"></i>{{.Title}}</a>
+                                <a id="menu-{{.Name}}" class="nav-link {{if .Selected}}active{{end}}"
+                                    href="{{$baseUrl}}{{.Location}}"><i class="{{.IconClass}}"></i><span
+                                        class="nav-link-label">{{.Title}}</span></a>
                                 {{end}}
                                 {{end}}
                             </li>
@@ -252,7 +168,10 @@
         <!-- wrapper  -->
         <!-- ============================================================== -->
         <div class="dashboard-wrapper">
-            <div class="dashboard-ecommerce">
+            <!--  -->
+            <div class="loading" style="display: none;"></div>
+            <!-- Begin Dashboard content wrapper -->
+            <div id="gyDashboardContent" class="dashboard-ecommerce">
                 <div class="container-fluid dashboard-content ">
                     <!-- ============================================================== -->
                     <!-- pageheader  -->
@@ -282,27 +201,30 @@
 
                     {{if ne .MessageStr ""}}
                     {{if eq .MessageType "error"}}
-                    <div class="row">
+                    <div id="gyDashboardMessage" class="row">
                         <div class="col-12 col-md-12">
                             <div class="alert alert-danger"><i class="fas fa-exclamation-circle mr-2"></i>
                                 {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{else if eq .MessageType "success"}}
-                    <div class="row">
+                    <div id="gyDashboardMessage" class="row">
                         <div class="col-12 col-md-12">
                             <div class="alert alert-success"><i class="fas fa-info-circle mr-2"></i> {{.MessageStr}}
                             </div>
                         </div>
                     </div>
                     {{else}}
-                    <div class="row">
+                    <div id="gyDashboardMessage" class="row">
                         <div class="col-12 col-md-12">
                             <div class="alert alert-warning"><i class="fas fa-exclamation-circle mr-2"></i>
                                 {{.MessageStr}}</div>
                         </div>
                     </div>
                     {{end}}
+                    <script>
+                        document.getElementById("gyDashboardMessage").style.display = "none";
+                    </script>
                     {{end}}
                     <noscript>
                         <div class="row">
@@ -388,71 +310,8 @@
         </div>
     </div>
 
-    <!-- Custom initialization-->
-    {{if eq .PageData.PageName "contests"}}
-    <script>
-        function customInit() {
-            initReminderTimer();
-        }
-    </script>
-    {{else if eq .PageData.PageName "home"}}
-    <script>
-        function customInit() {
-            $('#onlineOverflow').overlayScrollbars({})
-        }
-    </script>
-    {{else}}
-    <script>
-        // No custom initialization, do nothing
-        function customInit() {}
-    </script>
-    {{end}}
     <!-- Main Page Initialization -->
-    <script>
-        function appendZero(num) {
-            return num > 9 ? num : "0" + num;
-        }
-
-        function dashboardClock() {
-            var nowTime = new Date();
-            var timeStr = appendZero(nowTime.getHours()) + ":" +
-                appendZero(nowTime.getMinutes()) + ":" +
-                appendZero(nowTime.getSeconds());
-            $("#gyClock").html(timeStr);
-            setTimeout(dashboardClock, 1000);
-        }
-
-        $(document).ready(function () {
-            // Apply OverlayScrollbars and workarounds for BS Modal
-            var osInstance = $('body').overlayScrollbars({}).overlayScrollbars();
-            $('body').on('show.bs.modal', function () {
-                requestAnimationFrame(function () {
-                    var osContentElm = $(osInstance.getElements().content);
-                    var backdropElms = $('body > .modal-backdrop');
-                    backdropElms.each(function (index, elm) {
-                        osContentElm.append(elm);
-                    });
-                });
-            });
-            // About application handle
-            $("#aboutAppLink").click(function () {
-                var modalHeight = $(window).height() / 2;
-                $("#aboutModalContainer").css("height", modalHeight + "px");
-                //$('#aboutModalContainer').overlayScrollbars({});
-                $.ajax({
-                    type: "GET",
-                    url: "{{.BaseUrl}}about",
-                    success: function (result) {
-                        $("#aboutModalContainer").html(result);
-                    }
-                });
-            });
-            dashboardClock();
-            $("#gyClockContainer").show();
-            // Page-defined custom initialization
-            customInit();
-        });
-    </script>
+    <script type="text/javascript" src="{{.BaseUrl}}assets/dashboard/libs/js/gydash.js"></script>
 
 </body>
 

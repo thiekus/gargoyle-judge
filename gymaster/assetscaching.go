@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,6 +18,7 @@ import (
 	"github.com/tdewolff/minify/json"
 	"github.com/tdewolff/minify/svg"
 	"github.com/tdewolff/minify/xml"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -26,11 +28,11 @@ import (
 )
 
 func setAssetsWithCaching(r *mux.Router) {
-	log := newLog()
+	log := gylib.GetStdLog()
 	// Initialize assets go-cache
 	c := cache.New(30*time.Minute, 1*time.Hour)
 	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		localPath := "." + r.URL.Path
+		localPath := gylib.ConcatByProgramDir("." + r.URL.Path)
 		if fileData, cached := c.Get(localPath); cached {
 			//log.Printf("Hit cache for %s", localPath)
 			contentType, _ := c.Get(localPath + ":type")

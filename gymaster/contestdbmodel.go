@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,6 +10,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"html/template"
 	"strconv"
 	"time"
@@ -18,18 +21,11 @@ type ContestDbModel struct {
 	db DbContext
 }
 
-func NewContestDbModel() (ContestDbModel, error) {
-	cdm := ContestDbModel{}
-	db, err := OpenDatabase()
-	if err != nil {
-		return cdm, err
+func NewContestDbModel(db DbContext) ContestDbModel {
+	cdm := ContestDbModel{
+		db: db,
 	}
-	cdm.db = db
-	return cdm, err
-}
-
-func (cdm *ContestDbModel) Close() error {
-	return cdm.db.Close()
+	return cdm
 }
 
 func (cdm *ContestDbModel) GetContestAccessCount(contestId int, userId int) (int, error) {
@@ -49,10 +45,10 @@ func (cdm *ContestDbModel) GetContestAccessCount(contestId int, userId int) (int
 	return count, nil
 }
 
-func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (ContestAccess, error) {
+func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (gytypes.ContestAccess, error) {
 	db := cdm.db
-	ca := ContestAccess{}
-	query := `SELECT id, id_user, id_contest, start_time, end_time, allowed FROM {{.TablePrefix}}contest_access
+	ca := gytypes.ContestAccess{}
+	query := `SELECT id_user, id_contest, start_time, end_time, allowed FROM {{.TablePrefix}}contest_access
         WHERE id_user = ? AND id_contest = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -61,7 +57,6 @@ func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (
 	defer stmt.Close()
 	var utStartTime, utEndTime int64
 	err = stmt.QueryRow(userId, contestId).Scan(
-		&ca.Id,
 		&ca.UserId,
 		&ca.ContestId,
 		&utStartTime,
@@ -76,12 +71,12 @@ func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (
 	return ca, nil
 }
 
-func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (ContestList, error) {
+func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (gytypes.ContestList, error) {
 	ui := appUsers.GetUserById(uid)
-	cl := ContestList{Count: 0}
+	cl := gytypes.ContestList{Count: 0}
 	db := cdm.db
-	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, must_stream, 
-        start_timestamp, end_timestamp, max_runtime FROM {{.TablePrefix}}contests ORDER BY start_timestamp DESC`
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, is_unlocked, allow_public, must_stream, 
+        start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests ORDER BY start_timestamp DESC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cl, err
@@ -92,19 +87,24 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (ContestList, error) 
 		return cl, err
 	}
 	for rows.Next() {
-		cd := ContestData{}
-		var utStartTime, utEndTime int64
+		cd := gytypes.ContestData{}
+		var utStartTime, utEndTime, utFreezeTime, utUnfreezeTime int64
 		err = rows.Scan(
 			&cd.Id,
 			&cd.Title,
 			&cd.Description,
+			&cd.Style,
+			&cd.AllowedLang,
 			&cd.ProblemCount,
 			&cd.GroupId,
+			&cd.EnableFreeze,
 			&cd.Unlocked,
 			&cd.PublicView,
 			&cd.MustStream,
 			&utStartTime,
 			&utEndTime,
+			&utFreezeTime,
+			&utUnfreezeTime,
 			&cd.MaxTime,
 		)
 		if err != nil {
@@ -112,6 +112,8 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (ContestList, error) 
 		}
 		cd.StartTime = time.Unix(utStartTime, 0)
 		cd.EndTime = time.Unix(utEndTime, 0)
+		cd.FreezeTime = time.Unix(utFreezeTime, 0)
+		cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
 		// Check group access if contest is restricted to certain group only
 		if cd.GroupId != 0 {
 			granted := false
@@ -146,28 +148,64 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (ContestList, error) 
 	return cl, nil
 }
 
-func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error) {
-	cd := ContestData{}
+func (cdm *ContestDbModel) GetContestListForScoreboard(publicScoreboard bool) ([]gytypes.ScoreboardListData, error) {
+	var contestList []gytypes.ScoreboardListData
 	db := cdm.db
-	query := `SELECT id, title, description, problem_count, contest_group_id, is_unlocked, is_public, must_stream, 
-        start_timestamp, end_timestamp, max_runtime FROM {{.TablePrefix}}contests WHERE id = ?`
+	query := `SELECT c.id, c.title, (SELECT COUNT(*) FROM {{.TablePrefix}}contest_access as a WHERE a.id_contest = c.id), c.allow_public 
+        FROM {{.TablePrefix}}contests as c WHERE (c.allow_public = ?) OR (0 = ?)`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	rows, err := stmt.Query(publicScoreboard, gylib.Btoi(publicScoreboard))
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		contest := gytypes.ScoreboardListData{}
+		err = rows.Scan(
+			&contest.ContestId,
+			&contest.ContestName,
+			&contest.ContestantCount,
+			&contest.AllowPublic,
+		)
+		if err != nil {
+			return nil, err
+		}
+		contest.Updated = false
+		contestList = append(contestList, contest)
+	}
+	return contestList, nil
+}
+
+func (cdm *ContestDbModel) GetContestDetails(contestId int) (gytypes.ContestData, error) {
+	cd := gytypes.ContestData{}
+	db := cdm.db
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, is_unlocked, allow_public, must_stream, 
+        start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return cd, err
 	}
 	defer stmt.Close()
-	var utStartTime, utEndTime int64
+	var utStartTime, utEndTime, utFreezeTime, utUnfreezeTime int64
 	err = stmt.QueryRow(contestId).Scan(
 		&cd.Id,
 		&cd.Title,
 		&cd.Description,
+		&cd.Style,
+		&cd.AllowedLang,
 		&cd.ProblemCount,
 		&cd.GroupId,
+		&cd.EnableFreeze,
 		&cd.Unlocked,
 		&cd.PublicView,
 		&cd.MustStream,
 		&utStartTime,
 		&utEndTime,
+		&utFreezeTime,
+		&utUnfreezeTime,
 		&cd.MaxTime,
 	)
 	if err != nil {
@@ -175,6 +213,8 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 	}
 	cd.StartTime = time.Unix(utStartTime, 0)
 	cd.EndTime = time.Unix(utEndTime, 0)
+	cd.FreezeTime = time.Unix(utFreezeTime, 0)
+	cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
 	cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 	if (utStartTime != 0) && (utEndTime != 0) {
 		maxTime := cd.MaxTime / 60
@@ -192,10 +232,10 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (ContestData, error)
 	return cd, nil
 }
 
-func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]ProblemData, error) {
-	var qs []ProblemData
+func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]gytypes.ProblemData, error) {
+	var qs []gytypes.ProblemData
 	db := cdm.db
-	query := `SELECT id, contest_id, problem_name, description, time_limit, mem_limit, max_attempts
+	query := `SELECT id, contest_id, problem_name, problem_shortname, description, time_limit, mem_limit, max_attempts
 		FROM {{.TablePrefix}}problems WHERE contest_id = ? ORDER BY problem_name ASC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -207,11 +247,12 @@ func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]ProblemData, error) {
 		return qs, err
 	}
 	for rows.Next() {
-		qd := ProblemData{}
+		qd := gytypes.ProblemData{}
 		err = rows.Scan(
 			&qd.Id,
 			&qd.ContestId,
 			&qd.Name,
+			&qd.ShortName,
 			&qd.Description,
 			&qd.TimeLimit,
 			&qd.MemLimit,
@@ -226,11 +267,11 @@ func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]ProblemData, error) {
 	return qs, nil
 }
 
-func (cdm *ContestDbModel) GetProblemById(problemId int) (ProblemData, error) {
-	qd := ProblemData{}
+func (cdm *ContestDbModel) GetProblemById(problemId int) (gytypes.ProblemData, error) {
+	qd := gytypes.ProblemData{}
 	db := cdm.db
-	query := `SELECT id, contest_id, problem_name, description, time_limit, mem_limit, max_attempts FROM {{.TablePrefix}}problems
-    	WHERE id = ?`
+	query := `SELECT p.id, p.contest_id, p.problem_name, p.problem_shortname, p.description, p.time_limit, p.mem_limit, p.max_attempts, c.allowed_lang 
+        FROM {{.TablePrefix}}problems AS p INNER JOIN {{.TablePrefix}}contests AS c ON p.contest_id = c.id WHERE p.id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return qd, err
@@ -240,10 +281,12 @@ func (cdm *ContestDbModel) GetProblemById(problemId int) (ProblemData, error) {
 		&qd.Id,
 		&qd.ContestId,
 		&qd.Name,
+		&qd.ShortName,
 		&qd.Description,
 		&qd.TimeLimit,
 		&qd.MemLimit,
 		&qd.MaxAttempts,
+		&qd.AllowedLang,
 	)
 	if err != nil {
 		return qd, err
@@ -252,7 +295,7 @@ func (cdm *ContestDbModel) GetProblemById(problemId int) (ProblemData, error) {
 	return qd, nil
 }
 
-func (cdm *ContestDbModel) InsertContestAccess(access ContestAccess) error {
+func (cdm *ContestDbModel) InsertContestAccess(access gytypes.ContestAccess) error {
 	db := cdm.db
 	query := `INSERT INTO {{.TablePrefix}}contest_access (id_user, id_contest, start_time, end_time, allowed) 
         VALUES (?, ?, ?, ?, ?)`
@@ -261,11 +304,13 @@ func (cdm *ContestDbModel) InsertContestAccess(access ContestAccess) error {
 		return err
 	}
 	defer prep.Close()
+	utStartTime := access.StartTime.Unix()
+	utEndTime := access.EndTime.Unix()
 	_, err = prep.Exec(
 		access.UserId,
 		access.ContestId,
-		access.StartTime,
-		access.EndTime,
+		utStartTime,
+		utEndTime,
 		access.Allowed,
 	)
 	if err != nil {

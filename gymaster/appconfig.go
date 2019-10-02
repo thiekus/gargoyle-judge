@@ -2,6 +2,7 @@ package main
 
 /* GargoyleJudge - Simple Judgement System for Competitive Programming
  * Copyright (C) Thiekus 2019
+ * Visit www.khayalan.id for updates
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +14,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/securecookie"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"os"
 )
@@ -62,10 +64,10 @@ const ConfigFilename = "master_config.json"
 
 // Get configuration from config file
 func getConfigData() ConfigData {
-	log := newLog()
-	configPath := "./" + ConfigFilename
+	log := gylib.GetStdLog()
+	configPath := gylib.ConcatByWorkDir("./" + ConfigFilename)
 	cfg := ConfigData{}
-	if !isFileExists(configPath) {
+	if !gylib.IsFileExists(configPath) {
 		log.Warn("Config file doesn't exists yet, recreating new configuration...")
 		cfg.HasFirstSetup = ConfigDefaultHasFirstSetup
 		cfg.SessionKey = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
@@ -93,19 +95,19 @@ func getConfigData() ConfigData {
 			log.Fatalf("Cannot parse configuration: %s", err.Error())
 		}
 	} else {
-		log.Fatal("Cannot read configuration: %s", err.Error())
+		log.Fatalf("Cannot read configuration: %s", err.Error())
 	}
 	return cfg
 }
 
 // Save current configuration to config file
 func saveConfigData(config ConfigData) {
-	configPath := "./" + ConfigFilename
+	configPath := gylib.ConcatByWorkDir("./" + ConfigFilename)
 	if jsonData, err := json.Marshal(config); err == nil {
 		var jsonBuf bytes.Buffer
 		if err = json.Indent(&jsonBuf, jsonData, "", "\t"); err == nil {
 			if err = ioutil.WriteFile(configPath, jsonBuf.Bytes(), os.ModePerm); err == nil {
-				log := newLog()
+				log := gylib.GetStdLog()
 				log.Print("Config data have been saved!")
 			}
 		}

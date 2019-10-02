@@ -2,25 +2,31 @@
     "generalMenu": [
         {
             "name": "home",
-            "title": "Halaman Utama",
+            "title": "Home",
             "iconClass": "fa fa-fw fas fa-home",
             "location": "dashboard"
         },
         {
+            "name": "scoreboard",
+            "title": "Scoreboard",
+            "iconClass": "fa fa-fw fa-chalkboard",
+            "location": "dashboard/scoreboard"
+        },
+        {
             "name": "notifications",
-            "title": "Notifikasi",
+            "title": "Notifications",
             "iconClass": "fa fa-fw fa-bell",
             "location": "dashboard/notifications"
         },
         {
             "name": "profile",
-            "title": "Profil Anda",
+            "title": "Your Profile",
             "iconClass": "fa fa-fw fa-user-circle",
             "location": "dashboard/profile"
         },
         {
             "name": "settings",
-            "title": "Pengaturan",
+            "title": "Account Settings",
             "iconClass": "fa fa-fw fa-cog",
             "location": "dashboard/settings"
         }
@@ -28,13 +34,13 @@
     "contestMenu": [
         {
             "name": "contests",
-            "title": "Area Kontes",
+            "title": "Contest Area",
             "iconClass": "fa fa-fw fas fa-fire",
             "location": "dashboard/contests"
         },
         {
             "name": "usersubmissions",
-            "title": "Hasil Masukan",
+            "title": "Submissions",
             "iconClass": "fa fa-fw fas fa-check-square",
             "location": "dashboard/userSubmissions"
         }

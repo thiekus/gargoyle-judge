@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+    <Product Id="*" Name="$(var.AppName)" Language="1057" Version="0.7.0.1" Manufacturer="Thiekus" UpgradeCode="99CEE5C0-D317-4EB9-92B4-89E2F4992400">
+        <Package Description="Thiekus Setup" Comments="Thiekus Setup" InstallerVersion="200" Compressed="yes" />
+        <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." AllowSameVersionUpgrades="yes" />
+        <Media Id="1" Cabinet="simple.cab" EmbedCab="yes" />
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="ProgramFilesFolder" Name="PFiles">
+                <Directory Id="PRODUCTDIR" Name="Gargoyle Judge">
+                    <!-- Define external Heat generated SourceDir -->
+                    <Directory Id="HeatFiles"/>
+                    <Component Id="GYWIN" DiskId="1" Guid="6d525d2c-9ab3-42ad-a427-e39bc5101da4">
+                        <!-- Give full access for current user -->
+                        <CreateFolder>
+                            <util:PermissionEx User="Users" GenericAll="yes" />
+                        </CreateFolder>
+                        <File Id="GYMASTER.EXE" Name="gymaster.exe" Source="..\work\gymaster.exe">
+                            <Shortcut Id="ExeShortcutMaster" Directory="ProgramMenuDir" Name="Start Gargoyle Master Server" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
+                        </File>
+                        <File Id="GYSLAVE.EXE" Name="gyslave.exe" Source="..\work\gyslave.exe">
+                            <Shortcut Id="ExeShortcutSlave" Directory="ProgramMenuDir" Name="Start Gargoyle Slave Server" Advertise="yes" Icon="StartMenuIcon.exe" IconIndex="0" />
+                        </File>
+                        <File Id="FAVICON.ICO" Name="favicon.ico" Source="..\work\favicon.ico" />
+                        <File Id="DEFAULT.SQL" Name="default.sql" Source="..\work\default.sql" />
+                        <File Id="GY_NOT_PORTABLE" Name="gy_not_portable" Source="gy_not_portable" />
+                    </Component>
+                </Directory>    
+            </Directory>
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ProgramMenuDir" Name="Gargoyle Judge">
+                    <Component Id="StartMenuShortcuts" Guid="B9A3B8CE-35ED-4303-AD11-C522EFFB53A6">
+                        <RemoveFolder Id="ProgramMenuDir" On="uninstall" />
+                        <RegistryValue Root="HKCU" Key="Software\[Manufacturer]\[ProductName]" Type="string" Value="" />
+                        <Shortcut Id="UninstallProduct" Name="Uninstall" Description="Uninstalls the application" Target="[System64Folder]msiexec.exe" Arguments="/x [ProductCode]" />
+                        <util:InternetShortcut Id="WebsiteShortcut" Name="Gargoyle Judge Project Homepage" Target="http://github.com/thiekus/gargoyle-judge" />
+                    </Component>
+                </Directory>
+            </Directory>
+        </Directory>
+        <Feature Id="DefaultFeature" Title="Main Feature" Level="1">
+            <ComponentRef Id="GYWIN" />
+            <ComponentGroupRef Id="AssetsDir" />
+            <ComponentGroupRef Id="LangDir" />
+            <ComponentGroupRef Id="TemplatesDir" />
+            <ComponentRef Id="StartMenuShortcuts" />
+        </Feature>
+        <UI />
+        <UI Id="ThiekusModUI">
+            <UIRef Id="WixUI_InstallDir" />
+            <UIRef Id="WixUI_ErrorProgressText" />
+        </UI>
+        <Property Id="WIXUI_INSTALLDIR" Value="PRODUCTDIR" />
+        <Icon Id="StartMenuIcon.exe" SourceFile="..\work\favicon.ico" />
+        <WixVariable Id="WixUILicenseRtf" Value="..\license.rtf" />
+        <WixVariable Id="WixUIBannerBmp" Value="wizard_ban_256.bmp" />
+        <WixVariable Id="WixUIDialogBmp" Value="wizard_dlg_256.bmp" />
+    </Product>
+</Wix>

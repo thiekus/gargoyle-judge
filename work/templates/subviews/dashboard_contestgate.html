@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-12 col-md-12">
+    <div class="col-12">
         <div class="card">
             <div class="card-header">
                 <h4 class="card-title text-center">Daftar Kontes</h4>
@@ -9,8 +9,8 @@
 
                     {{if gt .PageData.Count 0}}
 
-                    <p>Terdapat {{.PageData.Count}} kontes disini.</p>
-                    <p>Kontes akan dimulai apabila anda memulai dengan memasuki kontes yang anda pilih.</p>
+                    <p>There are {{.PageData.Count}} contests here.</p>
+                    <p>Contest will be started after you press Start Contest</p>
 
                     {{$baseUrl := .BaseUrl}}
                     {{with .PageData.Contests}}
@@ -20,7 +20,7 @@
                             <h4 class="card-title text-white float-left"><i class="fas fa-book mr-1"></i> {{.Title}}
                             </h4>
                             <div class="heading-elements float-right">
-                                Terdapat {{.ProblemCount}} soal
+                                {{.ProblemCount}} problems
                             </div>
                         </div>
                         <div class="card-content collapse show">
@@ -29,7 +29,7 @@
                                 {{.TimeDesc}}
                                 <div class="text-right">
                                     <a href="{{$baseUrl}}{{.ContestUrl}}" class="btn btn-success"><i
-                                            class="fas fa-book-open mr-1"></i> Mulai Kontes</a>
+                                            class="fas fa-book-open mr-1"></i> Start Contest</a>
                                 </div>
                             </div>
                         </div>
@@ -38,7 +38,7 @@
                     {{end}}
 
                     {{else}}
-                    <p>Belum ada kontes yang dipublikasikan!</p>
+                    <p>No contest available!</p>
                     {{end}}
 
                 </div>
@@ -48,6 +48,6 @@
 
 </div>
 
-<script>
-    function initReminderTimer() {}
+<script id="gySubviewScript">
+    function subviewInit() {}
 </script>
