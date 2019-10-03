@@ -32,7 +32,7 @@ func setAssetsWithCaching(r *mux.Router) {
 	// Initialize assets go-cache
 	c := cache.New(30*time.Minute, 1*time.Hour)
 	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		localPath := gylib.ConcatByProgramDir("." + r.URL.Path)
+		localPath := gylib.ConcatByProgramLibDir("." + r.URL.Path)
 		if fileData, cached := c.Get(localPath); cached {
 			//log.Printf("Hit cache for %s", localPath)
 			contentType, _ := c.Get(localPath + ":type")

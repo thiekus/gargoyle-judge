@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="HeatFiles">
+            <Directory Id="dir5CBD49085F962A8945C03A50F85878AC" Name="lang">
+                <Directory Id="dirCE7B1AF0DB784CD7F58ED1CF8FB47C58" Name="id">
+                    <Component Id="cmp0C51B8438D91FAEA62EA8888802605F1" Guid="{44046A2C-AF07-4826-B96B-552FA4FED981}">
+                        <File Id="fil64FCBF4FB3B62AA823CD071D93E5EB64" KeyPath="yes" Source="$(var.SourceDir)\id\country.json" />
+                    </Component>
+                </Directory>
+                <Directory Id="dirD239FCCCBEF6730636EAFDF7D721FCEC" Name="en">
+                    <Component Id="cmp9C8D502E73F24186FF67365CD2BD65F1" Guid="{399798B1-DE20-41D1-8328-951327DC4FBC}">
+                        <File Id="fil36DD2420A77FBDFC34AAE29725D4C234" KeyPath="yes" Source="$(var.SourceDir)\en\country.json" />
+                    </Component>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="LangDir">
+            <ComponentRef Id="cmp0C51B8438D91FAEA62EA8888802605F1" />
+            <ComponentRef Id="cmp9C8D502E73F24186FF67365CD2BD65F1" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

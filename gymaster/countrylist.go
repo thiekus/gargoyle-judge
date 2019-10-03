@@ -19,7 +19,7 @@ import (
 type CountryListName map[string]string
 
 func GetCountryListName() (CountryListName, error) {
-	listFile := gylib.ConcatByProgramDir("./templates/country.json")
+	listFile := gylib.ConcatByProgramLibDir("./templates/country.json")
 	lf, err := os.Open(listFile)
 	if err != nil {
 		return nil, err

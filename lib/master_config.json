@@ -1,0 +1,21 @@
+{
+	"hasFirstSetup": true,
+	"sessionKey": "e79310c253272edd25d71f98727202e6b370c8d7e4e6b6e5b46713d506def5e7",
+	"hostname": "",
+	"listeningPort": 28498,
+	"useTLS": false,
+	"forceTLS": false,
+	"crtFile": "./cert/server.crt",
+	"keyFile": "./cert/server.key",
+	"compressOnFly": true,
+	"pageMinify": true,
+	"assetsCaching": false,
+	"assetsMinify": true,
+	"dbDriver": "mysql",
+	"dbHost": "localhost",
+	"dbUsername": "root",
+	"dbPassword": "",
+	"dbFile": "./database.db",
+	"dbName": "gargoyle",
+	"dbTablePrefix": "gy_"
+}

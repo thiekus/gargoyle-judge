@@ -74,18 +74,18 @@ func GetStdLog() *logrus.Logger {
 	return appLog
 }
 
-func GetProgramDir() string {
+func GetProgramLibDir() string {
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
-	dir := filepath.ToSlash(filepath.Dir(exePath))
+	dir := filepath.ToSlash(filepath.Dir(filepath.Dir(exePath)) + "/lib")
 	return dir
 }
 
-func ConcatByProgramDir(path string) string {
+func ConcatByProgramLibDir(path string) string {
 	if (path[0] == '.') && (path[1] == '/') {
-		dir := GetProgramDir()
+		dir := GetProgramLibDir()
 		resultDir := filepath.ToSlash(strings.Replace(path, ".", dir, 1))
 		return resultDir
 	}
@@ -113,7 +113,7 @@ func GetAppDataDirectory() string {
 }
 
 func GetWorkDir() string {
-	programDir := GetProgramDir()
+	programDir := GetProgramLibDir()
 	if IsFileExists(programDir + "/gy_not_portable") {
 		appDir := GetAppDataDirectory()
 		return appDir

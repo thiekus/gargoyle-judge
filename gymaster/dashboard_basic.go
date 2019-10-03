@@ -60,7 +60,7 @@ type SyntaxThemeInfo struct {
 
 func getSyntaxThemeList() ([]SyntaxThemeInfo, error) {
 	var sl []SyntaxThemeInfo
-	b, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./templates/syntaxthemes.json"))
+	b, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./templates/syntaxthemes.json"))
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func getSyntaxThemeList() ([]SyntaxThemeInfo, error) {
 }
 
 func getSyntaxTestContent() (string, error) {
-	b, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./templates/syntax_test.c"))
+	b, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./templates/syntax_test.c"))
 	if err != nil {
 		return "", err
 	}

@@ -74,7 +74,7 @@ func ParsePageMessage(w http.ResponseWriter, r *http.Request, retrieveMsg bool) 
 }
 
 func GenerateMenuTOC(selectedName string) (MenuTOC, error) {
-	jsonData, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./templates/menutoc.json"))
+	jsonData, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./templates/menutoc.json"))
 	if err != nil {
 		return MenuTOC{}, err
 	}
@@ -138,7 +138,7 @@ func NewPageInfoData(w http.ResponseWriter, r *http.Request, pageData interface{
 func CompileSinglePage(w http.ResponseWriter, r *http.Request, templatePath string, pageData interface{}) {
 	execStart := time.Now()
 	log := gylib.GetStdLog()
-	tpl := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramDir("./templates/%s"), templatePath)))
+	tpl := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramLibDir("./templates/%s"), templatePath)))
 	data := NewPageInfoData(w, r, pageData, true)
 	var byteData bytes.Buffer
 	if err := tpl.Execute(&byteData, data); err != nil {
@@ -182,7 +182,7 @@ func CompileDashboardPage(w http.ResponseWriter, r *http.Request, templateDash s
 	pageName string, data interface{}, customTitle string) {
 	execStart := time.Now()
 	log := gylib.GetStdLog()
-	tplContent := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramDir("./templates/subviews/%s"), templateContent)))
+	tplContent := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramLibDir("./templates/subviews/%s"), templateContent)))
 	dataContent := NewPageInfoData(w, r, data, false)
 	var byteContent bytes.Buffer
 	if err := tplContent.Execute(&byteContent, dataContent); err != nil {
@@ -190,7 +190,7 @@ func CompileDashboardPage(w http.ResponseWriter, r *http.Request, templateDash s
 		http.Error(w, "Internal Server Error: template compile for content failed", 500)
 		return
 	}
-	tplDash := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramDir("./templates/%s"), templateDash)))
+	tplDash := template.Must(template.ParseFiles(fmt.Sprintf(gylib.ConcatByProgramLibDir("./templates/%s"), templateDash)))
 	menuToc, _ := GenerateMenuTOC(pageName)
 	mainTitle := menuToc.SelectedTitle
 	if customTitle != "" {

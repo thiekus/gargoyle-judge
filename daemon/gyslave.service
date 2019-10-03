@@ -1,0 +1,9 @@
+[Unit]
+Description=Gargoyle Judge slave server
+
+[Service]
+Type=simple
+ExecStart=/opt/gargoyle/bin/gyslave
+
+[Install]
+WantedBy=multi-user.target

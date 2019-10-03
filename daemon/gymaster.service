@@ -1,0 +1,9 @@
+[Unit]
+Description=Gargoyle Judge master server
+
+[Service]
+Type=simple
+ExecStart=/opt/gargoyle/bin/gymaster
+
+[Install]
+WantedBy=multi-user.target

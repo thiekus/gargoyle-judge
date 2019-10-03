@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Fragment>
+        <DirectoryRef Id="HeatFiles">
+            <Directory Id="dir419D5DF4357DAA2C5BEF82F504C74CAE" Name="templates">
+                <Component Id="cmp38F53995C0BEFF52818F9FC1990C6F5D" Guid="{E5957E5E-33B8-4D30-BF17-4DE6668C7EC4}">
+                    <File Id="fil1DBD9541BE288188A30F5762812EF93A" KeyPath="yes" Source="$(var.SourceDir)\first_setup_done.html" />
+                </Component>
+                <Component Id="cmpC285BF5DF2B4310C080D20ECF9EA51EC" Guid="{9DF1679D-14DF-4CF6-AA14-50F27D85E6C7}">
+                    <File Id="filD500DFD569A3596C57E66A0410ADB1EF" KeyPath="yes" Source="$(var.SourceDir)\live_base.html" />
+                </Component>
+                <Component Id="cmpCAC70B29399C74C5E89A48870910F6CA" Guid="{3D264764-A103-49DA-B4BC-01745291959B}">
+                    <File Id="filDCB58C82B764DD6B71BB077090D62755" KeyPath="yes" Source="$(var.SourceDir)\syntaxthemes.json" />
+                </Component>
+                <Component Id="cmpA4EB4CE3E94858E12A8225E40C8E5E8B" Guid="{4FAA500C-7F2D-42D5-BEBF-FEC014F30A55}">
+                    <File Id="filE17841839C3F4E2396527BCA356EF85E" KeyPath="yes" Source="$(var.SourceDir)\syntax_test.c" />
+                </Component>
+                <Component Id="cmpCC3B2A97A718E4DF73BA0AB11432A4B1" Guid="{F5A8C2D6-5896-45A0-9B28-B9A52838D58C}">
+                    <File Id="filF408022065DDBAA24DFC8E965A771649" KeyPath="yes" Source="$(var.SourceDir)\index.html" />
+                </Component>
+                <Component Id="cmpA8C1750B0665D526382B745CD89D9768" Guid="{C5935FB8-FD6F-40EB-8D79-2D28E2E8741E}">
+                    <File Id="filD8A5C5943F5F7F9A8576A2CCE2DDE743" KeyPath="yes" Source="$(var.SourceDir)\.DS_Store" />
+                </Component>
+                <Component Id="cmpA56A6AF7F54A3CC401A1D84504F6EA7B" Guid="{95CAA0CA-F77A-4BCB-B8DA-4DDEE00489A6}">
+                    <File Id="filB35531D705B1919E7A5FF1B9C10FAD47" KeyPath="yes" Source="$(var.SourceDir)\about.html" />
+                </Component>
+                <Component Id="cmp3547065F1E50607FC36FB0B833AF82F2" Guid="{49EA6FE8-A8C3-42C5-892B-8056F82CEE83}">
+                    <File Id="fil44FAD6A78B1892B6A1EC56B6916A95E4" KeyPath="yes" Source="$(var.SourceDir)\login.html" />
+                </Component>
+                <Component Id="cmp60E22AE4434AABD09090630F9B2F327E" Guid="{58C006ED-EF23-4BDE-BAC0-7BAA7E88BCB2}">
+                    <File Id="fil527D87DE8948441BC19ADBC7A66A904E" KeyPath="yes" Source="$(var.SourceDir)\first_setup.html" />
+                </Component>
+                <Component Id="cmpC346DC57FC7223A2266892DCC3ABFEC6" Guid="{04A03542-B1F0-469C-81E5-C2CC8F60A4F8}">
+                    <File Id="fil7F81654D1B188F33BEE534313E785B2A" KeyPath="yes" Source="$(var.SourceDir)\dashboard_base.html" />
+                </Component>
+                <Component Id="cmpAF05D2E543D41CF3E56AB7C1E27C6FD6" Guid="{8780FAE8-8B7D-4B21-A777-058ECE59439A}">
+                    <File Id="fil14ABC65100BF8980FD9BA16A1ED9896D" KeyPath="yes" Source="$(var.SourceDir)\menutoc.json" />
+                </Component>
+                <Component Id="cmp8B8EDA0B8E7DA74A87EC2CE87C77CF24" Guid="{381BB9EC-55F8-484F-9001-00AFC01C4DF4}">
+                    <File Id="fil55E13BE9FFAA27AA8806D38E57DEFC34" KeyPath="yes" Source="$(var.SourceDir)\passreset_request.html" />
+                </Component>
+                <Directory Id="dir92486138E89A712CC7DCEFBD035D1FFB" Name="subviews">
+                    <Component Id="cmp5DDE8647D75A88B946AFCDD00E80FE7B" Guid="{33851991-EA3A-4C0C-BD04-080B1EEFEAB8}">
+                        <File Id="fil04ED0B2952966E9467943ACAAAA2CF9F" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_scoreboardview.html" />
+                    </Component>
+                    <Component Id="cmp0AFB66252AF89C60C41BF9D19EF22A3A" Guid="{1588F925-0F33-40B8-BEF8-BA47B2D5D99F}">
+                        <File Id="fil7D111C4FA0205F425DF20D4B37522B44" KeyPath="yes" Source="$(var.SourceDir)\subviews\live_home.html" />
+                    </Component>
+                    <Component Id="cmpB1643F3E04F560C4022AE5C17F064E10" Guid="{0C307707-2AB1-402E-BC57-6F92D4CB7F15}">
+                        <File Id="fil31D4EF3977DACBC6C307505AF481A3AB" KeyPath="yes" Source="$(var.SourceDir)\subviews\.DS_Store" />
+                    </Component>
+                    <Component Id="cmp3C0A6B4E216D2811F8D4EC4412AE7F8F" Guid="{5A99F190-3BA7-472C-BDB2-E43DD6137570}">
+                        <File Id="fil0EE66C11BDFD938D6DCF8DC8A3850EDF" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_submissions.html" />
+                    </Component>
+                    <Component Id="cmp250C0EE88D2DA3CC1ED45AF5FD855102" Guid="{041D5C60-A38B-4DEA-BE8F-580ADDCF4120}">
+                        <File Id="fil5BD1725B77531FD2A4C3519E6A5C89DB" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_profileedit.html" />
+                    </Component>
+                    <Component Id="cmp470F0AA43C61D772A01DC170445A717F" Guid="{6FE31F45-DF64-41B8-BE6B-7A567A32F091}">
+                        <File Id="fil0201DD47A4B01F2DE7F71DDC6542F0EC" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_submissionview.html" />
+                    </Component>
+                    <Component Id="cmpF23CA92005BEA8F943369DF49B21CB54" Guid="{FCD6A507-2322-4698-AEF3-A29911F33C02}">
+                        <File Id="fil15C888C00531EBB3490D0EF434D615FC" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_problemset.html" />
+                    </Component>
+                    <Component Id="cmp5503F638D962B62B826873F392E11DB9" Guid="{0699DB6E-E597-4724-813A-1D8856CB0E86}">
+                        <File Id="fil739B0C732CDF9FEF08F1A54D8B74CD1F" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_notifications.html" />
+                    </Component>
+                    <Component Id="cmpDE44483B71B4DE564B77B19296C5DEAC" Guid="{297C86D7-07ED-4BBD-A7AD-19C01AF32525}">
+                        <File Id="fil452EA57277DCB382058FEC453D5246F6" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_problemview.html" />
+                    </Component>
+                    <Component Id="cmpD8142F63EF3B3F9061A301652FD8C48F" Guid="{C9F23E09-908F-4EB5-8E08-C172B1EFCE00}">
+                        <File Id="filECD9D690A20812F54E40B0ABEFAE96FA" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_contestgate.html" />
+                    </Component>
+                    <Component Id="cmp748AAAF461ED7216089805B6116FC66A" Guid="{3EE7051D-8383-48AC-8DE8-0DC24B0698E1}">
+                        <File Id="fil94B1C469972A629930BA388CE5382757" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_home.html" />
+                    </Component>
+                    <Component Id="cmpB4CC1C6E2D9E9F51BCCE7C8DB9336F3F" Guid="{78DD669D-92ED-4CC1-B5DE-242CAC47BA2E}">
+                        <File Id="filED4F1C8F4570349DFF57C26FE23ECC2C" KeyPath="yes" Source="$(var.SourceDir)\subviews\live_capture.html" />
+                    </Component>
+                    <Component Id="cmp8323358AFDD94E722DB7AEED992A7946" Guid="{E79D316F-D039-4E46-9123-80E3D564EBD2}">
+                        <File Id="fil60ABA8D383B70D4565FF1D65F58ABA57" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_scoreboards.html" />
+                    </Component>
+                    <Component Id="cmpAF023537602BF076FF491C8D1634F128" Guid="{A2FB822D-E99A-404F-87CF-DC4AA5C203AD}">
+                        <File Id="filB7E7AC5D4DB3B4E35BFAE89887CACD8C" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_settings.html" />
+                    </Component>
+                    <Component Id="cmp15F73429E4B9864D1100ED6D00B1C71B" Guid="{4CCF35F5-AB7F-4653-AA90-6BEB91AA802F}">
+                        <File Id="filFEFC90409DC20F9703E8A28E9C8D7473" KeyPath="yes" Source="$(var.SourceDir)\subviews\dashboard_manageusers.html" />
+                    </Component>
+                </Directory>
+            </Directory>
+        </DirectoryRef>
+    </Fragment>
+    <Fragment>
+        <ComponentGroup Id="TemplatesDir">
+            <ComponentRef Id="cmp38F53995C0BEFF52818F9FC1990C6F5D" />
+            <ComponentRef Id="cmpC285BF5DF2B4310C080D20ECF9EA51EC" />
+            <ComponentRef Id="cmpCAC70B29399C74C5E89A48870910F6CA" />
+            <ComponentRef Id="cmpA4EB4CE3E94858E12A8225E40C8E5E8B" />
+            <ComponentRef Id="cmpCC3B2A97A718E4DF73BA0AB11432A4B1" />
+            <ComponentRef Id="cmpA8C1750B0665D526382B745CD89D9768" />
+            <ComponentRef Id="cmpA56A6AF7F54A3CC401A1D84504F6EA7B" />
+            <ComponentRef Id="cmp3547065F1E50607FC36FB0B833AF82F2" />
+            <ComponentRef Id="cmp60E22AE4434AABD09090630F9B2F327E" />
+            <ComponentRef Id="cmpC346DC57FC7223A2266892DCC3ABFEC6" />
+            <ComponentRef Id="cmpAF05D2E543D41CF3E56AB7C1E27C6FD6" />
+            <ComponentRef Id="cmp8B8EDA0B8E7DA74A87EC2CE87C77CF24" />
+            <ComponentRef Id="cmp5DDE8647D75A88B946AFCDD00E80FE7B" />
+            <ComponentRef Id="cmp0AFB66252AF89C60C41BF9D19EF22A3A" />
+            <ComponentRef Id="cmpB1643F3E04F560C4022AE5C17F064E10" />
+            <ComponentRef Id="cmp3C0A6B4E216D2811F8D4EC4412AE7F8F" />
+            <ComponentRef Id="cmp250C0EE88D2DA3CC1ED45AF5FD855102" />
+            <ComponentRef Id="cmp470F0AA43C61D772A01DC170445A717F" />
+            <ComponentRef Id="cmpF23CA92005BEA8F943369DF49B21CB54" />
+            <ComponentRef Id="cmp5503F638D962B62B826873F392E11DB9" />
+            <ComponentRef Id="cmpDE44483B71B4DE564B77B19296C5DEAC" />
+            <ComponentRef Id="cmpD8142F63EF3B3F9061A301652FD8C48F" />
+            <ComponentRef Id="cmp748AAAF461ED7216089805B6116FC66A" />
+            <ComponentRef Id="cmpB4CC1C6E2D9E9F51BCCE7C8DB9336F3F" />
+            <ComponentRef Id="cmp8323358AFDD94E722DB7AEED992A7946" />
+            <ComponentRef Id="cmpAF023537602BF076FF491C8D1634F128" />
+            <ComponentRef Id="cmp15F73429E4B9864D1100ED6D00B1C71B" />
+        </ComponentGroup>
+    </Fragment>
+</Wix>

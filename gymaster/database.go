@@ -185,7 +185,7 @@ func CreateBlankDatabase() error {
 		return err
 	}
 	defer db.Close()
-	createSql, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./default.sql"))
+	createSql, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./default.sql"))
 	if _, err = db.Exec(fmt.Sprintf("%s", createSql)); err != nil {
 		log.Error(err)
 		return err

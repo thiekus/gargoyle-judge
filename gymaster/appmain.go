@@ -189,11 +189,11 @@ func prepareHttpEndpoints() {
 	if appConfig.AssetsCaching {
 		setAssetsWithCaching(r)
 	} else {
-		r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(gylib.ConcatByProgramDir("./assets")))))
+		r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(gylib.ConcatByProgramLibDir("./assets")))))
 	}
 	// Handle favicon
 	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
-		b, err := ioutil.ReadFile(gylib.ConcatByProgramDir("./favicon.ico"))
+		b, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./favicon.ico"))
 		if err == nil {
 			w.Header().Set("Cache-Control", "public, max-age=3600")
 			w.Header().Set("Content-Type", "image/x-icon")
@@ -265,7 +265,7 @@ func main() {
 	fmt.Printf("Running on %s\n\n", appOSName)
 
 	log := gylib.GetStdLog()
-	log.Printf("ProgramDir: %s", gylib.GetProgramDir())
+	log.Printf("ProgramDir: %s", gylib.GetProgramLibDir())
 	log.Printf("WorkDir: %s", gylib.GetWorkDir())
 	for {
 		log.Print("Initializing master server...")

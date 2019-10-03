@@ -1,0 +1,222 @@
+<div class="row">
+    <div class="col-sm-4">
+        <h3>Live Camera</h3>
+        <p>Pilih kamera yang akan digunakan untuk merekam kegiatan selama kontes.</p>
+        <p>Catatan: Jendela ini harus dibuka dan jangan ditutup selama anda mengikuti kontes.</p>
+        <div class="form-group">
+            <select class="form-control" id="videoSource"></select>
+        </div>
+        <hr class="d-sm-none">
+    </div>
+    <div id="liveStreamBody" class="col-sm-8">
+        <div class="row">
+            <div class="col-sm-6">
+                <video id="videoPreview" playsinline autoplay></video>
+            </div>
+            <div class="col-sm-6">
+                <img id="captureResult">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Petito JPEG Library -->
+<script src="{{.BaseUrl}}assets/shared/petito-jpeg/pttjpeg.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    /* Based from WebRTC API Samples - https://webrtc.github.io/samples/ */
+    const videoElement = document.querySelector('video#videoPreview');
+    const videoSelect = document.querySelector('select#videoSource');
+    const selectors = [videoSelect];
+
+    function gotDevices(deviceInfos) {
+        // Handles being called several times to update labels. Preserve values.
+        const values = selectors.map(select => select.value);
+        selectors.forEach(select => {
+            while (select.firstChild) {
+                select.removeChild(select.firstChild);
+            }
+        });
+        for (let i = 0; i !== deviceInfos.length; ++i) {
+            const deviceInfo = deviceInfos[i];
+            const option = document.createElement('option');
+            option.value = deviceInfo.deviceId;
+            if (deviceInfo.kind === 'audioinput') {
+                //option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+                //audioInputSelect.appendChild(option);
+            } else if (deviceInfo.kind === 'audiooutput') {
+                //option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
+                //audioOutputSelect.appendChild(option);
+            } else if (deviceInfo.kind === 'videoinput') {
+                option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
+                videoSelect.appendChild(option);
+            } else {
+                console.log('Some other kind of source/device: ', deviceInfo);
+            }
+        }
+        selectors.forEach((select, selectorIndex) => {
+            if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
+                select.value = values[selectorIndex];
+            }
+        });
+    }
+
+    navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
+    // Attach audio output device to video element using device/sink ID.
+    function attachSinkId(element, sinkId) {
+        if (typeof element.sinkId !== 'undefined') {
+            element.setSinkId(sinkId)
+                .then(() => {
+                    console.log(`Success, audio output device attached: ${sinkId}`);
+                })
+                .catch(error => {
+                    let errorMessage = error;
+                    if (error.name === 'SecurityError') {
+                        errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
+                    }
+                    console.error(errorMessage);
+                    // Jump back to first output device in the list as it's the default.
+                    //audioOutputSelect.selectedIndex = 0;
+                });
+        } else {
+            console.warn('Browser does not support output device selection.');
+        }
+    }
+
+    function changeAudioDestination() {
+        //const audioDestination = audioOutputSelect.value;
+        //attachSinkId(videoElement, audioDestination);
+    }
+
+    function gotStream(stream) {
+        window.stream = stream; // make stream available to console
+        videoElement.srcObject = stream;
+        // Refresh button list in case labels have become available
+        return navigator.mediaDevices.enumerateDevices();
+    }
+
+    function handleError(error) {
+        console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    }
+
+    function startCapture() {
+        if (window.stream) {
+            window.stream.getTracks().forEach(track => {
+                track.stop();
+            });
+        }
+        const videoSource = videoSelect.value;
+        const constraints = {
+            video: {
+                width: {
+                    exact: 320
+                },
+                height: {
+                    exact: 240
+                },
+                deviceId: videoSource ? {
+                    exact: videoSource
+                } : undefined
+            }
+        };
+        navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
+    }
+
+    function appendZero(num) {
+        return num > 9? num: "0"+num;
+    }
+
+    function getDateTimeText() {
+        var currentdate = new Date();
+        var datetime = appendZero(currentdate.getDate()) + "/" +
+            appendZero(currentdate.getMonth() + 1) + "/" +
+            currentdate.getFullYear() + " @ " +
+            appendZero(currentdate.getHours()) + ":" +
+            appendZero(currentdate.getMinutes()) + ":" +
+            appendZero(currentdate.getSeconds());
+        return datetime;
+    }
+
+    function videoCaptureToImage(video) {
+        var canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // Write OSD
+        osd1 = "{{.UserData.DisplayName}}";
+        osd2 = getDateTimeText();
+        ctx.font = "Arial 12px";
+        ctx.fillStyle = "white";
+        ctx.strokeText(osd1, 12, 16);
+        ctx.fillText(osd1, 12, 16);
+        ctx.strokeText(osd2, 12, 30);
+        ctx.fillText(osd2, 12, 30);
+        return ctx.getImageData(0, 0, canvas.width, canvas.height);
+    }
+
+    function initializeCapture() {
+        var jpeg = new pttJPEG();
+
+        function updateResultImg(data) {
+            var url = "data:image/jpeg;base64," + data
+            var dstImgElem = document.getElementById("captureResult");
+            dstImgElem.setAttribute("src", url);
+        }
+
+        function captureLoop() {
+            try {
+                var srcImg = new jpeg.pttImage(videoCaptureToImage(videoElement));
+                var bw = new jpeg.ByteWriter();
+                jpeg.encode(50, srcImg, bw);
+                // Send data
+                var data = bw.getBase64Data();
+                var fd = new FormData();
+                fd.append("fname", "stream.jpg");
+                fd.append("type", "image/jpeg")
+                fd.append("data", data);
+                $.ajax({
+                    type: "POST",
+                    url: "{{.BaseUrl}}live/capture",
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    timeout: 5000,
+                    success: function (result) {
+                        if (result.success) {
+                            updateResultImg(data)
+                            console.log("Image sent!");
+                            setTimeout(captureLoop, 1000);
+                        } else {
+                            console.log("Send error: " + result.message)
+                            setTimeout(captureLoop, 3000);
+                        }
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        console.log("Failed: " + errorThrown);
+                        setTimeout(captureLoop, 3000);
+                    }
+                });
+            } catch (err) {
+                console.error("Capture error: " + err.message);
+                setTimeout(captureLoop, 3000);
+            }
+        }
+
+        function videoReady() {
+            if ((videoElement.videoWidth > 0) && (videoElement.videoHeight > 0)) {
+                captureLoop();
+            } else {
+                setTimeout(videoReady, 500);
+            }
+        }
+
+        setTimeout(videoReady, 500);
+    }
+
+    $(document).ready(function () {
+        startCapture();
+        videoSelect.onchange = startCapture;
+        initializeCapture();
+    });
+</script>

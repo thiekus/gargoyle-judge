@@ -30,7 +30,6 @@ require (
 	github.com/tdewolff/minify v2.3.6+incompatible
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.5 // indirect
-	github.com/thiekus/go-mssqldb v0.0.0-20190930224236-4de51150be58
 	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect
 	golang.org/x/sys v0.0.0-20190922100055-0a153f010e69
 	google.golang.org/appengine v1.6.3 // indirect

@@ -1,0 +1,19 @@
+.scoreboard-solved {
+    background-color: #90f590;
+}
+
+.scoreboard-solved-first {
+    background-color: #36d036;
+}
+
+.scoreboard-incorrect {
+    background-color: #ef9a9a;
+}
+
+.scoreboard-head-circle {
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    border: 1px solid black;
+    display: inline-block;
+}
