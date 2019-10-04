@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 )
@@ -194,7 +195,17 @@ func dashboardProblemPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	var code string
 	switch inputType {
 	case "file":
-		break
+		// TODO: Submission via file upload doesn't work with QuickForm yet
+		f, _, err := r.FormFile("sourceCodeFile")
+		if err != nil {
+			return
+		}
+		defer f.Close()
+		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			return
+		}
+		code = string(b)
 	case "text":
 		code = r.PostFormValue("sourceCodeText")
 	default:
