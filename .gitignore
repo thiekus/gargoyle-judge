@@ -17,3 +17,5 @@ bin/gy_not_portable
 bin/gymaster
 bin/gyslave
 bin/*.exe
+
+*.log
