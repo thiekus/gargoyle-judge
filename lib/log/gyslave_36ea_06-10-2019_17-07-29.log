@@ -1,0 +1,33 @@
+Oct  6 17:07:29.641[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gyslave_36ea_06-10-2019_17-07-29.log
+Oct  6 17:07:29.641[36m [INFO] [0mInitializing slave server...
+Oct  6 17:07:29.642[36m [INFO] [0mListening and serve RPC Server...
+Oct  6 17:07:37.143[36m [INFO] [0mPing from master, delta 3.462000ms
+Oct  6 17:07:37.149[36m [INFO] [0mPing from master, delta 2.953000ms
+Oct  6 17:09:08.449[36m [INFO] [0mPing from master, delta 0.381000ms
+Oct  6 17:09:53.425[36m [INFO] [0mPing from master, delta 0.993000ms
+Oct  6 17:10:23.478[36m [INFO] [0mPing from master, delta 0.527000ms
+Oct  6 17:10:23.494[36m [INFO] [0m[subId:174] Begin processing submission...
+Oct  6 17:10:23.498[36m [INFO] [0m[subId:174] saved in temporary dir /Users/thiekus/projects/gargoyle-judge/lib/caches/d81f8a09a080355140ada8a59c65ff50
+Oct  6 17:10:23.511[36m [INFO] [0m[subId:174] Executing compilation with args: [gcc -Wall -o /Users/thiekus/projects/gargoyle-judge/lib/caches/d81f8a09a080355140ada8a59c65ff50/appmain -O2 -std=gnu99 -lm /Users/thiekus/projects/gargoyle-judge/lib/caches/d81f8a09a080355140ada8a59c65ff50/appmain.c]
+Oct  6 17:10:27.370[36m [INFO] [0m[subId:174] Compiled after 3853.237721ms
+Oct  6 17:10:27.370[36m [INFO] [0m[subId:174] Executing testcase 1 with args: [/Users/thiekus/projects/gargoyle-judge/lib/caches/d81f8a09a080355140ada8a59c65ff50/appmain]
+Oct  6 17:10:27.377[36m [INFO] [0m[subId:174] Test case no. 1 verdict:WA after 4.900914ms score:0.000000
+Oct  6 17:10:27.377[36m [INFO] [0m[subId:174] Graded with verdict:WA and score 0
+Oct  6 17:11:33.148[36m [INFO] [0mPing from master, delta 0.868000ms
+Oct  6 17:11:33.151[36m [INFO] [0mPing from master, delta 0.338000ms
+Oct  6 17:11:33.169[36m [INFO] [0m[subId:175] Begin processing submission...
+Oct  6 17:11:33.204[36m [INFO] [0m[subId:175] saved in temporary dir /Users/thiekus/projects/gargoyle-judge/lib/caches/ca0c88bf94509413205be270aece3034
+Oct  6 17:11:33.206[36m [INFO] [0m[subId:175] Executing compilation with args: [gcc -Wall -o /Users/thiekus/projects/gargoyle-judge/lib/caches/ca0c88bf94509413205be270aece3034/appmain -O2 -std=gnu99 -lm /Users/thiekus/projects/gargoyle-judge/lib/caches/ca0c88bf94509413205be270aece3034/appmain.c]
+Oct  6 17:11:33.389[36m [INFO] [0m[subId:175] Compiled after 182.601789ms
+Oct  6 17:11:33.389[36m [INFO] [0m[subId:175] Executing testcase 1 with args: [/Users/thiekus/projects/gargoyle-judge/lib/caches/ca0c88bf94509413205be270aece3034/appmain]
+Oct  6 17:11:33.416[36m [INFO] [0m[subId:175] Test case no. 1 verdict:WA after 5.865025ms score:0.000000
+Oct  6 17:11:33.416[36m [INFO] [0m[subId:175] Graded with verdict:WA and score 0
+Oct  6 17:18:43.834[36m [INFO] [0mPing from master, delta 1.034000ms
+Oct  6 17:18:43.839[36m [INFO] [0mPing from master, delta 0.762000ms
+Oct  6 17:18:43.866[36m [INFO] [0m[subId:176] Begin processing submission...
+Oct  6 17:18:43.869[36m [INFO] [0m[subId:176] saved in temporary dir /Users/thiekus/projects/gargoyle-judge/lib/caches/9b71acee6412a47a821fb14d2e5e6b5d
+Oct  6 17:18:43.870[36m [INFO] [0m[subId:176] Executing compilation with args: [gcc -Wall -o /Users/thiekus/projects/gargoyle-judge/lib/caches/9b71acee6412a47a821fb14d2e5e6b5d/appmain -O2 -std=gnu99 -lm /Users/thiekus/projects/gargoyle-judge/lib/caches/9b71acee6412a47a821fb14d2e5e6b5d/appmain.c]
+Oct  6 17:18:44.047[36m [INFO] [0m[subId:176] Compiled after 176.124795ms
+Oct  6 17:18:44.048[36m [INFO] [0m[subId:176] Executing testcase 1 with args: [/Users/thiekus/projects/gargoyle-judge/lib/caches/9b71acee6412a47a821fb14d2e5e6b5d/appmain]
+Oct  6 17:18:44.059[36m [INFO] [0m[subId:176] Test case no. 1 verdict:WA after 5.353306ms score:0.000000
+Oct  6 17:18:44.059[36m [INFO] [0m[subId:176] Graded with verdict:WA and score 0

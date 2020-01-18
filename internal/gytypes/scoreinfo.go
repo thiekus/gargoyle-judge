@@ -28,7 +28,7 @@ type ScoreContestInfo struct {
 	FreezeTime     time.Time
 	UnfreezeTime   time.Time
 	AllowPublic    bool
-	StartTimestamp int64
+	StartTimestamp time.Time
 	PenaltyTime    int64
 }
 
@@ -91,10 +91,11 @@ func (cd ScoreContestantDataList) Swap(i, j int) {
 }
 
 func (cd ScoreContestantDataList) Less(i, j int) bool {
+	// Sort from biggest point to lesser point
 	// TODO: implements scoring sort other than ICPC
 	if cd[i].TotalScore == cd[j].TotalScore {
 		// Bigger penalty, then lower rank for same score
-		return cd[i].TotalPenaltyTime > cd[j].TotalPenaltyTime
+		return cd[i].TotalPenaltyTime < cd[j].TotalPenaltyTime
 	}
-	return cd[i].TotalScore < cd[j].TotalScore
+	return cd[i].TotalScore > cd[j].TotalScore
 }

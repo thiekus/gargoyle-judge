@@ -16,6 +16,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/mattn/go-colorable"
 	"github.com/sirupsen/logrus"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -23,6 +24,8 @@ import (
 	"strings"
 	"time"
 )
+
+const dateTimePickerFormatTime = "2006/01/02 15:04"
 
 func GetBaseUrl(r *http.Request) string {
 	if r.TLS != nil {
@@ -69,7 +72,21 @@ func GetStdLog() *logrus.Logger {
 		appLog.SetFormatter(&nested.Formatter{
 			HideKeys: true,
 		})
-		appLog.SetOutput(colorable.NewColorableStdout())
+		logDir := GetWorkDir() + "/log"
+		if !IsDirectoryExists(logDir) {
+			if err := os.Mkdir(logDir, os.ModePerm); err != nil {
+				panic(err)
+			}
+		}
+		t := time.Now()
+		logPath := fmt.Sprintf("%s/%s_%x_%02d-%02d-%d_%02d-%02d-%02d.log", logDir, filepath.Base(os.Args[0]), os.Getpid(), t.Day(), t.Month(), t.Year(), t.Hour(), t.Minute(), t.Second())
+		logFile, err := os.OpenFile(logPath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		if err != nil {
+			panic(err)
+		}
+		logMulti := io.MultiWriter(colorable.NewColorableStdout(), logFile)
+		appLog.SetOutput(logMulti)
+		appLog.Printf("Log file will be printed on %s", logPath)
 	}
 	return appLog
 }
@@ -155,6 +172,15 @@ func GenerateRandomSalt() string {
 
 func GenerateRandomToken() string {
 	return fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
+}
+
+func StringToTime(dtsStr string) time.Time {
+	t, _ := time.Parse(dateTimePickerFormatTime, dtsStr)
+	return t
+}
+
+func TimeToString(t time.Time) string {
+	return t.Format(dateTimePickerFormatTime)
 }
 
 func TimeToHMS(t time.Time) string {

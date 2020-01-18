@@ -18,6 +18,11 @@ import (
 	"strconv"
 )
 
+type DashboardContestGateData struct {
+	Count    int
+	Contests []gytypes.ContestData
+}
+
 type DashboardProblemData struct {
 	gytypes.ProblemData
 	Problems      []gytypes.ProblemData
@@ -62,8 +67,12 @@ func dashboardContestsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		return
 	}
+	cgd := DashboardContestGateData{
+		Count:    len(cl),
+		Contests: cl,
+	}
 	CompileDashboardPage(w, r, "dashboard_base.html", "dashboard_contestgate.html",
-		"contests", cl, "")
+		"contests", cgd, "")
 }
 
 func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {

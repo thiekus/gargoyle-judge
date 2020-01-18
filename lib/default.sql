@@ -2,11 +2,11 @@
 -- Copyright (C) Thiekus 2019
 
 -- Programming Languages
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}languages', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}languages; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}languages;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}languages (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     ext_name VARCHAR(20) NOT NULL DEFAULT 'c',
@@ -36,17 +36,17 @@ INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_n
     VALUES ('pas', 'Pascal', 1, 'pascal', 'appmain.pas', 'appmain', 'fpc -O2 -XS -Sg \{\{.WorkPath\}\}/\{\{.SourceName\}\}', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 -- Java
 INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
-    VALUES ('java', 'Java', 1, 'java', 'PandoraApp.java', 'PandoraApp.class', 'javac -encoding UTF-8 -d . \{\{.WorkPath\}\}/\{\{.SourceName\}\}', 'java -Xmx\{\{.MemLimit\}\}m -cp \{\{.WorkPath\}\} PandoraApp', 0, 1, 1, 'class .*\\{|class .*\\s{', 'class PandoraApp {', '');
+    VALUES ('java', 'Java', 1, 'java', 'PandoraApp.java', 'PandoraApp.class', 'javac -encoding UTF-8 -d . \{\{.WorkPath\}\}/\{\{.SourceName\}\}', 'java -Xmx\{\{.MemLimit\}\}m -cp \{\{.WorkPath\}\} PandoraApp', 0, 0, 1, 'class .*\\{|class .*\\s{', 'class PandoraApp {', '');
 -- Golang
 INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
     VALUES ('go', 'Go', 1, 'golang', 'appmain.go', 'appmain', 'go build -o \{\{.WorkPath\}\}/\{\{.ExeName\}\} \{\{.WorkPath\}\}/', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 
 -- User table
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}users', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}users; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}users;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}users (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -61,18 +61,18 @@ CREATE TABLE {{.TablePrefix}}users (
     avatar VARCHAR(250) NOT NULL DEFAULT '',
     syntax_theme VARCHAR(50) NOT NULL DEFAULT 'eclipse',
     role INTEGER NOT NULL DEFAULT 2,
-    verified INTEGER NOT NULL DEFAULT 0,
+    active INTEGER NOT NULL DEFAULT 1,
     banned INTEGER NOT NULL DEFAULT 0,
     create_time INTEGER NOT NULL DEFAULT 0,
     lastaccess_time INTEGER NOT NULL DEFAULT 0
 );
 
 -- User roles
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}roles', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}roles; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}roles;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}roles (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     rolename VARCHAR(20) NOT NULL DEFAULT 'undefined',
@@ -89,22 +89,22 @@ INSERT INTO {{.TablePrefix}}roles (rolename, access_root, access_jury, access_co
     ('Jury', 0, 1, 0);
 
 -- Contestant Group
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}groups', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}groups; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}groups;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}groups (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Contestant Group Member relations
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}group_members', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}group_members; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}group_members;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}group_members (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     user_id INTEGER NOT NULL,
@@ -112,11 +112,11 @@ CREATE TABLE {{.TablePrefix}}group_members (
 );
 
 -- News
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}news', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}news; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}news;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}news (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     author_id INTEGER NOT NULL,
@@ -126,11 +126,11 @@ CREATE TABLE {{.TablePrefix}}news (
 );
 
 -- Contest List
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}contests', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contests; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}contests;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}contests (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     title VARCHAR(50) NOT NULL DEFAULT 'Untitled',
@@ -140,7 +140,7 @@ CREATE TABLE {{.TablePrefix}}contests (
     problem_count INTEGER NOT NULL DEFAULT 0,
     contest_group_id INTEGER NOT NULL DEFAULT 0,
     enable_freeze INTEGER NOT NULL DEFAULT 0,
-    is_unlocked INTEGER NOT NULL DEFAULT 1,
+    active INTEGER NOT NULL DEFAULT 1,
     allow_public INTEGER NOT NULL DEFAULT 1,
     must_stream INTEGER NOT NULL DEFAULT 0,
     start_timestamp INTEGER NOT NULL DEFAULT 0,
@@ -152,11 +152,11 @@ CREATE TABLE {{.TablePrefix}}contests (
 );
 
 -- Problem List
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}problems', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}problems; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}problems;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}problems (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     contest_id INTEGER NOT NULL,
@@ -169,11 +169,11 @@ CREATE TABLE {{.TablePrefix}}problems (
 );
 
 -- Contest Access
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}contest_access', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contest_access; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}contest_access;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}contest_access (
     id_user INTEGER NOT NULL,
     id_contest INTEGER NOT NULL,
@@ -184,11 +184,11 @@ CREATE TABLE {{.TablePrefix}}contest_access (
 );
 
 -- Contest Submissions
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}submissions', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}submissions; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}submissions;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}submissions (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_problem INTEGER NOT NULL,
@@ -205,11 +205,11 @@ CREATE TABLE {{.TablePrefix}}submissions (
 );
 
 -- Contest problem testcase
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}testcases', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testcases; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}testcases;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}testcases (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_problem INTEGER NOT NULL,
@@ -219,11 +219,11 @@ CREATE TABLE {{.TablePrefix}}testcases (
 );
 
 -- Contest problem testresults
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}testresults', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testresults; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}testresults;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}testresults (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_problem INTEGER NOT NULL,
@@ -236,11 +236,11 @@ CREATE TABLE {{.TablePrefix}}testresults (
 );
 
 -- Contest score for internal beholder (Admin and Jury)
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}scores_private', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_private; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}scores_private;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}scores_private (
     id_contest INTEGER NOT NULL,
     id_problem INTEGER NOT NULL,
@@ -255,11 +255,11 @@ CREATE TABLE {{.TablePrefix}}scores_private (
 );
 
 -- Contest score for public
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}scores_public', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_public; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}scores_public;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}scores_public (
     id_contest INTEGER NOT NULL,
     id_problem INTEGER NOT NULL,
@@ -274,11 +274,11 @@ CREATE TABLE {{.TablePrefix}}scores_public (
 );
 
 -- Slaves list
-{{if eq .Driver "sqlserver"}}
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}slaves', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}slaves; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}slaves;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}slaves (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     name VARCHAR(200) NOT NULL DEFAULT 'Unnamed',
@@ -289,11 +289,12 @@ CREATE TABLE {{.TablePrefix}}slaves (
 INSERT INTO {{.TablePrefix}}slaves (name, address, enable) 
     VALUES ('Localhost Slave', 'localhost:28499', 1);
 
-{{if eq .Driver "sqlserver"}}
+-- Notifications
+-- {{if eq .Driver "sqlserver"}}
 IF OBJECT_ID('{{.TablePrefix}}notifications', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}notifications; 
-{{else}}
+-- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}notifications;
-{{end}}
+-- {{end}}
 CREATE TABLE {{.TablePrefix}}notifications (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_user INTEGER NOT NULL,
@@ -302,4 +303,16 @@ CREATE TABLE {{.TablePrefix}}notifications (
     has_read INTEGER NOT NULL DEFAULT 0,
     description VARCHAR(200) NOT NULL DEFAULT 'Empty Notification',
     link VARCHAR(100) NOT NULL DEFAULT 'dashboard'
+);
+
+-- Login tokens
+-- {{if eq .Driver "sqlserver"}}
+IF OBJECT_ID('{{.TablePrefix}}tokens', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}tokens; 
+-- {{else}}
+DROP TABLE IF EXISTS {{.TablePrefix}}tokens;
+-- {{end}}
+CREATE TABLE {{.TablePrefix}}tokens (
+    token VARCHAR(64) PRIMARY KEY NOT NULL,
+    id_user INTEGER NOT NULL,
+    login_time INTEGER NOT NULL DEFAULT 0
 );

@@ -22,6 +22,11 @@
     <link type="text/css" href="{{.BaseUrl}}assets/shared/overlay-scrollbars/css/OverlayScrollbars.min.css"
         rel="stylesheet" />
     <link rel="stylesheet" href="{{.BaseUrl}}assets/dashboard/libs/css/gydash.css">
+    <!-- datetimepicker -->
+    <link rel="stylesheet" type="text/css"
+        href="{{.BaseUrl}}assets/shared/datetimepicker/build/jquery.datetimepicker.min.css" />
+    <!-- jquery 3.4.1 -->
+    <script src="{{.BaseUrl}}assets/shared/jquery/jquery-3.4.1.min.js"></script>
     <title>Coding INFEST 2019</title>
 </head>
 
@@ -70,7 +75,8 @@
                                     </div>
                                 </li>
                                 <li>
-                                    <div class="list-footer"> <a href="{{.BaseUrl}}dashboard/notifications">View all notifications</a></div>
+                                    <div class="list-footer"> <a href="{{.BaseUrl}}dashboard/notifications">View all
+                                            notifications</a></div>
                                 </li>
                             </ul>
                         </li>
@@ -89,8 +95,8 @@
                                         class="fas fa-user mr-2"></i> Edit Profile</a>
                                 <a class="dropdown-item" href="{{.BaseUrl}}dashboard/settings"><i
                                         class="fas fa-cog mr-2"></i> Settings</a>
-                                <a class="dropdown-item" href="{{.BaseUrl}}logout"><i
-                                        class="fas fa-power-off mr-2"></i> Logout</a>
+                                <a class="dropdown-item" href="{{.BaseUrl}}logout"><i class="fas fa-power-off mr-2"></i>
+                                    Logout</a>
                             </div>
                         </li>
                     </ul>
@@ -132,6 +138,20 @@
                             </li>
                             <li class="nav-item ">
                                 {{with .PageData.Menu.ContestMenu}}
+                                {{range .}}
+                                <a id="menu-{{.Name}}" class="nav-link {{if .Selected}}active{{end}}"
+                                    href="{{$baseUrl}}{{.Location}}"><i class="{{.IconClass}}"></i><span
+                                        class="nav-link-label">{{.Title}}</span></a>
+                                {{end}}
+                                {{end}}
+                            </li>
+                            {{end}}
+                            {{if .UserData.Roles.Jury}}
+                            <li class="nav-divider">
+                                <span class="nav-div-label">Judgement Menu</span>
+                            </li>
+                            <li class="nav-item ">
+                                {{with .PageData.Menu.JuryMenu}}
                                 {{range .}}
                                 <a id="menu-{{.Name}}" class="nav-link {{if .Selected}}active{{end}}"
                                     href="{{$baseUrl}}{{.Location}}"><i class="{{.IconClass}}"></i><span
@@ -271,8 +291,6 @@
     <!-- ============================================================== -->
     <!-- end main wrapper  -->
     <!-- ============================================================== -->
-    <!-- jquery 3.4.1 -->
-    <script src="{{.BaseUrl}}assets/shared/jquery/jquery-3.4.1.min.js"></script>
     <!-- bootstap bundle js -->
     <script src="{{.BaseUrl}}assets/shared/bootstrap/js/bootstrap.bundle.js"></script>
     <!-- slimscroll js -->

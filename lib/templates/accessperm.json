@@ -1,0 +1,92 @@
+[
+    {
+        "prefix": "/dashboard/notifications",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/scoreboard",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/profile",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/settings",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/contests",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/problemSet",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/problem",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/userSubmissions",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/userViewSubmissions",
+        "contestant": true,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/manageContests",
+        "contestant": false,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/contestAdd",
+        "contestant": false,
+        "jury": true,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/manageUsers",
+        "contestant": false,
+        "jury": false,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/userAdd",
+        "contestant": false,
+        "jury": false,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/userEdit",
+        "contestant": false,
+        "jury": false,
+        "admin": true
+    },
+    {
+        "prefix": "/dashboard/userDelete",
+        "contestant": false,
+        "jury": false,
+        "admin": true
+    }
+]

@@ -1,0 +1,48 @@
+Oct  7 17:52:14.928[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_c47_07-10-2019_17-52-14.log
+Oct  7 17:52:14.928[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 17:52:14.928[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 17:52:14.928[36m [INFO] [0mInitializing master server...
+Oct  7 17:52:14.929[36m [INFO] [0mConfig data loaded...
+Oct  7 17:52:14.929[36m [INFO] [0mTesting database connection...
+Oct  7 17:52:14.929[36m [INFO] [0mDB Driver: mysql
+Oct  7 17:52:14.930[36m [INFO] [0mPing test into selected database...
+Oct  7 17:52:14.936[36m [INFO] [0mDB Connection OK!
+Oct  7 17:52:15.023[36m [INFO] [0m30 user token retrieved
+Oct  7 17:52:15.024[36m [INFO] [0mRouters have been initialized...
+Oct  7 17:52:15.024[36m [INFO] [0mServer will use plain HTTP
+Oct  7 17:52:18.876[36m [INFO] [0mClient [::1]:51929 uid:3 accessing /dashboard/scoreboard/2
+Oct  7 17:52:19.005[36m [INFO] [0mClient [::1]:51929 uid:3 accessing /avatar/Rzo2MDA1OTE5OTYyMGM2NzhlYmVlYjUxZGZmMjYyNTViNQ==
+Oct  7 17:52:19.089[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTpmNDc0MzRkZmZkMzA4OTE4ZDQyYTFhMmQxZGFmMDFiOA==
+Oct  7 17:52:19.092[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTpiYjkxMGRmNjgxOTk5NTUxYjgyZmY0ZGE1ZDc0MjEyNw==
+Oct  7 17:52:19.106[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTpmOGE1ODllNjhiNGM0ZWRjNDhjZjY2ODM2MjNlYzgwOA==
+Oct  7 17:52:19.116[36m [INFO] [0mClient [::1]:51936 uid:3 accessing /avatar/Rzo3MTYzYjZkODhlN2JjMzA4NjE5OGM3NTQ0OTU3NDQzZA==
+Oct  7 17:52:19.151[36m [INFO] [0mClient [::1]:51938 uid:3 accessing /avatar/TTphMzk4MjNjYzAyOGE0NDNkNGRlMjdiM2IyYmUxMmNkMQ==
+Oct  7 17:52:19.223[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TToxMDdiM2U0NDUzZmUwZTMwYWE1OWUyMzg2YzU4NmE0MA==
+Oct  7 17:52:19.229[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTpmMDAxM2E1N2VkYTM4YzI4ZWRhNjc2NzRlYTdhODUwYw==
+Oct  7 17:52:19.289[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTo3ZjU2YWU4MGI0M2JjZjZkZGU2OTA2ZWRhMzY3YTE2Mw==
+Oct  7 17:52:19.366[36m [INFO] [0mClient [::1]:51938 uid:3 accessing /avatar/RzpmMTI2OGU2MjNkYzdjODViZTA5MmEwMjIzNjNiNjQxMw==
+Oct  7 17:52:19.376[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTozMGIyMWRmM2I0MmEzNDFlN2FlMzdmNWE4N2NmNmNkMw==
+Oct  7 17:52:19.465[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTo2MDRmMmU2YTNhM2U1MjlmYTZiNjBiZjY0MjBiOWI2NQ==
+Oct  7 17:52:19.478[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTpmNDZjNjYwMGQ3MGM5ZTgwYjBiOTdlMWZjMGQ5Njg0ZA==
+Oct  7 17:52:19.491[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTo4MGUwYjJhMmMxYTFkNmQ0N2Y5YTlmZjU3M2MwOGM0Mg==
+Oct  7 17:52:19.587[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTplNWQ2YjRkYmY4ZDIzZDhkZWNkNDAyNDc0NGQzZjYzZA==
+Oct  7 17:52:19.640[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTphMmE5NzNmNmI3YmQxOTgxNmRmZmRjODAxZDE0MjIyMA==
+Oct  7 17:52:19.641[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTowN2QyOTIyZDllMGFiYmU3MTE3NDA4NjUwZDYyODYxOQ==
+Oct  7 17:52:19.672[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTpmZGZlZGMwMWM2NmU5ZWEyODE3NTA4Y2ExMDk3ZGYyZg==
+Oct  7 17:52:19.786[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTplNzhiZmNhYmE1ZTUzNDFiNjliMWUxOTViMDZhZDQyZQ==
+Oct  7 17:52:19.814[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTo5NjE0Y2JjODY2NTk5NzRkYTg1M2RlZTIwMjgwYjhjNA==
+Oct  7 17:52:19.815[36m [INFO] [0mClient [::1]:51936 uid:3 accessing /avatar/TTphM2VmZDBmMDZhNTAyODQ3NTYzODE0ZWJiNDdjZDI0Nw==
+Oct  7 17:52:19.824[36m [INFO] [0mClient [::1]:51938 uid:3 accessing /avatar/TTplY2MxZjBhNmE2NTJlY2QwYWM5MmEyNDg0YWEwZDU2ZA==
+Oct  7 17:52:19.855[36m [INFO] [0mClient [::1]:51934 uid:3 accessing /avatar/TTo0NzE4MzhmZTFmNTkyNTY2ZTU3NzU5MjZlNDU5NzY4ZQ==
+Oct  7 17:52:19.880[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTo5ZjM3ZjFkOWExZDQyOGFkODM1MWYwN2RiZTUwMmYwOQ==
+Oct  7 17:52:19.918[36m [INFO] [0mClient [::1]:51929 uid:3 accessing /avatar/TToyNjI4NjA0OWYzZjAyY2M4MTQxOWE3NTM4MzM4NGIwNA==
+Oct  7 17:52:20.008[36m [INFO] [0mClient [::1]:51936 uid:3 accessing /avatar/TTpmODVlNTExODNhMzEwMzRkZjE2OGRjNjRkZWQ4YjgxYw==
+Oct  7 17:52:20.009[36m [INFO] [0mClient [::1]:51938 uid:3 accessing /avatar/TTowNmE5YTI4NjY2NGU4NmZhODdlNTA5MmQ5NzQ1YmEwNQ==
+Oct  7 17:52:20.035[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTpmNTI1NDc5YjZhODMzNTE2ZDdkMTEzMjRhYTgzMjg5NQ==
+Oct  7 17:52:20.084[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTo4ZWVhY2U2MmE0ZGFiM2I0ZWY5OWEyZGFkNGUwMTZhNA==
+Oct  7 17:52:20.515[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /favicon.ico
+Oct  7 17:52:22.120[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /dashboard/scoreboard
+Oct  7 17:52:24.104[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /dashboard/scoreboard/1
+Oct  7 17:52:24.171[36m [INFO] [0mClient [::1]:51931 uid:3 accessing /avatar/TTo1OTVhYTczOWZjNTg0MDNjN2M2MmNjMjg0MGQwYjdmYg==
+Oct  7 17:52:24.176[36m [INFO] [0mClient [::1]:51938 uid:3 accessing /avatar/TToxYmMzZjU3NzUwYzIwMzNkZjVkMWJhMmY2OTM4OTI2OQ==
+Oct  7 17:52:24.176[36m [INFO] [0mClient [::1]:51935 uid:3 accessing /avatar/TTphMWU1OTZhYWVhNjMyMjlkY2U3NDdiODhjYjAxZTYxYw==

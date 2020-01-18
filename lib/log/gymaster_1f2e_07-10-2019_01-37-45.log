@@ -1,0 +1,19 @@
+Oct  7 01:37:45.089[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1f2e_07-10-2019_01-37-45.log
+Oct  7 01:37:45.089[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:37:45.089[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:37:45.089[36m [INFO] [0mInitializing master server...
+Oct  7 01:37:45.089[36m [INFO] [0mConfig data loaded...
+Oct  7 01:37:45.090[36m [INFO] [0mTesting database connection...
+Oct  7 01:37:45.090[36m [INFO] [0mDB Driver: mysql
+Oct  7 01:37:45.090[36m [INFO] [0mPing test into selected database...
+Oct  7 01:37:45.092[36m [INFO] [0mDB Connection OK!
+Oct  7 01:37:45.094[36m [INFO] [0mRouters have been initialized...
+Oct  7 01:37:45.094[36m [INFO] [0mServer will use plain HTTP
+Oct  7 01:37:48.417[36m [INFO] [0mClient [::1]:50522 uid:0 accessing /
+Oct  7 01:37:48.793[36m [INFO] [0mClient [::1]:50522 uid:0 accessing /favicon.ico
+Oct  7 01:37:54.637[36m [INFO] [0mClient [::1]:50522 uid:0 accessing /login
+Oct  7 01:37:54.638[36m [INFO] [0mUser dummy trying to login...
+Oct  7 01:37:54.644[36m [INFO] [0mUser dummy logged in with token b1d8aa146003c1efe05799180e513be504fedcb1375ca7a1952754854f51e6bb
+Oct  7 01:37:54.656[36m [INFO] [0mClient [::1]:50522 uid:3 accessing /dashboard
+Oct  7 01:37:56.391[36m [INFO] [0mClient [::1]:50522 uid:3 accessing /dashboard/settings
+Oct  7 01:37:56.392[31m [ERRO] [0muid:3 cannot access dashboard because insufficient privileges! Roles: {1 Contestant true false false}

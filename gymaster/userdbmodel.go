@@ -59,7 +59,7 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	}
 	db := &udm.db
 	query := `INSERT INTO {{.TablePrefix}}users 
-            (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role, verified, banned, create_time, lastaccess_time)
+            (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role, active, banned, create_time, lastaccess_time)
 			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {
@@ -91,16 +91,53 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 	return nil
 }
 
+func (udm *UserDbModel) DeleteUserById(uid int) error {
+	db := udm.db
+	query := "DELETE FROM {{.TablePrefix}}users WHERE id = ?"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(uid)
+	return err
+}
+
+func (udm *UserDbModel) GetAccessRoleList() ([]gytypes.UserRoleAccess, error) {
+	db := udm.db
+	query := "SELECT id, rolename, access_contestant, access_jury, access_root FROM {{.TablePrefix}}roles"
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var al []gytypes.UserRoleAccess
+	for rows.Next() {
+		ua := gytypes.UserRoleAccess{}
+		err = rows.Scan(
+			&ua.Id,
+			&ua.RoleName,
+			&ua.Contestant,
+			&ua.Jury,
+			&ua.SysAdmin,
+		)
+		if err != nil {
+			return nil, err
+		}
+		al = append(al, ua)
+	}
+	return al, nil
+}
+
 func (udm *UserDbModel) GetUserAccess(id int) (gytypes.UserRoleAccess, error) {
 	ua := gytypes.UserRoleAccess{}
-	db := &udm.db
-	query := "SELECT rolename, access_contestant, access_jury, access_root FROM {{.TablePrefix}}roles WHERE id = ?"
+	db := udm.db
+	query := "SELECT id, rolename, access_contestant, access_jury, access_root FROM {{.TablePrefix}}roles WHERE id = ?"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return ua, err
 	}
 	defer stmt.Close()
 	err = stmt.QueryRow(id).Scan(
+		&ua.Id,
 		&ua.RoleName,
 		&ua.Contestant,
 		&ua.Jury,
@@ -112,11 +149,54 @@ func (udm *UserDbModel) GetUserAccess(id int) (gytypes.UserRoleAccess, error) {
 	return ua, nil
 }
 
+func (udm *UserDbModel) GetUserList() ([]gytypes.UserInfo, error) {
+	db := udm.db
+	query := `SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
+        syntax_theme, role, active, banned 
+        FROM {{.TablePrefix}}users`
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var ul []gytypes.UserInfo
+	for rows.Next() {
+		ui := gytypes.UserInfo{}
+		err = rows.Scan(
+			&ui.Id,
+			&ui.Username,
+			&ui.Password,
+			&ui.Salt,
+			&ui.Email,
+			&ui.DisplayName,
+			&ui.Gender,
+			&ui.Address,
+			&ui.Institution,
+			&ui.CountryId,
+			&ui.Avatar,
+			&ui.SyntaxTheme,
+			&ui.RoleId,
+			&ui.Active,
+			&ui.Banned,
+		)
+		if err != nil {
+			return nil, err
+		}
+		roles, err := udm.GetUserAccess(ui.RoleId)
+		if err != nil {
+			return nil, err
+		}
+		ui.Roles = roles
+		ul = append(ul, ui)
+	}
+	return ul, nil
+}
+
 func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 	ui := gytypes.UserInfo{}
-	db := &udm.db
+	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
+        syntax_theme, role, active, banned 
         FROM {{.TablePrefix}}users WHERE id = ?`)
 	if err != nil {
 		return ui, err
@@ -137,6 +217,8 @@ func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 		&ui.Avatar,
 		&ui.SyntaxTheme,
 		&ui.RoleId,
+		&ui.Active,
+		&ui.Banned,
 	)
 	if err != nil {
 		return ui, errors.New("username or password either invalid or not exists")
@@ -155,9 +237,10 @@ func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 
 func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytypes.UserInfo, error) {
 	ui := gytypes.UserInfo{}
-	db := &udm.db
+	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
+        syntax_theme, role, active, banned 
         FROM {{.TablePrefix}}users WHERE username = ?`)
 	if err != nil {
 		return ui, err
@@ -179,6 +262,8 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 		&ui.Avatar,
 		&ui.SyntaxTheme,
 		&roleId,
+		&ui.Active,
+		&ui.Banned,
 	)
 	if err != nil {
 		log := gylib.GetStdLog()
@@ -215,7 +300,7 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 }
 
 func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error {
-	db := &udm.db
+	db := udm.db
 	query := `UPDATE {{.TablePrefix}}users SET 
         password = ?,
         salt = ?,
@@ -227,7 +312,9 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error
         country_id = ?,
         avatar = ?,
         syntax_theme = ?,
-        role = ?
+        role = ?,
+        active = ?,
+        banned = ?
         WHERE id = ?`
 	prep, err := db.Prepare(query)
 	if err != nil {
@@ -246,6 +333,8 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error
 		ui.Avatar,
 		ui.SyntaxTheme,
 		ui.RoleId,
+		ui.Active,
+		ui.Banned,
 		userId,
 	)
 	return nil
@@ -274,6 +363,64 @@ func (udm *UserDbModel) GetUserGroupAccess(userId int) (gytypes.UserGroupAccess,
 		groups = append(groups, ug)
 	}
 	return groups, nil
+}
+
+func (udm *UserDbModel) DeleteTokenByUserId(uid int) error {
+	db := udm.db
+	query := "DELETE FROM {{.TablePrefix}}tokens WHERE id_user = ?"
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	_, err = stmt.Exec(uid)
+	return err
+}
+
+func (udm *UserDbModel) GetTokenList() ([]gytypes.UserTokenInfo, error) {
+	db := udm.db
+	query := `SELECT token, id_user, login_time FROM {{.TablePrefix}}tokens`
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var list []gytypes.UserTokenInfo
+	for rows.Next() {
+		tok := gytypes.UserTokenInfo{}
+		err = rows.Scan(
+			&tok.Token,
+			&tok.UserId,
+			&tok.LoginTime,
+		)
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, tok)
+	}
+	return list, nil
+}
+
+func (udm *UserDbModel) InsertToken(token string, uid int) error {
+	db := udm.db
+	query := `INSERT INTO {{.TablePrefix}}tokens (token, id_user, login_time) VALUES (?, ?, ?)`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(token, uid, time.Now().Unix())
+	return err
+}
+
+func (udm *UserDbModel) CleanTokenOfUser(uid int) error {
+	db := udm.db
+	query := `DELETE FROM {{.TablePrefix}}tokens WHERE id_user = ?`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(uid)
+	return err
 }
 
 func calculateSaltedHash(password string, salt string) string {

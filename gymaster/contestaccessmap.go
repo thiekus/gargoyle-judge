@@ -152,6 +152,10 @@ func (cac *ContestAccessController) GetAccessInfoOfUser(userId int, contestId in
 			if err != nil {
 				return nil, err
 			}
+			// Check if active
+			if !cd.Active {
+				return nil, errors.New("contest not active")
+			}
 			// Check group access
 			if cd.GroupId != 0 {
 				// Get groups access for selected user
@@ -204,6 +208,8 @@ func (cac *ContestAccessController) GetAccessInfoOfUser(userId int, contestId in
 		ca.RemainTime = cac.CalculateRemainingTime(&ca)
 		// Save to map cache
 		cac.storeContestAccessMap(userId, contestId, ca)
+		// Invalidate scoreboard cache after enter
+		appScoreboard.InvalidateScoreboardCache(contestId)
 		return &ca, nil
 	} else {
 		ca.RemainTime = cac.CalculateRemainingTime(&ca)

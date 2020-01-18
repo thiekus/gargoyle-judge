@@ -1,0 +1,25 @@
+Oct  6 17:11:08.768[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_37d2_06-10-2019_17-11-08.log
+Oct  6 17:11:08.768[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  6 17:11:08.768[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  6 17:11:08.768[36m [INFO] [0mInitializing master server...
+Oct  6 17:11:08.776[36m [INFO] [0mConfig data loaded...
+Oct  6 17:11:08.777[36m [INFO] [0mTesting database connection...
+Oct  6 17:11:08.777[36m [INFO] [0mDB Driver: mysql
+Oct  6 17:11:08.777[36m [INFO] [0mPing test into selected database...
+Oct  6 17:11:08.790[36m [INFO] [0mDB Connection OK!
+Oct  6 17:11:08.792[36m [INFO] [0mRouters have been initialized...
+Oct  6 17:11:08.792[36m [INFO] [0mServer will use plain HTTP
+Oct  6 17:11:12.095[36m [INFO] [0mClient [::1]:54933 uid:0 accessing /dashboard/scoreboard/1
+Oct  6 17:11:12.103[36m [INFO] [0mClient [::1]:54933 uid:0 accessing /login?target=L2Rhc2hib2FyZC9zY29yZWJvYXJkLzE=
+Oct  6 17:11:12.166[36m [INFO] [0mClient [::1]:54933 uid:0 accessing /assets/dashboard/images/logo.png
+Oct  6 17:11:17.083[36m [INFO] [0mClient [::1]:54933 uid:0 accessing /login
+Oct  6 17:11:17.083[36m [INFO] [0mUser barakallah trying to login...
+Oct  6 17:11:17.094[36m [INFO] [0mUser barakallah logged in with token ad71376394f1fcc30870220a78fc7d70123c5da21c152fdba9d77d4e3417b515
+Oct  6 17:11:17.100[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/scoreboard/1
+Oct  6 17:11:24.252[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/contests
+Oct  6 17:11:25.824[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/problemSet/1
+Oct  6 17:11:28.544[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/problem/2
+Oct  6 17:11:33.136[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/problem
+Oct  6 17:11:33.168[36m [INFO] [0mClient [::1]:54933 uid:9 accessing /dashboard/problemSet/1
+Oct  6 17:11:33.442[36m [INFO] [0mInserting {0 2 175 1 WA 5.865025 0 0}
+Oct  6 17:11:33.442[36m [INFO] [0mSubmission [id:175, verdict:WA]: Wrong Answer

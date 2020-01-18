@@ -1,0 +1,37 @@
+Oct  7 01:36:20.037[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1f03_07-10-2019_01-36-20.log
+Oct  7 01:36:20.037[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:36:20.038[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:36:20.038[36m [INFO] [0mInitializing master server...
+Oct  7 01:36:20.039[36m [INFO] [0mConfig data loaded...
+Oct  7 01:36:20.039[36m [INFO] [0mTesting database connection...
+Oct  7 01:36:20.039[36m [INFO] [0mDB Driver: mysql
+Oct  7 01:36:20.039[36m [INFO] [0mPing test into selected database...
+Oct  7 01:36:20.042[36m [INFO] [0mDB Connection OK!
+Oct  7 01:36:20.043[36m [INFO] [0mRouters have been initialized...
+Oct  7 01:36:20.043[36m [INFO] [0mServer will use plain HTTP
+Oct  7 01:36:23.483[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /dashboard
+Oct  7 01:36:23.494[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /login?target=L2Rhc2hib2FyZA==
+Oct  7 01:36:32.211[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /login
+Oct  7 01:36:32.211[36m [INFO] [0mUser gyroot trying to login...
+Oct  7 01:36:32.217[36m [INFO] [0mUser gyroot logged in with token 1df0eefe450070d93db87a00f6b654a65c3ffb1e71a569a7e549ccdbc0565935
+Oct  7 01:36:32.228[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard
+Oct  7 01:36:34.646[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard/scoreboard
+Oct  7 01:36:35.708[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard/notifications
+Oct  7 01:36:36.558[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard/manageContests
+Oct  7 01:36:37.739[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard/manageUsers
+Oct  7 01:36:37.740[31m [ERRO] [0muid:1 cannot access dashboard because insufficient privileges! Roles: {2 Administrator false true true}
+Oct  7 01:36:42.542[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /dashboard
+Oct  7 01:36:45.140[36m [INFO] [0mClient [::1]:50501 uid:1 accessing /logout
+Oct  7 01:36:45.140[36m [INFO] [0mRemoving token 1df0eefe450070d93db87a00f6b654a65c3ffb1e71a569a7e549ccdbc0565935 from logged user
+Oct  7 01:36:45.154[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /
+Oct  7 01:36:58.536[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /login
+Oct  7 01:36:58.536[36m [INFO] [0mUser dummy trying to login...
+Oct  7 01:36:58.542[36m [INFO] [0mUser dummy logged in with token 2b5d3ff9e100c3acae124f67f41bbc138fb4cdd13010da2d41ea78c83c7ced9c
+Oct  7 01:36:58.554[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /dashboard
+Oct  7 01:37:00.146[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /dashboard/contests
+Oct  7 01:37:01.552[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /dashboard/userSubmissions
+Oct  7 01:37:04.004[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /dashboard/scoreboard
+Oct  7 01:37:04.847[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /dashboard/profile
+Oct  7 01:37:07.194[36m [INFO] [0mClient [::1]:50501 uid:3 accessing /logout
+Oct  7 01:37:07.194[36m [INFO] [0mRemoving token 2b5d3ff9e100c3acae124f67f41bbc138fb4cdd13010da2d41ea78c83c7ced9c from logged user
+Oct  7 01:37:07.207[36m [INFO] [0mClient [::1]:50501 uid:0 accessing /

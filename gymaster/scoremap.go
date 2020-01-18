@@ -174,6 +174,18 @@ func (sbc *ScoreboardController) GetScoreboardListByUser(userInfo *gytypes.UserI
 	return sbc.GetPublicScoreboardList()
 }
 
+func (sbc *ScoreboardController) InvalidateScoreboardCache(contestId int) {
+	// Invalidate caches
+	if sdc, exists := sbc.loadPrivateScoreboardMap(contestId); exists {
+		sdc.NeedRefresh = true
+		sbc.storePrivateScoreboardMap(contestId, sdc)
+	}
+	if sdc, exists := sbc.loadPublicScoreboardMap(contestId); exists {
+		sdc.NeedRefresh = true
+		sbc.storePublicScoreboardMap(contestId, sdc)
+	}
+}
+
 func (sbc *ScoreboardController) RefreshPublicScoreboard(contestId int) error {
 	db, err := OpenDatabase()
 	if err != nil {
@@ -249,13 +261,6 @@ func (sbc *ScoreboardController) SubmitScore(problemId, userId, score int, accep
 		return err
 	}
 	// Now invalidate caches
-	if sdc, exists := sbc.loadPrivateScoreboardMap(ci.ContestId); exists {
-		sdc.NeedRefresh = true
-		sbc.storePrivateScoreboardMap(ci.ContestId, sdc)
-	}
-	if sdc, exists := sbc.loadPublicScoreboardMap(ci.ContestId); exists {
-		sdc.NeedRefresh = true
-		sbc.storePublicScoreboardMap(ci.ContestId, sdc)
-	}
+	sbc.InvalidateScoreboardCache(ci.ContestId)
 	return nil
 }

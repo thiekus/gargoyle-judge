@@ -28,6 +28,28 @@ func NewContestDbModel(db DbContext) ContestDbModel {
 	return cdm
 }
 
+func (cdm *ContestDbModel) CreateContest(contest gytypes.ContestData) error {
+	/*db := cdm.db
+	title := contest.Title
+	if title == "" {
+		title = "Untitled"
+	}
+	description := contest.Description
+	style := contest.Style
+	if style == "" {
+		style = "ICPC"
+	}
+	allowedLang := contest.AllowedLang
+	if allowedLang == "" {
+		allowedLang = "1,2,4"
+	}
+	contestGroupId := 0
+	enableFreeze := contest.EnableFreeze
+	active := true
+	allowPublic :=*/
+	return nil
+}
+
 func (cdm *ContestDbModel) GetContestAccessCount(contestId int, userId int) (int, error) {
 	db := cdm.db
 	query := `SELECT COUNT(*) FROM {{.TablePrefix}}contest_access
@@ -71,21 +93,20 @@ func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (
 	return ca, nil
 }
 
-func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (gytypes.ContestList, error) {
-	ui := appUsers.GetUserById(uid)
-	cl := gytypes.ContestList{Count: 0}
+func (cdm *ContestDbModel) GetContestList() ([]gytypes.ContestData, error) {
 	db := cdm.db
-	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, is_unlocked, allow_public, must_stream, 
-        start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests ORDER BY start_timestamp DESC`
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream, 
+        start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests ORDER BY id DESC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		return cl, err
+		return nil, err
 	}
 	defer stmt.Close()
 	rows, err := stmt.Query()
 	if err != nil {
-		return cl, err
+		return nil, err
 	}
+	var cl []gytypes.ContestData
 	for rows.Next() {
 		cd := gytypes.ContestData{}
 		var utStartTime, utEndTime, utFreezeTime, utUnfreezeTime int64
@@ -98,7 +119,7 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (gytypes.ContestList,
 			&cd.ProblemCount,
 			&cd.GroupId,
 			&cd.EnableFreeze,
-			&cd.Unlocked,
+			&cd.Active,
 			&cd.PublicView,
 			&cd.MustStream,
 			&utStartTime,
@@ -108,26 +129,12 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (gytypes.ContestList,
 			&cd.MaxTime,
 		)
 		if err != nil {
-			return cl, err
+			return nil, err
 		}
 		cd.StartTime = time.Unix(utStartTime, 0)
 		cd.EndTime = time.Unix(utEndTime, 0)
 		cd.FreezeTime = time.Unix(utFreezeTime, 0)
 		cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
-		// Check group access if contest is restricted to certain group only
-		if cd.GroupId != 0 {
-			granted := false
-			for _, gr := range ui.Groups {
-				if gr.GroupId == cd.GroupId {
-					granted = true
-					break
-				}
-			}
-			if !granted {
-				// skip this contest
-				break
-			}
-		}
 		cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 		if (utStartTime != 0) && (utEndTime != 0) {
 			maxTime := cd.MaxTime / 60
@@ -142,8 +149,34 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) (gytypes.ContestList,
 		} else {
 			cd.TimeDesc = "<p>Waktu: bisa dikerjakan kapanpun</p>"
 		}
-		cl.Contests = append(cl.Contests, cd)
-		cl.Count++
+		cl = append(cl, cd)
+	}
+	return cl, nil
+}
+
+func (cdm *ContestDbModel) GetContestListOfUserId(uid int) ([]gytypes.ContestData, error) {
+	ui := appUsers.GetUserById(uid)
+	clBase, err := cdm.GetContestList()
+	if err != nil {
+		return nil, err
+	}
+	var cl []gytypes.ContestData
+	for _, cd := range clBase {
+		// Check group access if contest is restricted to certain group only
+		if cd.GroupId != 0 {
+			granted := false
+			for _, gr := range ui.Groups {
+				if gr.GroupId == cd.GroupId {
+					granted = true
+					break
+				}
+			}
+			if !granted {
+				// skip this contest
+				continue
+			}
+		}
+		cl = append(cl, cd)
 	}
 	return cl, nil
 }
@@ -182,7 +215,7 @@ func (cdm *ContestDbModel) GetContestListForScoreboard(publicScoreboard bool) ([
 func (cdm *ContestDbModel) GetContestDetails(contestId int) (gytypes.ContestData, error) {
 	cd := gytypes.ContestData{}
 	db := cdm.db
-	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, is_unlocked, allow_public, must_stream, 
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream, 
         start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -199,7 +232,7 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (gytypes.ContestData
 		&cd.ProblemCount,
 		&cd.GroupId,
 		&cd.EnableFreeze,
-		&cd.Unlocked,
+		&cd.Active,
 		&cd.PublicView,
 		&cd.MustStream,
 		&utStartTime,

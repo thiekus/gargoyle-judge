@@ -45,24 +45,26 @@
             "location": "dashboard/userSubmissions"
         }
     ],
-    "adminMenu": [
-        {
-            "name": "manageusers",
-            "title": "Manajemen Users",
-            "iconClass": "fa fa-fw fas fa-users",
-            "location": "dashboard/manageUsers"
-        },
+    "juryMenu": [
         {
             "name": "managecontests",
-            "title": "Manajemen Kontes",
+            "title": "Contest Management",
             "iconClass": "fa fa-fw fas fa-fire",
             "location": "dashboard/manageContests"
         },
         {
             "name": "manageproblems",
-            "title": "Manajemen Problems",
+            "title": "Problem Management",
             "iconClass": "fa fa-fw fas fa-book",
             "location": "dashboard/manageProblems"
+        }
+    ],
+    "adminMenu": [
+        {
+            "name": "manageusers",
+            "title": "User Management",
+            "iconClass": "fa fa-fw fas fa-users",
+            "location": "dashboard/manageUsers"
         }
     ]
 }

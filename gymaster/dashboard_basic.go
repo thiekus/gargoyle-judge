@@ -237,7 +237,7 @@ func dashboardProfilePostEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	appUsers.RefreshUser(user.Id)
-	appUsers.AddFlashMessage(w, r, "Sukes mengupdate profil anda!", FlashInformation)
+	appUsers.AddFlashMessage(w, r, "Success change your profile!", FlashSuccess)
 	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/profile", 302)
 }
 
@@ -319,6 +319,6 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	appUsers.RefreshUser(user.Id)
-	appUsers.AddFlashMessage(w, r, "Sukes mengupdate pengaturan akun anda!", FlashInformation)
+	appUsers.AddFlashMessage(w, r, "Success updating your account settings!", FlashSuccess)
 	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/settings", 302)
 }

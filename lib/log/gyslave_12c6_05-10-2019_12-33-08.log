@@ -1,0 +1,11 @@
+Oct  5 12:33:08.465[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gyslave_12c6_05-10-2019_12-33-08.log
+Oct  5 12:33:08.465[36m [INFO] [0mInitializing slave server...
+Oct  5 12:33:08.465[36m [INFO] [0mListening and serve RPC Server...
+Oct  5 12:49:43.247[36m [INFO] [0mPing from master, delta 0.615000ms
+Oct  5 12:49:43.250[36m [INFO] [0mPing from master, delta 0.562000ms
+Oct  5 12:49:43.265[36m [INFO] [0m[subId:38] Begin processing submission...
+Oct  5 12:49:43.265[36m [INFO] [0m[subId:38] Regex replace from 'class .*\{|class .*\s{' to 'class PandoraApp {'
+Oct  5 12:49:43.269[36m [INFO] [0m[subId:38] saved in temporary dir /Users/thiekus/projects/gargoyle-judge/lib/caches/90cd901443b02ad76caaac66b9e0207d
+Oct  5 12:49:43.270[36m [INFO] [0m[subId:38] Executing compilation with args: [javac -encoding UTF-8 -d . /Users/thiekus/projects/gargoyle-judge/lib/caches/90cd901443b02ad76caaac66b9e0207d/PandoraApp.java]
+Oct  5 12:49:44.521[36m [INFO] [0m[subId:38] Compiled after 1249.545693ms
+Oct  5 12:49:44.521[36m [INFO] [0m[subId:38] Graded with verdict:AC and score 100

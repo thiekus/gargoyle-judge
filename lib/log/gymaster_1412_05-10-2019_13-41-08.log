@@ -1,0 +1,21 @@
+Oct  5 13:41:08.719[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1412_05-10-2019_13-41-08.log
+Oct  5 13:41:08.719[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:41:08.719[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:41:08.719[36m [INFO] [0mInitializing master server...
+Oct  5 13:41:08.720[36m [INFO] [0mConfig data loaded...
+Oct  5 13:41:08.720[36m [INFO] [0mTesting database connection...
+Oct  5 13:41:08.720[36m [INFO] [0mDB Driver: mysql
+Oct  5 13:41:08.720[36m [INFO] [0mPing test into selected database...
+Oct  5 13:41:08.727[36m [INFO] [0mDB Connection OK!
+Oct  5 13:41:08.728[36m [INFO] [0mRouters have been initialized...
+Oct  5 13:41:08.729[36m [INFO] [0mServer will use plain HTTP
+Oct  5 13:41:12.407[36m [INFO] [0mClient [::1]:57587 uid:0 accessing /dashboard/manageContests
+Oct  5 13:41:12.421[36m [INFO] [0mClient [::1]:57587 uid:0 accessing /login?target=L2Rhc2hib2FyZC9tYW5hZ2VDb250ZXN0cw==
+Oct  5 13:41:13.840[36m [INFO] [0mClient [::1]:57587 uid:0 accessing /login
+Oct  5 13:41:13.840[36m [INFO] [0mUser gyroot trying to login...
+Oct  5 13:41:13.845[36m [INFO] [0mUser gyroot logged in with token b687345c808286df3e270c4902c1b49a03f516564ec11e9ca158b7d3b35cb197
+Oct  5 13:41:13.856[36m [INFO] [0mClient [::1]:57587 uid:1 accessing /dashboard/manageContests
+Oct  5 13:41:24.183[36m [INFO] [0mClient [::1]:57587 uid:1 accessing /dashboard/manageContests
+Oct  5 13:41:37.735[36m [INFO] [0mClient [::1]:57587 uid:1 accessing /dashboard/problemSet/1
+Oct  5 13:41:39.598[36m [INFO] [0mClient [::1]:57587 uid:1 accessing /dashboard/problem/1
+Oct  5 13:41:42.050[36m [INFO] [0mClient [::1]:57587 uid:1 accessing /dashboard/manageContests

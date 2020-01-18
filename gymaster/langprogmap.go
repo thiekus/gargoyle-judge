@@ -44,6 +44,16 @@ func (lpc *LanguageProgramController) RefreshLanguageList() error {
 	return nil
 }
 
+func (lpc *LanguageProgramController) GetLanguageMap() (gytypes.LanguageProgramMap, error) {
+	if !lpc.fetched {
+		err := lpc.RefreshLanguageList()
+		if err != nil {
+			return nil, err
+		}
+	}
+	return lpc.lmap, nil
+}
+
 func (lpc *LanguageProgramController) GetLanguageFromId(id int) (*gytypes.LanguageProgramData, error) {
 	// If not fetched, must fetched first!
 	if !lpc.fetched {

@@ -1,0 +1,26 @@
+Oct  5 13:32:53.002[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1378_05-10-2019_13-32-53.log
+Oct  5 13:32:53.002[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:32:53.002[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:32:53.002[36m [INFO] [0mInitializing master server...
+Oct  5 13:32:53.003[36m [INFO] [0mConfig data loaded...
+Oct  5 13:32:53.003[36m [INFO] [0mTesting database connection...
+Oct  5 13:32:53.003[36m [INFO] [0mDB Driver: mysql
+Oct  5 13:32:53.003[36m [INFO] [0mPing test into selected database...
+Oct  5 13:32:53.007[36m [INFO] [0mDB Connection OK!
+Oct  5 13:32:53.010[36m [INFO] [0mRouters have been initialized...
+Oct  5 13:32:53.010[36m [INFO] [0mServer will use plain HTTP
+Oct  5 13:32:55.150[36m [INFO] [0mClient [::1]:57527 uid:0 accessing /dashboard/userSubmissions
+Oct  5 13:32:55.167[36m [INFO] [0mClient [::1]:57527 uid:0 accessing /login?target=L2Rhc2hib2FyZC91c2VyU3VibWlzc2lvbnM=
+Oct  5 13:32:55.816[36m [INFO] [0mClient [::1]:57527 uid:0 accessing /favicon.ico
+Oct  5 13:32:56.688[36m [INFO] [0mClient [::1]:57527 uid:0 accessing /login
+Oct  5 13:32:56.688[36m [INFO] [0mUser gyroot trying to login...
+Oct  5 13:32:56.694[36m [INFO] [0mUser gyroot logged in with token 4a3577c2c2128f372c6621710d127cd83c7b8eb4fbf5c6e0631d66a5dcb1f312
+Oct  5 13:32:56.704[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:32:58.623[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/contests
+Oct  5 13:33:02.788[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/problemSet/1
+Oct  5 13:33:05.313[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard
+Oct  5 13:33:06.850[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/contests
+Oct  5 13:33:09.958[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/problemSet/1
+Oct  5 13:33:22.888[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/settings
+Oct  5 13:33:23.673[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/contests
+Oct  5 13:33:26.032[36m [INFO] [0mClient [::1]:57527 uid:1 accessing /dashboard/problemSet/1

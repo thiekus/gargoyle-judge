@@ -24,7 +24,7 @@ type ContestData struct {
 	ProblemCount int
 	GroupId      int
 	EnableFreeze bool
-	Unlocked     bool
+	Active       bool
 	PublicView   bool
 	MustStream   bool
 	StartTime    time.Time
@@ -55,11 +55,6 @@ type ContestAccess struct {
 	EndTime    time.Time
 	Allowed    bool
 	RemainTime int // Used for written in page
-}
-
-type ContestList struct {
-	Count    int
-	Contests []ContestData
 }
 
 type ProblemSet struct {

@@ -38,6 +38,15 @@ func NewSubmissionProcessor(slaveMan *SlaveManager, idProblem, idUser, idLang in
 	if err != nil {
 		return nil, err
 	}
+	// Check access to avoid access bypass
+	ca, err := appContestAccess.GetAccessInfoOfUser(idUser, problem.ContestId)
+	if err != nil {
+		return nil, err
+	}
+	err = appContestAccess.CheckAccessInfo(ca)
+	if err != nil {
+		return nil, err
+	}
 	sdm := NewSubmissionDbModel(db)
 	// Check if problem have maximum attempts
 	if problem.MaxAttempts > 0 {

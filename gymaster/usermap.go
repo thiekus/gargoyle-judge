@@ -52,6 +52,24 @@ func MakeUserController() UserController {
 		umap:         UsersMap{},
 		tmap:         UsersTokenMap{},
 	}
+	// Prevent users kicked out after short maintenance
+	if db, err := OpenDatabase(); err == nil {
+		defer db.Close()
+		udm := NewUserDbModel(db)
+		if tl, err := udm.GetTokenList(); err == nil {
+			storedCount := 0
+			for _, v := range tl {
+				if ui, err := udm.GetUserById(v.UserId); err == nil {
+					luser.storeUserMap(v.UserId, ui)
+					luser.storeTokenMap(v.Token, v.UserId)
+					storedCount++
+				}
+			}
+			if storedCount > 0 {
+				gylib.GetStdLog().Printf("%d user token retrieved", storedCount)
+			}
+		}
+	}
 	return luser
 }
 
@@ -238,14 +256,14 @@ func (uc *UserController) UserLogin(username string, password string) (string, e
 	log.Printf("User %s trying to login...", username)
 	db, err := OpenDatabase()
 	if err != nil {
-		log.Errorf("[%s] Login error: %s", username, err)
+		log.Errorf("[%s] UserLogin error: %s", username, err)
 		return "", err
 	}
 	defer db.Close()
 	udm := NewUserDbModel(db)
 	ui, err := udm.GetUserByLogin(username, password)
 	if err != nil {
-		log.Errorf("[%s] Login error: %s", username, err)
+		log.Errorf("[%s] UserLogin error: %s", username, err)
 		return "", err
 	}
 	// Check token map if this user has logged in before, kick out :p
@@ -264,6 +282,15 @@ func (uc *UserController) UserLogin(username string, password string) (string, e
 		}
 	}
 	uid := ui.Id
+	// Insert into database for persistent token
+	if err := udm.DeleteTokenByUserId(uid); err != nil {
+		log.Errorf("[%s] UserLogin error: %s", username, err)
+		return "", err
+	}
+	if err := udm.InsertToken(token, uid); err != nil {
+		log.Errorf("[%s] UserLogin error: %s", username, err)
+		return "", err
+	}
 	ui.Token = token
 	ui.LastAccess = time.Now()
 	uc.storeUserMap(uid, ui)
@@ -286,6 +313,15 @@ func (uc *UserController) UserRemoveFromList(token string) {
 	log := gylib.GetStdLog()
 	log.Printf("Removing token %s from logged user", token)
 	uid, _ := uc.loadTokenMap(token)
+	if db, err := OpenDatabase(); err == nil {
+		defer db.Close()
+		udm := NewUserDbModel(db)
+		if err := udm.DeleteTokenByUserId(uid); err != nil {
+			log.Warnf("Cannot remove token %s from database: %s", token, err.Error())
+		}
+	} else {
+		log.Warnf("Cannot remove token %s from database: %s", token, err.Error())
+	}
 	uc.deleteUserMap(uid)
 	uc.deleteTokenMap(token)
 	appContestAccess.deleteContestMap(uid)

@@ -18,13 +18,14 @@ import (
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
-const appVersion = "0.7r71"
+const appVersion = "0.7r127"
 
 var appOSName string
 var appConfig ConfigData
@@ -95,11 +96,45 @@ func appMiddleware(next http.Handler) http.Handler {
 		// Check user is login?
 		user := appUsers.GetLoggedUserInfo(r)
 		// Restrict dashboard from stranger
-		if strings.HasPrefix(r.URL.Path, "/dashboard") && (user == nil) {
-			appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
+		if strings.HasPrefix(r.URL.Path, "/dashboard") {
 			urlBase64 := base64.StdEncoding.EncodeToString([]byte(path))
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
-			return
+			if user == nil {
+				appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
+				http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+				return
+			} else {
+				// User has been banned
+				if user.Banned {
+					log.Errorf("uid:%d cannot access dashboard because have been banned!", user.Id)
+					appUsers.UserLogoutFromWebsite(w, r)
+					appUsers.AddFlashMessage(w, r, "You have been banned!", FlashError)
+					http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+					return
+				}
+				// User inactive
+				if !user.Active {
+					log.Errorf("uid:%d cannot access dashboard because account was inactive!", user.Id)
+					appUsers.UserLogoutFromWebsite(w, r)
+					appUsers.AddFlashMessage(w, r, "You account is not activated or deactivated by admin!", FlashError)
+					http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+					return
+				}
+				// Further page access permission
+				access, err := GetPageAccessPermission()
+				if err != nil {
+					http.Error(w, "500 Internal Server Error: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+				for _, v := range access {
+					if strings.HasPrefix(r.URL.Path, v.Prefix) {
+						if !IsPageAccessHasPermission(v, user.Roles) {
+							log.Errorf("uid:%d cannot access dashboard because insufficient privileges! Roles: %v", user.Id, user.Roles)
+							http.Error(w, "403 Forbidden: insufficient privileges", http.StatusForbidden)
+							return
+						}
+					}
+				}
+			}
 		} else if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
 			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
 			return
@@ -173,14 +208,24 @@ func prepareHttpEndpoints() {
 	r.HandleFunc("/dashboard/problem", dashboardProblemPostEndpoint).Methods("POST")
 	r.HandleFunc("/dashboard/userSubmissions", dashboardUserSubmissionsGetEndpoint).Methods("GET")
 	r.HandleFunc("/dashboard/userViewSubmission/{id}", dashboardUserViewSubmissionGetEndpoint).Methods("GET")
-	//
+	// see dashboard_jury.go
+	r.HandleFunc("/dashboard/manageContests", dashboardManageContestsGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/contestAdd", dashboardContestAddGetEndpoint).Methods("GET")
+	// see dashboard_admin.go
+	r.HandleFunc("/dashboard/manageUsers", dashboardManageUsersGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/userAdd", dashboardUserAddGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/userAdd", dashboardUserAddPostEndpoint).Methods("POST")
+	r.HandleFunc("/dashboard/userEdit/{id}", dashboardUserEditGetEndpoint).Methods("GET")
+	r.HandleFunc("/dashboard/userEdit", dashboardUserEditPostEndpoint).Methods("POST")
+	r.HandleFunc("/dashboard/userDelete/{id}", dashboardUserDeleteGetEndpoint).Methods("GET")
+	// see ajax_users.go
 	r.HandleFunc("/ajax/getNotifications", ajaxGetNotifications).Methods("GET")
 	r.HandleFunc("/ajax/readAllNotifications", ajaxReadAllNotifications).Methods("GET")
-	//
-	r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
-	r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
-	r.HandleFunc("/live/capture", liveCapturePostEndpoint).Methods("POST")
-	r.HandleFunc("/live/imageStream/{id}", liveImageStreamGetEndpoint).Methods("GET")
+	// proposed livecontest features, not yet ready
+	//r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
+	//r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
+	//r.HandleFunc("/live/capture", liveCapturePostEndpoint).Methods("POST")
+	//r.HandleFunc("/live/imageStream/{id}", liveImageStreamGetEndpoint).Methods("GET")
 	// see firstsetup.go
 	r.HandleFunc("/gysetup", firstSetupGetEndpoint).Methods("GET")
 	r.HandleFunc("/gysetup", firstSetupPostEndpoint).Methods("POST")
@@ -203,6 +248,15 @@ func prepareHttpEndpoints() {
 			http.Error(w, "500 Internal Server Error", 500)
 		}
 	})
+	// Private files
+	filesDir := gylib.ConcatByProgramLibDir("./files")
+	if !gylib.IsDirectoryExists(filesDir) {
+		if err := os.Mkdir(filesDir, os.ModePerm); err != nil {
+			panic(err)
+		}
+	}
+	r.PathPrefix("/files/").Handler(http.StripPrefix("/files/", http.FileServer(http.Dir(filesDir))))
+	// Avatar images
 	r.HandleFunc("/avatar/{avatarInfo}", avatarGetEndpoint).Methods("GET")
 
 	// About contents endpoints

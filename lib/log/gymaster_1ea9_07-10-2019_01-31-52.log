@@ -1,0 +1,36 @@
+Oct  7 01:31:52.634[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1ea9_07-10-2019_01-31-52.log
+Oct  7 01:31:52.634[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:31:52.634[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:31:52.634[36m [INFO] [0mInitializing master server...
+Oct  7 01:31:52.635[36m [INFO] [0mConfig data loaded...
+Oct  7 01:31:52.636[36m [INFO] [0mTesting database connection...
+Oct  7 01:31:52.636[36m [INFO] [0mDB Driver: mysql
+Oct  7 01:31:52.636[36m [INFO] [0mPing test into selected database...
+Oct  7 01:31:52.640[36m [INFO] [0mDB Connection OK!
+Oct  7 01:31:52.641[36m [INFO] [0mRouters have been initialized...
+Oct  7 01:31:52.641[36m [INFO] [0mServer will use plain HTTP
+Oct  7 01:31:57.532[36m [INFO] [0mClient [::1]:50441 uid:0 accessing /dashboard
+Oct  7 01:31:57.542[36m [INFO] [0mClient [::1]:50441 uid:0 accessing /login?target=L2Rhc2hib2FyZA==
+Oct  7 01:32:02.389[36m [INFO] [0mClient [::1]:50441 uid:0 accessing /login
+Oct  7 01:32:02.390[36m [INFO] [0mUser gyroot trying to login...
+Oct  7 01:32:02.396[36m [INFO] [0mUser gyroot logged in with token 1c24890deeffd4445e7a6bc535136978fdd37d34203c0cd64ba3c010fa223e2c
+Oct  7 01:32:02.408[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard
+Oct  7 01:32:04.483[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard/manageUsers
+Oct  7 01:32:06.035[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard/manageContests
+Oct  7 01:32:07.061[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard/notifications
+Oct  7 01:32:08.236[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard/scoreboard
+Oct  7 01:32:09.437[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard/settings
+Oct  7 01:32:09.894[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /assets/shared/ace/src-min-noconflict/theme-eclipse.js
+Oct  7 01:32:10.486[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /dashboard
+Oct  7 01:32:13.387[36m [INFO] [0mClient [::1]:50441 uid:1 accessing /logout
+Oct  7 01:32:13.387[36m [INFO] [0mRemoving token 1c24890deeffd4445e7a6bc535136978fdd37d34203c0cd64ba3c010fa223e2c from logged user
+Oct  7 01:32:13.401[36m [INFO] [0mClient [::1]:50441 uid:0 accessing /
+Oct  7 01:32:17.985[36m [INFO] [0mClient [::1]:50441 uid:0 accessing /login
+Oct  7 01:32:17.986[36m [INFO] [0mUser dummy trying to login...
+Oct  7 01:32:17.992[36m [INFO] [0mUser dummy logged in with token bb2107baff26116bdd81ba9db6f1b4a7127c82ca67df64e4317449a0da9fba7c
+Oct  7 01:32:18.005[36m [INFO] [0mClient [::1]:50441 uid:3 accessing /dashboard
+Oct  7 01:32:18.102[36m [INFO] [0mClient [::1]:50441 uid:3 accessing /avatar/TToyNzU4NzZlMzRjZjYwOWRiMTE4ZjNkODRiNzk5YTc5MA==
+Oct  7 01:32:19.947[36m [INFO] [0mClient [::1]:50441 uid:3 accessing /dashboard/contests
+Oct  7 01:32:19.947[31m [ERRO] [0muid:3 cannot access dashboard because insufficient privileges! Roles: {1 Contestant true false false}
+Oct  7 01:32:23.903[36m [INFO] [0mClient [::1]:50441 uid:3 accessing /dashboard/notifications
+Oct  7 01:32:23.906[31m [ERRO] [0muid:3 cannot access dashboard because insufficient privileges! Roles: {1 Contestant true false false}

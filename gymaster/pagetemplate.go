@@ -62,6 +62,7 @@ type MenuNode struct {
 type MenuTOC struct {
 	GeneralMenu   []MenuNode `json:"generalMenu"`
 	ContestMenu   []MenuNode `json:"contestMenu"`
+	JuryMenu      []MenuNode `json:"juryMenu"`
 	AdminMenu     []MenuNode `json:"adminMenu"`
 	SelectedTitle string
 }
@@ -97,6 +98,14 @@ func GenerateMenuTOC(selectedName string) (MenuTOC, error) {
 		menu.ContestMenu[i].Selected = false
 		if n.Name == selectedName {
 			menu.ContestMenu[i].Selected = true
+			menu.SelectedTitle = n.Title
+		}
+	}
+	// Jury menu
+	for i, n := range menu.JuryMenu {
+		menu.JuryMenu[i].Selected = false
+		if n.Name == selectedName {
+			menu.JuryMenu[i].Selected = true
 			menu.SelectedTitle = n.Title
 		}
 	}

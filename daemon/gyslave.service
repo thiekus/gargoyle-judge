@@ -2,8 +2,10 @@
 Description=Gargoyle Judge slave server
 
 [Service]
+#User=youruser
 Type=simple
 ExecStart=/opt/gargoyle/bin/gyslave
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

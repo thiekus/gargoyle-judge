@@ -101,7 +101,7 @@ func (grt *GargoyleRpcTask) ProcessSubmission(req RpcSubmissionRequest, resp *Rp
 			if err != nil {
 				if duration > 1000 {
 					result.Verdict = gytypes.SubmissionTimeLimitExceeded
-				} else if memory > uint64(prob.MemLimit*1024*1024) {
+				} else if lang.LimitMemory && (memory > uint64(prob.MemLimit*1024*1024)) {
 					result.Verdict = gytypes.SubmissionMemoryLimitExceeded
 				} else {
 					result.Verdict = gytypes.SubmissionRuntimeError
@@ -110,7 +110,7 @@ func (grt *GargoyleRpcTask) ProcessSubmission(req RpcSubmissionRequest, resp *Rp
 				// Not returning error, but we will check for time and memory constrains
 				if duration > float64(prob.TimeLimit*1000) {
 					result.Verdict = gytypes.SubmissionTimeLimitExceeded
-				} else if memory > uint64(prob.MemLimit*1024*1024) {
+				} else if lang.LimitMemory && (memory > uint64(prob.MemLimit*1024*1024)) {
 					result.Verdict = gytypes.SubmissionMemoryLimitExceeded
 				} else {
 					// Now compare for stdout

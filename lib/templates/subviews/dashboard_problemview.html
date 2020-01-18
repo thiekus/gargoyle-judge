@@ -243,7 +243,7 @@
         var remainTime = parseInt("{{.PageData.RemainingTime}}");
         if (remainTime >= 0) {
             $("#tiktokContainer").show();
-            tickTock(remainTime);
+            setTickTock(remainTime);
         }
         $("#langSelectCode").change(function () {
             var syntaxName = $(this).children("option:selected").attr("syntaxName");

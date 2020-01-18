@@ -10,7 +10,6 @@ package gylib
 
 import (
 	"fmt"
-	"github.com/lxn/win"
 	"golang.org/x/sys/windows/registry"
 	"syscall"
 )
@@ -43,7 +42,7 @@ func utilsGetOSName() (string, error) {
 		return "", err
 	}
 
-	osString := fmt.Sprintf("%s (%s build %s)",
+	osString := fmt.Sprintf("%s (version %s build %s)",
 		productName, versionString, versionBuild)
 	return osString, nil
 }

@@ -11,6 +11,7 @@ package gytypes
 import "time"
 
 type UserRoleAccess struct {
+	Id         int
 	RoleName   string
 	Contestant bool
 	SysAdmin   bool
@@ -39,6 +40,8 @@ type UserInfo struct {
 	Avatar      string
 	SyntaxTheme string
 	RoleId      int
+	Active      bool
+	Banned      bool
 	Roles       UserRoleAccess
 	Groups      UserGroupAccess
 	// Unused at this moment, but exists in database schema
@@ -60,6 +63,12 @@ type UserOnline struct {
 type UserOnlineList struct {
 	Count int
 	Users []UserOnline
+}
+
+type UserTokenInfo struct {
+	Token     string
+	UserId    int
+	LoginTime int64
 }
 
 func (ui *UserInfo) IsAdmin() bool {

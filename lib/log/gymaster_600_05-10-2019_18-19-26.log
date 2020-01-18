@@ -1,0 +1,40 @@
+Oct  5 18:19:26.485[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_600_05-10-2019_18-19-26.log
+Oct  5 18:19:26.485[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 18:19:26.485[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 18:19:26.485[36m [INFO] [0mInitializing master server...
+Oct  5 18:19:26.487[36m [INFO] [0mConfig data loaded...
+Oct  5 18:19:26.487[36m [INFO] [0mTesting database connection...
+Oct  5 18:19:26.487[36m [INFO] [0mDB Driver: mysql
+Oct  5 18:19:26.488[36m [INFO] [0mPing test into selected database...
+Oct  5 18:19:26.492[36m [INFO] [0mDB Connection OK!
+Oct  5 18:19:26.493[36m [INFO] [0mRouters have been initialized...
+Oct  5 18:19:26.494[36m [INFO] [0mServer will use plain HTTP
+Oct  5 19:01:31.990[36m [INFO] [0mClient [::1]:50364 uid:0 accessing /dashboard/manageContests
+Oct  5 19:01:31.996[36m [INFO] [0mClient [::1]:50364 uid:0 accessing /login?target=L2Rhc2hib2FyZC9tYW5hZ2VDb250ZXN0cw==
+Oct  5 19:01:32.019[36m [INFO] [0mClient [::1]:50364 uid:0 accessing /login?target=L2Rhc2hib2FyZC9tYW5hZ2VDb250ZXN0cw==
+Oct  5 19:01:33.749[36m [INFO] [0mClient [::1]:50364 uid:0 accessing /login
+Oct  5 19:01:33.750[36m [INFO] [0mUser gyroot trying to login...
+Oct  5 19:01:33.757[36m [INFO] [0mUser gyroot logged in with token 030a19debf21219fa45387507b4242b43676c5f70a706cb47b62828577db5689
+Oct  5 19:01:33.771[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:01:33.800[31m [ERRO] [0mtemplate: dashboard_managecontests.html:12:44: executing "dashboard_managecontests.html" at <.PageData.UserCount>: can't evaluate field UserCount in type interface {}
+Oct  5 19:02:02.209[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:02:02.284[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /avatar/RzoyZmMzYWZhMzkwNzYxYjBkYTQ0ZTkwZjExYTk5MTE1ZQ==
+Oct  5 19:02:03.081[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:02:07.660[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/userEdit/1
+Oct  5 19:02:10.560[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:03:07.779[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:03:08.231[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:03:09.842[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/userAdd
+Oct  5 19:03:11.492[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:03:51.550[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:03:52.017[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:09:09.277[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:09:09.793[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:09:38.921[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:09:39.403[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:10:13.018[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:10:13.564[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:10:30.044[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:10:30.539[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico
+Oct  5 19:10:41.367[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /dashboard/manageContests
+Oct  5 19:10:41.919[36m [INFO] [0mClient [::1]:50364 uid:1 accessing /favicon.ico

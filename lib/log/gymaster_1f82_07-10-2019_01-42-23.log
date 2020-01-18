@@ -1,0 +1,25 @@
+Oct  7 01:42:23.128[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_1f82_07-10-2019_01-42-23.log
+Oct  7 01:42:23.128[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:42:23.128[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  7 01:42:23.128[36m [INFO] [0mInitializing master server...
+Oct  7 01:42:23.129[36m [INFO] [0mConfig data loaded...
+Oct  7 01:42:23.129[36m [INFO] [0mTesting database connection...
+Oct  7 01:42:23.129[36m [INFO] [0mDB Driver: mysql
+Oct  7 01:42:23.129[36m [INFO] [0mPing test into selected database...
+Oct  7 01:42:23.132[36m [INFO] [0mDB Connection OK!
+Oct  7 01:42:23.133[36m [INFO] [0mRouters have been initialized...
+Oct  7 01:42:23.133[36m [INFO] [0mServer will use plain HTTP
+Oct  7 01:42:26.973[36m [INFO] [0mClient [::1]:50549 uid:0 accessing /dashboard
+Oct  7 01:42:26.984[36m [INFO] [0mClient [::1]:50549 uid:0 accessing /login?target=L2Rhc2hib2FyZA==
+Oct  7 01:42:34.651[36m [INFO] [0mClient [::1]:50549 uid:0 accessing /login
+Oct  7 01:42:34.652[36m [INFO] [0mUser gyroot trying to login...
+Oct  7 01:42:34.657[36m [INFO] [0mUser gyroot logged in with token e203492a3cad272021b242e7d0f66ac3ad26c9c528c4853bdfecbb7ddd3e22be
+Oct  7 01:42:34.672[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard
+Oct  7 01:42:36.434[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard/scoreboard
+Oct  7 01:42:37.416[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard/notifications
+Oct  7 01:42:38.088[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard/manageContests
+Oct  7 01:42:38.089[31m [ERRO] [0muid:1 cannot access dashboard because insufficient privileges! Roles: {2 Administrator false true true}
+Oct  7 01:42:41.444[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard/manageUsers
+Oct  7 01:42:41.444[31m [ERRO] [0muid:1 cannot access dashboard because insufficient privileges! Roles: {2 Administrator false true true}
+Oct  7 01:43:55.701[36m [INFO] [0mClient [::1]:50549 uid:1 accessing /dashboard/manageContests
+Oct  7 01:43:55.701[31m [ERRO] [0muid:1 cannot access dashboard because insufficient privileges! Roles: {2 Administrator false true true}

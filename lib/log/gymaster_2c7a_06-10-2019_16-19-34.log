@@ -1,0 +1,38 @@
+Oct  6 16:19:34.798[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_2c7a_06-10-2019_16-19-34.log
+Oct  6 16:19:34.798[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  6 16:19:34.798[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  6 16:19:34.798[36m [INFO] [0mInitializing master server...
+Oct  6 16:19:34.799[36m [INFO] [0mConfig data loaded...
+Oct  6 16:19:34.799[36m [INFO] [0mTesting database connection...
+Oct  6 16:19:34.799[36m [INFO] [0mDB Driver: mysql
+Oct  6 16:19:34.799[36m [INFO] [0mPing test into selected database...
+Oct  6 16:19:34.806[36m [INFO] [0mDB Connection OK!
+Oct  6 16:19:34.807[36m [INFO] [0mRouters have been initialized...
+Oct  6 16:19:34.808[36m [INFO] [0mServer will use plain HTTP
+Oct  6 16:19:36.863[36m [INFO] [0mClient [::1]:50859 uid:0 accessing /
+Oct  6 16:19:37.931[36m [INFO] [0mClient [::1]:50859 uid:0 accessing /favicon.ico
+Oct  6 16:19:42.460[36m [INFO] [0mClient [::1]:50859 uid:0 accessing /login
+Oct  6 16:19:42.460[36m [INFO] [0mUser dummy trying to login...
+Oct  6 16:19:42.488[36m [INFO] [0mUser dummy logged in with token 399042150c2671e0d353e0ef95cbd2a1f105544fb4b32c4c93c4b64535b028e9
+Oct  6 16:19:42.503[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /dashboard
+Oct  6 16:19:42.591[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /avatar/TToyNzU4NzZlMzRjZjYwOWRiMTE4ZjNkODRiNzk5YTc5MA==
+Oct  6 16:19:42.679[36m [INFO] [0mClient [::1]:50860 uid:3 accessing /assets/dashboard/libs/js/gydash.js
+Oct  6 16:19:44.415[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /dashboard/scoreboard
+Oct  6 16:19:45.699[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /dashboard/scoreboard/1
+Oct  6 16:19:45.766[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /avatar/TTpiYjkxMGRmNjgxOTk5NTUxYjgyZmY0ZGE1ZDc0MjEyNw==
+Oct  6 16:19:45.784[36m [INFO] [0mClient [::1]:50866 uid:3 accessing /avatar/TToxMDdiM2U0NDUzZmUwZTMwYWE1OWUyMzg2YzU4NmE0MA==
+Oct  6 16:19:45.786[36m [INFO] [0mClient [::1]:50868 uid:3 accessing /avatar/Rzo3MTYzYjZkODhlN2JjMzA4NjE5OGM3NTQ0OTU3NDQzZA==
+Oct  6 16:19:45.798[36m [INFO] [0mClient [::1]:50867 uid:3 accessing /avatar/TTo3ZjU2YWU4MGI0M2JjZjZkZGU2OTA2ZWRhMzY3YTE2Mw==
+Oct  6 16:19:45.801[36m [INFO] [0mClient [::1]:50869 uid:3 accessing /avatar/TTo2MDRmMmU2YTNhM2U1MjlmYTZiNjBiZjY0MjBiOWI2NQ==
+Oct  6 16:19:45.792[36m [INFO] [0mClient [::1]:50860 uid:3 accessing /avatar/TTpmNTI1NDc5YjZhODMzNTE2ZDdkMTEzMjRhYTgzMjg5NQ==
+Oct  6 16:19:45.931[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /avatar/TTphM2VmZDBmMDZhNTAyODQ3NTYzODE0ZWJiNDdjZDI0Nw==
+Oct  6 16:19:45.955[36m [INFO] [0mClient [::1]:50866 uid:3 accessing /avatar/TTplY2MxZjBhNmE2NTJlY2QwYWM5MmEyNDg0YWEwZDU2ZA==
+Oct  6 16:19:46.051[36m [INFO] [0mClient [::1]:50869 uid:3 accessing /avatar/TTo4ZWVhY2U2MmE0ZGFiM2I0ZWY5OWEyZGFkNGUwMTZhNA==
+Oct  6 16:19:46.072[36m [INFO] [0mClient [::1]:50867 uid:3 accessing /avatar/TToxYmMzZjU3NzUwYzIwMzNkZjVkMWJhMmY2OTM4OTI2OQ==
+Oct  6 16:19:46.074[36m [INFO] [0mClient [::1]:50859 uid:3 accessing /avatar/TTowNmE5YTI4NjY2NGU4NmZhODdlNTA5MmQ5NzQ1YmEwNQ==
+Oct  6 16:19:46.150[36m [INFO] [0mClient [::1]:50860 uid:3 accessing /avatar/TTplNWQ2YjRkYmY4ZDIzZDhkZWNkNDAyNDc0NGQzZjYzZA==
+Oct  6 16:19:46.209[36m [INFO] [0mClient [::1]:50869 uid:3 accessing /avatar/TTplNzhiZmNhYmE1ZTUzNDFiNjliMWUxOTViMDZhZDQyZQ==
+Oct  6 16:19:46.265[36m [INFO] [0mClient [::1]:50866 uid:3 accessing /avatar/TTo0NzE4MzhmZTFmNTkyNTY2ZTU3NzU5MjZlNDU5NzY4ZQ==
+Oct  6 16:19:46.362[36m [INFO] [0mClient [::1]:50867 uid:3 accessing /avatar/TTphMmE5NzNmNmI3YmQxOTgxNmRmZmRjODAxZDE0MjIyMA==
+Oct  6 16:19:46.362[36m [INFO] [0mClient [::1]:50869 uid:3 accessing /avatar/TToyNjI4NjA0OWYzZjAyY2M4MTQxOWE3NTM4MzM4NGIwNA==
+Oct  6 16:19:46.395[36m [INFO] [0mClient [::1]:50860 uid:3 accessing /avatar/TTowN2QyOTIyZDllMGFiYmU3MTE3NDA4NjUwZDYyODYxOQ==

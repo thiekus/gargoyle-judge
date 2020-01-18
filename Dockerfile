@@ -55,4 +55,4 @@ EXPOSE 28498
 EXPOSE 28499
 
 # Run our server, done!
-ENTRYPOINT [ "/opt/gargoyle/bin/bootstrap.sh" ]
+CMD [ "/opt/gargoyle/bin/bootstrap.sh" ]

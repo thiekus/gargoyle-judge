@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
+	"log"
 	"sort"
 	"time"
 )
@@ -28,18 +29,53 @@ func NewScoreDbModel(db DbContext) ScoreDbModel {
 	return sdm
 }
 
-func (sdm *ScoreDbModel) GetContestInfoByProblemId(problemId int) (gytypes.ScoreContestInfo, error) {
+func (sdm *ScoreDbModel) GetContestInfoById(contestId int) (gytypes.ScoreContestInfo, error) {
 	scd := gytypes.ScoreContestInfo{}
 	db := sdm.db
 	// First, query from contest info
-	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public, c.start_timestamp FROM {{.TablePrefix}}problems as p INNER JOIN 
-        {{.TablePrefix}}contests as c ON p.contest_id = c.id WHERE p.id = ?`
+	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public, 
+        c.start_timestamp, c.penalty_time FROM {{.TablePrefix}}contests as c WHERE c.id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		return scd, err
 	}
 	defer stmt.Close()
 	var utFreezeTime, utUnfreezeTime int64
+	var utStartTime int64
+	err = stmt.QueryRow(contestId).Scan(
+		&scd.ContestId,
+		&scd.Title,
+		&scd.Style,
+		&scd.EnableFreeze,
+		&utFreezeTime,
+		&utUnfreezeTime,
+		&scd.AllowPublic,
+		&utStartTime,
+		&scd.PenaltyTime,
+	)
+	if err != nil {
+		return scd, err
+	}
+	scd.FreezeTime = time.Unix(utFreezeTime, 0)
+	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
+	scd.StartTimestamp = time.Unix(utStartTime, 0)
+	return scd, nil
+}
+
+func (sdm *ScoreDbModel) GetContestInfoByProblemId(problemId int) (gytypes.ScoreContestInfo, error) {
+	scd := gytypes.ScoreContestInfo{}
+	db := sdm.db
+	// First, query from contest info
+	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public, 
+        c.start_timestamp, c.penalty_time FROM {{.TablePrefix}}problems as p INNER JOIN 
+        {{.TablePrefix}}contests as c ON c.id = p.contest_id WHERE p.id = ?`
+	stmt, err := db.Prepare(query)
+	if err != nil {
+		return scd, err
+	}
+	defer stmt.Close()
+	var utFreezeTime, utUnfreezeTime int64
+	var utStartTime int64
 	err = stmt.QueryRow(problemId).Scan(
 		&scd.ContestId,
 		&scd.Title,
@@ -48,20 +84,22 @@ func (sdm *ScoreDbModel) GetContestInfoByProblemId(problemId int) (gytypes.Score
 		&utFreezeTime,
 		&utUnfreezeTime,
 		&scd.AllowPublic,
-		&scd.StartTimestamp,
+		&utStartTime,
+		&scd.PenaltyTime,
 	)
 	if err != nil {
 		return scd, err
 	}
 	scd.FreezeTime = time.Unix(utFreezeTime, 0)
 	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
+	scd.StartTimestamp = time.Unix(utStartTime, 0)
 	return scd, nil
 }
 
 func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool) (*gytypes.ScoreboardData, error) {
 	db := sdm.db
 	// First, query from contest info
-	sci, err := sdm.GetContestInfoByProblemId(contestId)
+	sci, err := sdm.GetContestInfoById(contestId)
 	if err != nil {
 		return nil, err
 	}
@@ -193,27 +231,42 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 		if err != nil {
 			return nil, err
 		}
-		if score.AcceptedTime > 0 {
-			score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime-sci.StartTimestamp, 0))
-		}
 		// Score comparison is unlikely needed as filtered by SQL, but won't we paranoid?
 		if score.ContestId == contestId {
 			if user, exists := users[score.UserId]; exists {
 				if problemIndex, exists := contestProblemsId[score.ProblemId]; exists {
-					user.Problems[problemIndex] = score
 					user.TotalScore += score.Score
 					// On ICPC, penalty time considered to
 					if sci.Style == gytypes.ScoreStyleICPC {
 						user.TotalPenaltyTime += score.PenaltyTime
 						if score.AcceptedTime > 0 {
-							submitPenaltyTime := score.AcceptedTime - sci.StartTimestamp
+							submitPenaltyTime := int64(0)
+							startTime := sci.StartTimestamp.Unix()
+							log.Printf("user %s: start from %d", user.Name, startTime)
+							if startTime > 0 {
+								submitPenaltyTime = score.AcceptedTime - startTime
+							} else {
+								// TODO: start time for unlimited contest time
+								submitPenaltyTime = score.AcceptedTime - 1570348800 // - contest access start time
+							}
 							if submitPenaltyTime > 0 {
 								user.TotalPenaltyTime += submitPenaltyTime
 							}
 						}
 					}
-					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime, 0))
+					if score.AcceptedTime > 0 {
+						startTime := sci.StartTimestamp.Unix()
+						if startTime > 0 {
+							score.AcceptedTime = score.AcceptedTime - startTime
+						} else {
+							// TODO: start time for unlimited contest time
+							score.AcceptedTime = score.AcceptedTime - 1570348800 // - contest access start time
+						}
+						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime - 25200, 0))
+					}
+					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime - 25200, 0))
 					// Replace again with modified user info
+					user.Problems[problemIndex] = score
 					users[user.UserId] = user
 				}
 			}
@@ -283,8 +336,10 @@ func (sdm *ScoreDbModel) SubmitIntoScoreboard(problemId, userId, score int, acce
 	if err != nil {
 		return err
 	}
-	if sci.EnableFreeze {
-		if time.Now().Unix() < sci.FreezeTime.Unix() {
+	ft := sci.FreezeTime.Unix()
+	// TODO: remove EnableFreeze as doesn't matter
+	if ft > 0 {
+		if time.Now().Unix() < ft {
 			err = sdm.processSubmitIntoScoreboard(sci, sci.ContestId, problemId, userId, score, accepted, true)
 		}
 	} else {
@@ -294,7 +349,7 @@ func (sdm *ScoreDbModel) SubmitIntoScoreboard(problemId, userId, score int, acce
 }
 
 func (sdm *ScoreDbModel) processSubmitIntoScoreboard(sci gytypes.ScoreContestInfo, contestId, problemId, userId, score int, accepted, publicScoreboard bool) error {
-	//
+	// Since ICPC doesn't matter what you write out
 	if sci.Style == gytypes.ScoreStyleICPC {
 		if score >= 100 {
 			score = 1
@@ -312,10 +367,11 @@ func (sdm *ScoreDbModel) processSubmitIntoScoreboard(sci gytypes.ScoreContestInf
 			}
 		}
 		currentScore.Score = score
-		currentScore.PenaltyTime += sci.PenaltyTime
 		currentScore.SubmissionCount++
 		if accepted {
 			currentScore.AcceptedTime = time.Now().Unix()
+		} else {
+			currentScore.PenaltyTime += sci.PenaltyTime
 		}
 		// Update here
 		if err = sdm.UpdateScore(currentScore, publicScoreboard); err != nil {
@@ -336,8 +392,9 @@ func (sdm *ScoreDbModel) processSubmitIntoScoreboard(sci gytypes.ScoreContestInf
 		}
 		if accepted {
 			spd.AcceptedTime = time.Now().Unix()
+		} else {
+			spd.PenaltyTime = sci.PenaltyTime
 		}
-		spd.PenaltyTime = sci.PenaltyTime
 		if err = sdm.InsertScore(&spd, publicScoreboard); err != nil {
 			return err
 		}

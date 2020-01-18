@@ -1,0 +1,66 @@
+Oct  5 13:42:04.758[36m [INFO] [0mLog file will be printed on /Users/thiekus/projects/gargoyle-judge/lib/log/gymaster_144b_05-10-2019_13-42-04.log
+Oct  5 13:42:04.758[36m [INFO] [0mProgramDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:42:04.758[36m [INFO] [0mWorkDir: /Users/thiekus/projects/gargoyle-judge/lib
+Oct  5 13:42:04.758[36m [INFO] [0mInitializing master server...
+Oct  5 13:42:04.759[36m [INFO] [0mConfig data loaded...
+Oct  5 13:42:04.759[36m [INFO] [0mTesting database connection...
+Oct  5 13:42:04.759[36m [INFO] [0mDB Driver: mysql
+Oct  5 13:42:04.759[36m [INFO] [0mPing test into selected database...
+Oct  5 13:42:04.762[36m [INFO] [0mDB Connection OK!
+Oct  5 13:42:04.763[36m [INFO] [0mRouters have been initialized...
+Oct  5 13:42:04.763[36m [INFO] [0mServer will use plain HTTP
+Oct  5 13:42:08.207[36m [INFO] [0mClient [::1]:57608 uid:0 accessing /dashboard/manageContests
+Oct  5 13:42:08.218[36m [INFO] [0mClient [::1]:57608 uid:0 accessing /login?target=L2Rhc2hib2FyZC9tYW5hZ2VDb250ZXN0cw==
+Oct  5 13:42:09.433[36m [INFO] [0mClient [::1]:57608 uid:0 accessing /login
+Oct  5 13:42:09.433[36m [INFO] [0mUser gyroot trying to login...
+Oct  5 13:42:09.438[36m [INFO] [0mUser gyroot logged in with token c44e9cb93fe087fa04c7890acd6c9b0f840064d061b6d89e7892fddad0f3b501
+Oct  5 13:42:09.450[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:43:00.619[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 13:43:02.056[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:43:04.030[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:43:05.703[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 13:43:06.899[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:44:58.172[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard
+Oct  5 13:45:01.737[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/scoreboard
+Oct  5 13:45:03.000[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/notifications
+Oct  5 13:45:03.962[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/profile
+Oct  5 13:45:05.028[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/settings
+Oct  5 13:45:06.388[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/profile
+Oct  5 13:45:07.388[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/notifications
+Oct  5 13:45:08.276[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard
+Oct  5 13:45:09.700[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 13:45:10.513[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:45:25.886[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userViewSubmission/18
+Oct  5 13:45:29.582[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:45:31.292[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:45:32.132[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 13:45:33.077[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/settings
+Oct  5 13:45:34.260[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard
+Oct  5 13:56:22.039[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 13:56:26.082[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:56:27.879[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 13:56:29.608[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userEdit/1
+Oct  5 13:56:40.141[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:56:42.017[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:56:43.062[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 13:56:45.091[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 13:56:45.989[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 13:56:47.725[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 13:56:53.801[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userEdit/1
+Oct  5 14:03:34.185[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 14:03:38.463[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userEdit/1
+Oct  5 14:05:40.814[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userEdit
+Oct  5 14:05:40.821[36m [INFO] [0mRefreshing user id no 1
+Oct  5 14:05:40.831[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 15:18:21.376[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 15:18:25.092[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 15:18:28.824[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageUsers
+Oct  5 15:18:31.647[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/manageContests
+Oct  5 15:18:32.419[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 15:18:34.135[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 15:18:35.645[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/userSubmissions
+Oct  5 15:18:43.532[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/contests
+Oct  5 15:18:44.602[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/notifications
+Oct  5 15:18:46.090[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/scoreboard
+Oct  5 15:18:47.904[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /dashboard/scoreboard/1
+Oct  5 15:18:47.932[36m [INFO] [0mClient [::1]:57608 uid:1 accessing /avatar/RzoxYWVkYjhkOWRjNDc1MWUyMjlhMzM1ZTM3MWRiODA1OA==

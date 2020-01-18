@@ -2,8 +2,10 @@
 Description=Gargoyle Judge master server
 
 [Service]
+#User=youruser
 Type=simple
 ExecStart=/opt/gargoyle/bin/gymaster
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
