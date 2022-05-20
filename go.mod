@@ -15,11 +15,11 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
-	github.com/lxn/win v0.0.0-20190910083938-ae3bd9765f46
+	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	github.com/mattn/go-colorable v0.1.2
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/mattn/go-mjpeg v0.0.0-20180621123927-a9cedbfd1cd8
-	github.com/mattn/go-sqlite3 v1.11.0
+	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/govatar v0.3.0
@@ -31,7 +31,7 @@ require (
 	github.com/tdewolff/parse v2.3.4+incompatible // indirect
 	github.com/tdewolff/test v1.0.5 // indirect
 	golang.org/x/crypto v0.0.0-20190923035154-9ee001bba392 // indirect
-	golang.org/x/sys v0.0.0-20190922100055-0a153f010e69
+	golang.org/x/sys v0.0.0-20201018230417-eeed37f84f13
 	google.golang.org/appengine v1.6.3 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )

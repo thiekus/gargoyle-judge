@@ -10,6 +10,7 @@ package gylib
 
 import (
 	"fmt"
+	"github.com/lxn/win"
 	"golang.org/x/sys/windows/registry"
 	"syscall"
 )
