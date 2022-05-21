@@ -25,7 +25,7 @@ import (
 	"time"
 )
 
-const appVersion = "0.7r127"
+const appVersion = "0.7r129"
 
 var appOSName string
 var appConfig ConfigData
