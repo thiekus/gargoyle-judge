@@ -34,7 +34,7 @@ func (sdm *ScoreDbModel) GetContestInfoById(contestId int) (gytypes.ScoreContest
 	scd := gytypes.ScoreContestInfo{}
 	db := sdm.db
 	// First, query from contest info
-	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public, 
+	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public,
         c.start_timestamp, c.penalty_time FROM {{.TablePrefix}}contests as c WHERE c.id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -67,8 +67,8 @@ func (sdm *ScoreDbModel) GetContestInfoByProblemId(problemId int) (gytypes.Score
 	scd := gytypes.ScoreContestInfo{}
 	db := sdm.db
 	// First, query from contest info
-	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public, 
-        c.start_timestamp, c.penalty_time FROM {{.TablePrefix}}problems as p INNER JOIN 
+	query := `SELECT c.id, c.title, c.style, c.enable_freeze, c.freeze_timestamp, c.unfreeze_timestamp, c.allow_public,
+        c.start_timestamp, c.penalty_time FROM {{.TablePrefix}}problems as p INNER JOIN
         {{.TablePrefix}}contests as c ON c.id = p.contest_id WHERE p.id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -111,7 +111,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 		return nil, errors.New("public scoreboard not allowed")
 	}
 	// Second, query all problems information
-	queryProblems := `SELECT contest_id, id, problem_name, problem_shortname FROM {{.TablePrefix}}problems 
+	queryProblems := `SELECT contest_id, id, problem_name, problem_shortname FROM {{.TablePrefix}}problems
         WHERE contest_id = ? ORDER BY problem_shortname ASC`
 	stmtProblems, err := db.Prepare(queryProblems)
 	if err != nil {
@@ -148,7 +148,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 		contestProblemsId[problem.ProblemId] = i
 	}
 	// Third, query all active contestant of contest
-	queryUsers := `SELECT u.id, u.display_name, u.institution, u.country_id, u.avatar FROM {{.TablePrefix}}contest_access as a 
+	queryUsers := `SELECT u.id, u.display_name, u.institution, u.country_id, u.avatar FROM {{.TablePrefix}}contest_access as a
         INNER JOIN {{.TablePrefix}}users as u ON a.id_user = u.id WHERE a.id_contest = ?`
 	stmtUsers, err := db.Prepare(queryUsers)
 	if err != nil {
@@ -409,8 +409,8 @@ func (sdm *ScoreDbModel) InsertScore(score *gytypes.ScoreProblemData, publicScor
 	if publicScoreboard {
 		selTable = "{{.TablePrefix}}scores_public"
 	}
-	query := `INSERT INTO %s 
-        (id_contest, id_problem, id_user, score, accepted_time, penalty_time, submission_count, one_hit, regraded) 
+	query := `INSERT INTO %s
+        (id_contest, id_problem, id_user, score, accepted_time, penalty_time, submission_count, one_hit, regraded)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	query = fmt.Sprintf(query, selTable)
 	stmt, err := db.Prepare(query)
