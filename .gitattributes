@@ -1,2 +1,2 @@
-lib/assets/* linguist-vendored=true
-lib/templates/* linguist-vendored=true
+/lib/assets/* linguist-vendored=true
+/lib/templates/* linguist-vendored=true
