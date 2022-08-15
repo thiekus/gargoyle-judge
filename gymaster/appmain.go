@@ -26,7 +26,7 @@ import (
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
-const appVersion = "0.7r129"
+const appVersion = "0.8r201"
 
 var appOSName string
 var appConfig ConfigData
