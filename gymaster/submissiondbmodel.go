@@ -9,8 +9,9 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type SubmissionDbModel struct {

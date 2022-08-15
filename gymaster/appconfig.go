@@ -13,10 +13,11 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/securecookie"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"os"
+
+	"github.com/gorilla/securecookie"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 type ConfigData struct {

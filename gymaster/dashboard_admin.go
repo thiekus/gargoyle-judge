@@ -10,11 +10,12 @@ package main
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"net/http"
-	"strconv"
 )
 
 type DashboardManageUsersData struct {

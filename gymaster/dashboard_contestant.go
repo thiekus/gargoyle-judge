@@ -10,12 +10,13 @@ package main
 
 import (
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type DashboardContestGateData struct {

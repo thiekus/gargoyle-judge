@@ -9,9 +9,10 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"net/http"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"net/http"
 )
 
 type DashboardManageContestData struct {

@@ -10,11 +10,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"html/template"
 	"strconv"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type ContestDbModel struct {

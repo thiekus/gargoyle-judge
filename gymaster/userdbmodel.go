@@ -12,9 +12,10 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"time"
 )
 
 type UserDbModel struct {

@@ -11,12 +11,13 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type DashboardHomeData struct {

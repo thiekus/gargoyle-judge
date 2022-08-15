@@ -11,11 +11,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"log"
 	"sort"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type ScoreDbModel struct {
@@ -262,9 +263,9 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 							// TODO: start time for unlimited contest time
 							score.AcceptedTime = score.AcceptedTime - 1570348800 // - contest access start time
 						}
-						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime - 25200, 0))
+						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime-25200, 0))
 					}
-					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime - 25200, 0))
+					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime-25200, 0))
 					// Replace again with modified user info
 					user.Problems[problemIndex] = score
 					users[user.UserId] = user

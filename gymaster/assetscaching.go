@@ -9,6 +9,13 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"time"
+
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
 	"github.com/tdewolff/minify"
@@ -19,12 +26,6 @@ import (
 	"github.com/tdewolff/minify/svg"
 	"github.com/tdewolff/minify/xml"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"io/ioutil"
-	"net/http"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"time"
 )
 
 func setAssetsWithCaching(r *mux.Router) {

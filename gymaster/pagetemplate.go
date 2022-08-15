@@ -12,6 +12,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io/ioutil"
+	"net/http"
+	"regexp"
+	"runtime"
+	"time"
+
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -21,12 +28,6 @@ import (
 	"github.com/tdewolff/minify/xml"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"html/template"
-	"io/ioutil"
-	"net/http"
-	"regexp"
-	"runtime"
-	"time"
 )
 
 type PageDataInfo struct {

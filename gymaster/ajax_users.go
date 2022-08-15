@@ -10,9 +10,10 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/dustin/go-humanize"
 	"net/http"
 	"time"
+
+	"github.com/dustin/go-humanize"
 )
 
 type AjaxCommonStatus struct {

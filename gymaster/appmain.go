@@ -13,9 +13,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/NYTimes/gziphandler"
-	"github.com/gorilla/mux"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -23,6 +20,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/NYTimes/gziphandler"
+	"github.com/gorilla/mux"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 const appVersion = "0.7r129"
@@ -40,7 +41,8 @@ var appContestAccess ContestAccessController
 var appLangPrograms LanguageProgramController
 var appScoreboard ScoreboardController
 var appNotifications NotificationController
-var appImageStreams ImageStreamList
+
+// var appImageStreams ImageStreamList
 
 // Endpoint to perform application shutdown from http request.
 // Needs authentication to admin user.
@@ -176,7 +178,7 @@ func prepareControllers() {
 	appLangPrograms = MakeLanguageProgramController()
 	appScoreboard = MakeScoreboardController()
 	appNotifications = MakeNotificationController()
-	appImageStreams = MakeImageStreamList()
+	// appImageStreams = MakeImageStreamList()
 }
 
 func prepareHttpEndpoints() {
@@ -221,11 +223,6 @@ func prepareHttpEndpoints() {
 	// see ajax_users.go
 	r.HandleFunc("/ajax/getNotifications", ajaxGetNotifications).Methods("GET")
 	r.HandleFunc("/ajax/readAllNotifications", ajaxReadAllNotifications).Methods("GET")
-	// proposed livecontest features, not yet ready
-	//r.HandleFunc("/live", liveHomeGetEndpoint).Methods("GET")
-	//r.HandleFunc("/live/capture", liveCaptureGetEndpoint).Methods("GET")
-	//r.HandleFunc("/live/capture", liveCapturePostEndpoint).Methods("POST")
-	//r.HandleFunc("/live/imageStream/{id}", liveImageStreamGetEndpoint).Methods("GET")
 	// see firstsetup.go
 	r.HandleFunc("/gysetup", firstSetupGetEndpoint).Methods("GET")
 	r.HandleFunc("/gysetup", firstSetupPostEndpoint).Methods("POST")

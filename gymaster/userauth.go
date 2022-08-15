@@ -11,8 +11,9 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"net/http"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 type LoginFormData struct {
