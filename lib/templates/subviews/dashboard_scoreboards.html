@@ -6,6 +6,7 @@
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
+                    {{if gt .PageData.Count 0}}
                     <p>There are {{.PageData.Count}} contests here.</p>
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered">
@@ -48,6 +49,9 @@
                             </tbody>
                         </table>
                     </div>
+                    {{else}}
+                    <p>There are no contests here.</p>
+                    {{end}}
                 </div>
             </div>
         </div>
@@ -115,9 +119,9 @@
                                 </style>
                                 <table>
                                     <tbody>
-                                        {{$baseUrl:=.BaseUrl}} {{with
-                                        .PageData.OnlineUsers.Users}} {{range
-                                        .}}
+                                        {{$baseUrl:=.BaseUrl}}
+                                        {{with .PageData.OnlineUsers.Users}}
+                                        {{range .}}
                                         <tr>
                                             <td
                                                 class="more-padding align-middle"
@@ -141,7 +145,8 @@
                                                 >
                                             </td>
                                         </tr>
-                                        {{end}} {{end}}
+                                        {{end}}
+                                        {{end}}
                                     </tbody>
                                 </table>
                             </div>

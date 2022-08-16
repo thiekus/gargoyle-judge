@@ -42,8 +42,6 @@ var appLangPrograms LanguageProgramController
 var appScoreboard ScoreboardController
 var appNotifications NotificationController
 
-// var appImageStreams ImageStreamList
-
 // Endpoint to perform application shutdown from http request.
 // Needs authentication to admin user.
 func shutdownEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -178,7 +176,6 @@ func prepareControllers() {
 	appLangPrograms = MakeLanguageProgramController()
 	appScoreboard = MakeScoreboardController()
 	appNotifications = MakeNotificationController()
-	// appImageStreams = MakeImageStreamList()
 }
 
 func prepareHttpEndpoints() {
