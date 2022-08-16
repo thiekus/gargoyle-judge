@@ -18,8 +18,6 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e
 	github.com/mattn/go-colorable v0.1.13
-	github.com/mattn/go-mjpeg v0.0.0-20180621123927-a9cedbfd1cd8
-	github.com/mattn/go-sqlite3 v1.14.13
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/o1egl/govatar v0.4.1
