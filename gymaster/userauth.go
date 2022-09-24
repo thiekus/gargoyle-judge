@@ -39,17 +39,18 @@ func loginPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		appUsers.AddFlashMessage(w, r, fmt.Sprintf("Error: %s", err), FlashError)
 		if target != "" {
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+target, 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/login?target="+target, 302)
 		} else {
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/login", 302)
 		}
 	} else {
 		// Login success
 		if target != "" {
 			targetDec, _ := base64.StdEncoding.DecodeString(target)
+			// Use base url instead, already modified on base64 encoded
 			http.Redirect(w, r, gylib.GetBaseUrl(r)+string(targetDec), 302)
 		} else {
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}
 }
@@ -58,7 +59,7 @@ func logoutGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	uid := appUsers.GetLoggedUserId(r)
 	appUsers.UserLogoutFromWebsite(w, r)
 	appContestAccess.ReleaseMapOfUser(uid)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r), 302)
+	http.Redirect(w, r, GetAppUrl(r), 302)
 }
 
 func forgotPassGetEndpoint(w http.ResponseWriter, r *http.Request) {

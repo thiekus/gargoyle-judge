@@ -14,6 +14,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -32,8 +33,8 @@ func setAssetsWithCaching(r *mux.Router) {
 	log := gylib.GetStdLog()
 	// Initialize assets go-cache
 	c := cache.New(30*time.Minute, 1*time.Hour)
-	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		localPath := gylib.ConcatByProgramLibDir("." + r.URL.Path)
+	r.PathPrefix(FixRootPath("/assets/")).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		localPath := gylib.ConcatByProgramLibDir("." + strings.TrimPrefix(r.URL.Path, GetAppRootPrefix()))
 		if fileData, cached := c.Get(localPath); cached {
 			//log.Printf("Hit cache for %s", localPath)
 			contentType, _ := c.Get(localPath + ":type")

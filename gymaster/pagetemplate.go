@@ -130,8 +130,8 @@ func NewPageInfoData(w http.ResponseWriter, r *http.Request, pageData interface{
 	}
 	uas := r.UserAgent()
 	data := PageDataInfo{
-		BaseUrl:     gylib.GetBaseUrlWithSlash(r),
-		BaseUrlNS:   gylib.GetBaseUrl(r),
+		BaseUrl:     GetAppUrlWithSlash(r),
+		BaseUrlNS:   GetAppUrl(r),
 		AppVersion:  appVersion,
 		GoVersion:   runtime.Version(),
 		GoPlatform:  fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH),

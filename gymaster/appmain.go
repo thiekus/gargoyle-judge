@@ -26,7 +26,7 @@ import (
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
-const appVersion = "0.8r201"
+const appVersion = "0.8r209"
 
 var appOSName string
 var appConfig ConfigData
@@ -41,6 +41,41 @@ var appContestAccess ContestAccessController
 var appLangPrograms LanguageProgramController
 var appScoreboard ScoreboardController
 var appNotifications NotificationController
+
+func FixRootPath(oldPath string) string {
+	if oldPath == "/" {
+		oldPath = ""
+	}
+	if (appConfig.RootSubPath == "") || (appConfig.RootSubPath == "/") {
+		return oldPath
+	} else {
+		return appConfig.RootSubPath + oldPath
+	}
+}
+
+func GetAppRootPrefix() string {
+	if (appConfig.RootSubPath == "") || (appConfig.RootSubPath == "/") {
+		return ""
+	} else {
+		return appConfig.RootSubPath
+	}
+}
+
+func GetAppUrl(r *http.Request) string {
+	if (appConfig.RootSubPath == "") || (appConfig.RootSubPath == "/") {
+		return gylib.GetBaseUrl(r)
+	} else {
+		return gylib.GetBaseUrl(r) + appConfig.RootSubPath
+	}
+}
+
+func GetAppUrlWithSlash(r *http.Request) string {
+	if (appConfig.RootSubPath == "") || (appConfig.RootSubPath == "/") {
+		return gylib.GetBaseUrlWithSlash(r)
+	} else {
+		return gylib.GetBaseUrl(r) + appConfig.RootSubPath + "/"
+	}
+}
 
 // Endpoint to perform application shutdown from http request.
 // Needs authentication to admin user.
@@ -86,9 +121,9 @@ func appMiddleware(next http.Handler) http.Handler {
 		if query != "" {
 			path += "?" + query
 		}
-		w.Header().Set("Location", gylib.GetBaseUrl(r)+path)
+		w.Header().Set("Location", GetAppUrl(r)+path)
 		// All ajax endpoints are json-return
-		if strings.HasPrefix(r.URL.Path, "/ajax") {
+		if strings.HasPrefix(r.URL.Path, FixRootPath("/ajax")) {
 			w.Header().Add("Content-Type", "application/json; charset=utf-8")
 		} else {
 			log.Printf("Client %s uid:%d accessing %s", r.RemoteAddr, uid, path)
@@ -96,11 +131,11 @@ func appMiddleware(next http.Handler) http.Handler {
 		// Check user is login?
 		user := appUsers.GetLoggedUserInfo(r)
 		// Restrict dashboard from stranger
-		if strings.HasPrefix(r.URL.Path, "/dashboard") {
+		if strings.HasPrefix(r.URL.Path, FixRootPath("/dashboard")) {
 			urlBase64 := base64.StdEncoding.EncodeToString([]byte(path))
 			if user == nil {
 				appUsers.AddFlashMessage(w, r, "Please login first!", FlashError)
-				http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+				http.Redirect(w, r, GetAppUrl(r)+"/login?target="+urlBase64, 302)
 				return
 			} else {
 				// User has been banned
@@ -108,7 +143,7 @@ func appMiddleware(next http.Handler) http.Handler {
 					log.Errorf("uid:%d cannot access dashboard because have been banned!", user.Id)
 					appUsers.UserLogoutFromWebsite(w, r)
 					appUsers.AddFlashMessage(w, r, "You have been banned!", FlashError)
-					http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+					http.Redirect(w, r, GetAppUrl(r)+"/login?target="+urlBase64, 302)
 					return
 				}
 				// User inactive
@@ -116,7 +151,7 @@ func appMiddleware(next http.Handler) http.Handler {
 					log.Errorf("uid:%d cannot access dashboard because account was inactive!", user.Id)
 					appUsers.UserLogoutFromWebsite(w, r)
 					appUsers.AddFlashMessage(w, r, "You account is not activated or deactivated by admin!", FlashError)
-					http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"login?target="+urlBase64, 302)
+					http.Redirect(w, r, GetAppUrl(r)+"/login?target="+urlBase64, 302)
 					return
 				}
 				// Further page access permission
@@ -126,7 +161,7 @@ func appMiddleware(next http.Handler) http.Handler {
 					return
 				}
 				for _, v := range access {
-					if strings.HasPrefix(r.URL.Path, v.Prefix) {
+					if strings.HasPrefix(r.URL.Path, FixRootPath(v.Prefix)) {
 						if !IsPageAccessHasPermission(v, user.Roles) {
 							log.Errorf("uid:%d cannot access dashboard because insufficient privileges! Roles: %v", user.Id, user.Roles)
 							http.Error(w, "403 Forbidden: insufficient privileges", http.StatusForbidden)
@@ -135,8 +170,8 @@ func appMiddleware(next http.Handler) http.Handler {
 					}
 				}
 			}
-		} else if (strings.HasPrefix(r.URL.Path, "/login") || (r.URL.Path == "/")) && (user != nil) {
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+		} else if (strings.HasPrefix(r.URL.Path, FixRootPath("/login")) || (r.URL.Path == FixRootPath("/"))) && (user != nil) {
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -185,50 +220,51 @@ func prepareHttpEndpoints() {
 	r.Use(appMiddleware)
 
 	// Main webservice endpoints, see frontpage.go
-	r.HandleFunc("/", homeGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/"), homeGetEndpoint).Methods("GET")
 	// see userauth.go
-	r.HandleFunc("/login", loginGetEndpoint).Methods("GET")
-	r.HandleFunc("/login", loginPostEndpoint).Methods("POST")
-	r.HandleFunc("/logout", logoutGetEndpoint).Methods("GET")
-	r.HandleFunc("/forgotPass", forgotPassGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/login"), loginGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/login"), loginPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/logout"), logoutGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/forgotPass"), forgotPassGetEndpoint).Methods("GET")
 	// see dashboard_basic.go
-	r.HandleFunc("/dashboard", dashboardHomeGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/notifications", dashboardNotificationsEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/scoreboard", dashboardScoreboardsGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/scoreboard/{id}", dashboardViewScoreboardGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/profile", dashboardProfileGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/profile", dashboardProfilePostEndpoint).Methods("POST")
-	r.HandleFunc("/dashboard/settings", dashboardSettingsGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/settings", dashboardSettingsPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/dashboard"), dashboardHomeGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/notifications"), dashboardNotificationsEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/scoreboard"), dashboardScoreboardsGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/scoreboard/{id}"), dashboardViewScoreboardGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/profile"), dashboardProfileGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/profile"), dashboardProfilePostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/dashboard/settings"), dashboardSettingsGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/settings"), dashboardSettingsPostEndpoint).Methods("POST")
 	// see dashboard_contestant.go
-	r.HandleFunc("/dashboard/contests", dashboardContestsGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/problemSet/{id}", dashboardProblemSetGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/problem/{id}", dashboardProblemGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/problem", dashboardProblemPostEndpoint).Methods("POST")
-	r.HandleFunc("/dashboard/userSubmissions", dashboardUserSubmissionsGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/userViewSubmission/{id}", dashboardUserViewSubmissionGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/contests"), dashboardContestsGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/problemSet/{id}"), dashboardProblemSetGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/problem/{id}"), dashboardProblemGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/problem"), dashboardProblemPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/dashboard/userSubmissions"), dashboardUserSubmissionsGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/userViewSubmission/{id}"), dashboardUserViewSubmissionGetEndpoint).Methods("GET")
 	// see dashboard_jury.go
-	r.HandleFunc("/dashboard/manageContests", dashboardManageContestsGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/contestAdd", dashboardContestAddGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/manageContests"), dashboardManageContestsGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/contestAdd"), dashboardContestAddGetEndpoint).Methods("GET")
 	// see dashboard_admin.go
-	r.HandleFunc("/dashboard/manageUsers", dashboardManageUsersGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/userAdd", dashboardUserAddGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/userAdd", dashboardUserAddPostEndpoint).Methods("POST")
-	r.HandleFunc("/dashboard/userEdit/{id}", dashboardUserEditGetEndpoint).Methods("GET")
-	r.HandleFunc("/dashboard/userEdit", dashboardUserEditPostEndpoint).Methods("POST")
-	r.HandleFunc("/dashboard/userDelete/{id}", dashboardUserDeleteGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/manageUsers"), dashboardManageUsersGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/userAdd"), dashboardUserAddGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/userAdd"), dashboardUserAddPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/dashboard/userEdit/{id}"), dashboardUserEditGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/dashboard/userEdit"), dashboardUserEditPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/dashboard/userDelete/{id}"), dashboardUserDeleteGetEndpoint).Methods("GET")
 	// see ajax_users.go
-	r.HandleFunc("/ajax/getNotifications", ajaxGetNotifications).Methods("GET")
-	r.HandleFunc("/ajax/readAllNotifications", ajaxReadAllNotifications).Methods("GET")
+	r.HandleFunc(FixRootPath("/ajax/getNotifications"), ajaxGetNotifications).Methods("GET")
+	r.HandleFunc(FixRootPath("/ajax/readAllNotifications"), ajaxReadAllNotifications).Methods("GET")
 	// see firstsetup.go
-	r.HandleFunc("/gysetup", firstSetupGetEndpoint).Methods("GET")
-	r.HandleFunc("/gysetup", firstSetupPostEndpoint).Methods("POST")
+	r.HandleFunc(FixRootPath("/gysetup"), firstSetupGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/gysetup"), firstSetupPostEndpoint).Methods("POST")
 
 	// Resources endpoints, assets and website favicon
 	if appConfig.AssetsCaching {
 		setAssetsWithCaching(r)
 	} else {
-		r.PathPrefix("/assets/").Handler(http.StripPrefix("/assets/", http.FileServer(http.Dir(gylib.ConcatByProgramLibDir("./assets")))))
+		r.PathPrefix(FixRootPath("/assets/")).
+			Handler(http.StripPrefix(FixRootPath("/assets/"), http.FileServer(http.Dir(gylib.ConcatByProgramLibDir("./assets")))))
 	}
 	// Handle favicon
 	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
@@ -249,14 +285,14 @@ func prepareHttpEndpoints() {
 			panic(err)
 		}
 	}
-	r.PathPrefix("/files/").Handler(http.StripPrefix("/files/", http.FileServer(http.Dir(filesDir))))
+	r.PathPrefix(FixRootPath("/files/")).Handler(http.StripPrefix(FixRootPath("/files/"), http.FileServer(http.Dir(filesDir))))
 	// Avatar images
-	r.HandleFunc("/avatar/{avatarInfo}", avatarGetEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/avatar/{avatarInfo}"), avatarGetEndpoint).Methods("GET")
 
 	// About contents endpoints
-	r.HandleFunc("/about", aboutEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/about"), aboutEndpoint).Methods("GET")
 	// Shutdown endpoints
-	r.HandleFunc("/shutdown", shutdownEndpoint).Methods("GET")
+	r.HandleFunc(FixRootPath("/shutdown"), shutdownEndpoint).Methods("GET")
 
 	log.Print("Routers have been initialized...")
 

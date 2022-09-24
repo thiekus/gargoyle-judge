@@ -25,6 +25,7 @@ type ConfigData struct {
 	SessionKey    string `json:"sessionKey"`
 	Hostname      string `json:"hostname"`
 	ListeningPort int    `json:"listeningPort"`
+	RootSubPath   string `json:"rootSubPath"`
 	UseTLS        bool   `json:"useTLS"`
 	ForceTLS      bool   `json:"forceTLS"`
 	CrtFile       string `json:"crtFile"`
@@ -45,6 +46,7 @@ type ConfigData struct {
 const (
 	ConfigDefaultHasFirstSetup = false
 	ConfigDefaultListeningPort = 28498
+	ConfigDefaultRootSubPath   = "/"
 	ConfigDefaultUseTLS        = false
 	ConfigDefaultCrtFile       = "./cert/server.crt"
 	ConfigDefaultKeyFile       = "./cert/server.key"
@@ -73,6 +75,7 @@ func getConfigData() ConfigData {
 		cfg.HasFirstSetup = ConfigDefaultHasFirstSetup
 		cfg.SessionKey = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
 		cfg.ListeningPort = ConfigDefaultListeningPort
+		cfg.RootSubPath = ConfigDefaultRootSubPath
 		cfg.UseTLS = ConfigDefaultUseTLS
 		cfg.CrtFile = ConfigDefaultCrtFile
 		cfg.KeyFile = ConfigDefaultKeyFile
