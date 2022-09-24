@@ -221,6 +221,10 @@ func prepareHttpEndpoints() {
 
 	// Main webservice endpoints, see frontpage.go
 	r.HandleFunc(FixRootPath("/"), homeGetEndpoint).Methods("GET")
+	if GetAppRootPrefix() != "" {
+		// Fix for subdirectory level path
+		r.HandleFunc(GetAppRootPrefix(), homeGetEndpoint).Methods("GET")
+	}
 	// see userauth.go
 	r.HandleFunc(FixRootPath("/login"), loginGetEndpoint).Methods("GET")
 	r.HandleFunc(FixRootPath("/login"), loginPostEndpoint).Methods("POST")
