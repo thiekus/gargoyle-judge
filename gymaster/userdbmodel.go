@@ -409,12 +409,10 @@ func (udm *UserDbModel) CleanTokenOfUser(uid int) error {
 
 func generatePasswordHash(password string) string {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	fmt.Printf("generatePasswordHash: pass => %s hash => %s\n", password, string(hash))
 	return string(hash)
 }
 
 func comparePasswordHash(passHash string, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(passHash), []byte(password))
-	fmt.Printf("comparePasswordHash: pass => %s hash => %s err => %v\n", password, passHash, err)
-	return err == nil
+	return err != nil
 }
