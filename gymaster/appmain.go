@@ -26,7 +26,7 @@ import (
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
-const appVersion = "0.8r209"
+const appVersion = "0.8r273"
 
 var appOSName string
 var appConfig ConfigData
@@ -271,7 +271,7 @@ func prepareHttpEndpoints() {
 			Handler(http.StripPrefix(FixRootPath("/assets/"), http.FileServer(http.Dir(gylib.ConcatByProgramLibDir("./assets")))))
 	}
 	// Handle favicon
-	r.HandleFunc("/favicon.ico", func(w http.ResponseWriter, r *http.Request) {
+	faviconFunc := func(w http.ResponseWriter, r *http.Request) {
 		b, err := ioutil.ReadFile(gylib.ConcatByProgramLibDir("./favicon.ico"))
 		if err == nil {
 			w.Header().Set("Cache-Control", "public, max-age=3600")
@@ -281,7 +281,12 @@ func prepareHttpEndpoints() {
 		} else {
 			http.Error(w, "500 Internal Server Error", 500)
 		}
-	})
+	}
+	r.HandleFunc("/favicon.ico", faviconFunc).Methods("GET")
+	if GetAppRootPrefix() != "" {
+		// Fix for subdirectory level path
+		r.HandleFunc(FixRootPath("/favicon.ico"), faviconFunc).Methods("GET")
+	}
 	// Private files
 	filesDir := gylib.ConcatByProgramLibDir("./files")
 	if !gylib.IsDirectoryExists(filesDir) {

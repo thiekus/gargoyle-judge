@@ -13,6 +13,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -21,12 +22,40 @@ import (
 	"time"
 
 	nested "github.com/antonfisher/nested-logrus-formatter"
-	"github.com/gorilla/securecookie"
 	"github.com/mattn/go-colorable"
 	"github.com/sirupsen/logrus"
 )
 
 const dateTimePickerFormatTime = "2006/01/02 15:04"
+
+// Based from https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
+var src = rand.NewSource(time.Now().UnixNano())
+
+const letterBytes = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+const (
+	letterIdxBits = 6                    // 6 bits to represent a letter index
+	letterIdxMask = 1<<letterIdxBits - 1 // All 1-bits, as many as letterIdxBits
+	letterIdxMax  = 63 / letterIdxBits   // # of letter indices fitting in 63 bits
+)
+
+func RandString(n int) string {
+	sb := strings.Builder{}
+	sb.Grow(n)
+	// A src.Int63() generates 63 random bits, enough for letterIdxMax characters!
+	for i, cache, remain := n-1, src.Int63(), letterIdxMax; i >= 0; {
+		if remain == 0 {
+			cache, remain = src.Int63(), letterIdxMax
+		}
+		if idx := int(cache & letterIdxMask); idx < len(letterBytes) {
+			sb.WriteByte(letterBytes[idx])
+			i--
+		}
+		cache >>= letterIdxBits
+		remain--
+	}
+
+	return sb.String()
+}
 
 func GetBaseUrl(r *http.Request) string {
 	if r.TLS != nil {
@@ -168,11 +197,11 @@ func GetMD5Hash(password string) string {
 }
 
 func GenerateRandomSalt() string {
-	return fmt.Sprintf("%x", md5.Sum([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
+	return RandString(64)
 }
 
 func GenerateRandomToken() string {
-	return fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
+	return RandString(64)
 }
 
 func StringToTime(dtsStr string) time.Time {
