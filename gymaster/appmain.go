@@ -121,7 +121,7 @@ func appMiddleware(next http.Handler) http.Handler {
 		if query != "" {
 			path += "?" + query
 		}
-		w.Header().Set("Location", GetAppUrl(r)+path)
+		w.Header().Set("Location", gylib.GetBaseUrl(r)+path)
 		// All ajax endpoints are json-return
 		if strings.HasPrefix(r.URL.Path, FixRootPath("/ajax")) {
 			w.Header().Add("Content-Type", "application/json; charset=utf-8")
