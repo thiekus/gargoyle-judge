@@ -53,6 +53,8 @@ type ScoreContestantData struct {
 	TotalPenaltyTime int64
 	Problems         []ScoreProblemData
 	PenaltyTimeStr   string
+	StartTime        int64
+	EndTime          int64
 }
 
 type ScoreContestantDataList []ScoreContestantData

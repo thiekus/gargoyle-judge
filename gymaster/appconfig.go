@@ -21,30 +21,32 @@ import (
 )
 
 type ConfigData struct {
-	HasFirstSetup bool   `json:"hasFirstSetup"`
-	SessionKey    string `json:"sessionKey"`
-	Hostname      string `json:"hostname"`
-	ListeningPort int    `json:"listeningPort"`
-	RootSubPath   string `json:"rootSubPath"`
-	UseTLS        bool   `json:"useTLS"`
-	ForceTLS      bool   `json:"forceTLS"`
-	CrtFile       string `json:"crtFile"`
-	KeyFile       string `json:"keyFile"`
-	CompressOnFly bool   `json:"compressOnFly"`
-	PageMinify    bool   `json:"pageMinify"`
-	AssetsCaching bool   `json:"assetsCaching"`
-	AssetsMinify  bool   `json:"assetsMinify"`
-	DbDriver      string `json:"dbDriver"`
-	DbHost        string `json:"dbHost"`
-	DbUsername    string `json:"dbUsername"`
-	DbPassword    string `json:"dbPassword"`
-	DbFile        string `json:"dbFile"`
-	DbName        string `json:"dbName"`
-	DbTablePrefix string `json:"dbTablePrefix"`
+	HasFirstSetup bool    `json:"hasFirstSetup"`
+	TimeUTC       float64 `json:"timeUTC"`
+	SessionKey    string  `json:"sessionKey"`
+	Hostname      string  `json:"hostname"`
+	ListeningPort int     `json:"listeningPort"`
+	RootSubPath   string  `json:"rootSubPath"`
+	UseTLS        bool    `json:"useTLS"`
+	ForceTLS      bool    `json:"forceTLS"`
+	CrtFile       string  `json:"crtFile"`
+	KeyFile       string  `json:"keyFile"`
+	CompressOnFly bool    `json:"compressOnFly"`
+	PageMinify    bool    `json:"pageMinify"`
+	AssetsCaching bool    `json:"assetsCaching"`
+	AssetsMinify  bool    `json:"assetsMinify"`
+	DbDriver      string  `json:"dbDriver"`
+	DbHost        string  `json:"dbHost"`
+	DbUsername    string  `json:"dbUsername"`
+	DbPassword    string  `json:"dbPassword"`
+	DbFile        string  `json:"dbFile"`
+	DbName        string  `json:"dbName"`
+	DbTablePrefix string  `json:"dbTablePrefix"`
 }
 
 const (
 	ConfigDefaultHasFirstSetup = false
+	ConfigDefaultTimeUTC       = 7 // UTC +7 WIB
 	ConfigDefaultListeningPort = 28498
 	ConfigDefaultRootSubPath   = "/"
 	ConfigDefaultUseTLS        = false
@@ -73,6 +75,7 @@ func getConfigData() ConfigData {
 	if !gylib.IsFileExists(configPath) {
 		log.Warn("Config file doesn't exists yet, recreating new configuration...")
 		cfg.HasFirstSetup = ConfigDefaultHasFirstSetup
+		cfg.TimeUTC = ConfigDefaultTimeUTC
 		cfg.SessionKey = fmt.Sprintf("%x", sha256.Sum256([]byte(fmt.Sprintf("%x", securecookie.GenerateRandomKey(32)))))
 		cfg.ListeningPort = ConfigDefaultListeningPort
 		cfg.RootSubPath = ConfigDefaultRootSubPath

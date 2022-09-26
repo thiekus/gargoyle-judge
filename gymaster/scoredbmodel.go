@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"sort"
 	"time"
 
@@ -148,7 +149,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 		contestProblemsId[problem.ProblemId] = i
 	}
 	// Third, query all active contestant of contest
-	queryUsers := `SELECT u.id, u.display_name, u.institution, u.country_id, u.avatar FROM {{.TablePrefix}}contest_access as a
+	queryUsers := `SELECT u.id, u.display_name, u.institution, u.country_id, u.avatar, a.start_time, a.end_time FROM {{.TablePrefix}}contest_access as a
         INNER JOIN {{.TablePrefix}}users as u ON a.id_user = u.id WHERE a.id_contest = ?`
 	stmtUsers, err := db.Prepare(queryUsers)
 	if err != nil {
@@ -174,6 +175,8 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 			&u.Institution,
 			&u.CountryCode,
 			&u.Avatar,
+			&u.StartTime,
+			&u.EndTime,
 		)
 		if err != nil {
 			return nil, err
@@ -244,28 +247,34 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 							submitPenaltyTime := int64(0)
 							startTime := sci.StartTimestamp.Unix()
 							log.Printf("user %s: start from %d", user.Name, startTime)
+							// Is contest was defined time?
 							if startTime > 0 {
+								// Use fixed contest time
 								submitPenaltyTime = score.AcceptedTime - startTime
 							} else {
-								// TODO: start time for unlimited contest time
-								submitPenaltyTime = score.AcceptedTime - 1570348800 // - contest access start time
+								// For unlimited contest, use first which user enter instead
+								submitPenaltyTime = score.AcceptedTime - user.StartTime
 							}
 							if submitPenaltyTime > 0 {
 								user.TotalPenaltyTime += submitPenaltyTime
 							}
 						}
 					}
+					// Delta of UTC (e.g UTC +7)
+					utcDelta := int64(math.RoundToEven(appConfig.TimeUTC * 3600))
 					if score.AcceptedTime > 0 {
 						startTime := sci.StartTimestamp.Unix()
+						// Is contest was defined time?
 						if startTime > 0 {
+							// Use fixed contest time
 							score.AcceptedTime = score.AcceptedTime - startTime
 						} else {
-							// TODO: start time for unlimited contest time
-							score.AcceptedTime = score.AcceptedTime - 1570348800 // - contest access start time
+							// For unlimited contest, use first which user enter instead
+							score.AcceptedTime = score.AcceptedTime - user.StartTime
 						}
-						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime-25200, 0))
+						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime-utcDelta, 0))
 					}
-					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime-25200, 0))
+					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime-utcDelta, 0))
 					// Replace again with modified user info
 					user.Problems[problemIndex] = score
 					users[user.UserId] = user
