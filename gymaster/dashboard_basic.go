@@ -286,11 +286,9 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	pass2 := r.PostFormValue("pass2")
 	syntaxTheme := r.PostFormValue("syntax_theme")
 	passHash := ""
-	passSalt := gylib.GenerateRandomSalt() // Assumed it's regenerated
 	if (pass1 == "") && (pass2 == "") {
 		// Preserve old password if supposed to not changed
 		passHash = user.Password
-		passSalt = user.Salt
 	} else {
 		if pass1 != pass2 {
 			err = errors.New("password yang akan diganti harus sama")
@@ -313,7 +311,6 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	// Modify here
 	ui.Email = email
 	ui.Password = passHash
-	ui.Salt = passSalt
 	ui.SyntaxTheme = syntaxTheme
 	err = udm.ModifyUserAccount(uid, ui)
 	if err != nil {

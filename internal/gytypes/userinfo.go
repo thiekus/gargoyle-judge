@@ -32,7 +32,6 @@ type UserInfo struct {
 	Token       string
 	Username    string
 	Password    string
-	Salt        string
 	Email       string
 	DisplayName string
 	Gender      string

@@ -150,7 +150,7 @@ func (udm *UserDbModel) GetUserAccess(id int) (gytypes.UserRoleAccess, error) {
 
 func (udm *UserDbModel) GetUserList() ([]gytypes.UserInfo, error) {
 	db := udm.db
-	query := `SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+	query := `SELECT id, username, password, email, display_name, gender, address, institution, country_id, avatar,
         syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users`
 	rows, err := db.Query(query)
@@ -164,7 +164,6 @@ func (udm *UserDbModel) GetUserList() ([]gytypes.UserInfo, error) {
 			&ui.Id,
 			&ui.Username,
 			&ui.Password,
-			&ui.Salt,
 			&ui.Email,
 			&ui.DisplayName,
 			&ui.Gender,
@@ -194,7 +193,7 @@ func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 	ui := gytypes.UserInfo{}
 	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+		`SELECT id, username, password, email, display_name, gender, address, institution, country_id, avatar,
         syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users WHERE id = ?`)
 	if err != nil {
@@ -206,7 +205,6 @@ func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 		&uid,
 		&ui.Username,
 		&ui.Password,
-		&ui.Salt,
 		&ui.Email,
 		&ui.DisplayName,
 		&ui.Gender,
@@ -238,7 +236,7 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 	ui := gytypes.UserInfo{}
 	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+		`SELECT id, username, password, email, display_name, gender, address, institution, country_id, avatar,
         syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users WHERE username = ?`)
 	if err != nil {
@@ -251,7 +249,6 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 		&uid,
 		&ui.Username,
 		&ui.Password,
-		&ui.Salt,
 		&ui.Email,
 		&ui.DisplayName,
 		&ui.Gender,
