@@ -200,7 +200,7 @@ func (sdm *SubmissionDbModel) GetTestResultOfSubmission(submissionId int) ([]gyt
 
 func (sdm *SubmissionDbModel) InsertSubmissionOnQueue(idProblem, idUser, idLang int, code string) (int, error) {
 	db := sdm.db
-	query := `INSERT INTO {{.TablePrefix}}submissions (id_problem, id_user, id_lang, code, verdict, submit_time)
+	query := `INSERT INTO {{.TablePrefix}}submissions (id_problem, id_user, id_lang, code, verdict, details, submit_time)
         VALUES (?, ?, ?, ?, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {
@@ -214,6 +214,7 @@ func (sdm *SubmissionDbModel) InsertSubmissionOnQueue(idProblem, idUser, idLang 
 		idLang,
 		code,
 		gytypes.SubmissionOnQueue,
+		"",
 		now,
 	)
 	if err != nil {
