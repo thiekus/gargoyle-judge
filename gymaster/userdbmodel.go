@@ -415,6 +415,6 @@ func generatePasswordHash(password string) string {
 
 func comparePasswordHash(passHash string, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(passHash), []byte(password))
-	fmt.Printf("comparePasswordHash: pass => %s hash => %s\n", password, passHash)
+	fmt.Printf("comparePasswordHash: pass => %s hash => %s err => %v\n", password, passHash, err)
 	return err == nil
 }
