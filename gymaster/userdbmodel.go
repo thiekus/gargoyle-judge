@@ -11,7 +11,6 @@ package main
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
