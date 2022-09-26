@@ -242,10 +242,8 @@ func dashboardUserEditPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	ui.Email = email
 	// Change password only if desired
 	if password != "" {
-		salt := gylib.GenerateRandomSalt()
-		hash := calculateSaltedHash(password, salt)
+		hash := generatePasswordHash(password)
 		ui.Password = hash
-		ui.Salt = salt
 	}
 	if accessRole != 0 {
 		ui.RoleId = accessRole

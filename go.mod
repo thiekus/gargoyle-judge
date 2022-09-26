@@ -33,7 +33,7 @@ require (
 	github.com/tklauser/numcpus v0.5.0 // indirect
 	github.com/urfave/cli v1.21.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.2 // indirect
-	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa // indirect
+	golang.org/x/crypto v0.0.0-20220924013350-4ba4fb4dd9e7 // indirect
 	golang.org/x/sys v0.0.0-20220811171246-fbc7d0a398ab
 	golang.org/x/tools v0.0.0-20190606124116-d0a3d012864b // indirect
 	google.golang.org/appengine v1.6.7 // indirect

@@ -296,7 +296,7 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			err = errors.New("password yang akan diganti harus sama")
 			return
 		} else {
-			passHash = calculateSaltedHash(pass1, passSalt)
+			passHash = generatePasswordHash(pass1)
 		}
 	}
 	db, err := OpenDatabase()
