@@ -9,11 +9,12 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/dustin/go-humanize"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"html"
 	"sync"
 	"time"
+
+	"github.com/dustin/go-humanize"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type NotificationChildDetails struct {

@@ -11,12 +11,13 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type DashboardHomeData struct {
@@ -83,7 +84,7 @@ func dashboardHomeGetEndpoint(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	if r.FormValue("timeOut") == "yes" {
 		appUsers.AddFlashMessage(w, r, "Waktu anda telah habis!", FlashError)
-		http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+		http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		return
 	}
 	dhd := DashboardHomeData{
@@ -101,7 +102,7 @@ func dashboardScoreboardsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}()
 	list, err := appScoreboard.GetScoreboardListByUser(appUsers.GetLoggedUserInfo(r))
@@ -124,7 +125,7 @@ func dashboardViewScoreboardGetEndpoint(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/scoreboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/scoreboard", 302)
 		}
 	}()
 	vars := mux.Vars(r)
@@ -147,7 +148,7 @@ func dashboardNotificationsEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}()
 	uid := appUsers.GetLoggedUserId(r)
@@ -196,7 +197,7 @@ func dashboardProfilePostEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/profile", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/profile", 302)
 		}
 	}()
 	user := appUsers.GetLoggedUserInfo(r)
@@ -238,7 +239,7 @@ func dashboardProfilePostEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	appUsers.RefreshUser(user.Id)
 	appUsers.AddFlashMessage(w, r, "Success change your profile!", FlashSuccess)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/profile", 302)
+	http.Redirect(w, r, GetAppUrl(r)+"/dashboard/profile", 302)
 }
 
 func dashboardSettingsGetEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -248,7 +249,7 @@ func dashboardSettingsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}()
 	sl, err := getSyntaxThemeList()
@@ -275,7 +276,7 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/settings", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/settings", 302)
 		}
 	}()
 	user := appUsers.GetLoggedUserInfo(r)
@@ -295,7 +296,7 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 			err = errors.New("password yang akan diganti harus sama")
 			return
 		} else {
-			passHash = calculateSaltedHash(pass1, passSalt)
+			passHash = generatePasswordHash(pass1)
 		}
 	}
 	db, err := OpenDatabase()
@@ -320,5 +321,5 @@ func dashboardSettingsPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	appUsers.RefreshUser(user.Id)
 	appUsers.AddFlashMessage(w, r, "Success updating your account settings!", FlashSuccess)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/settings", 302)
+	http.Redirect(w, r, GetAppUrl(r)+"/dashboard/settings", 302)
 }

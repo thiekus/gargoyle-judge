@@ -3,59 +3,110 @@
     <div class="col-12 col-md-8">
         <div class="card">
             <div class="card-header">
-                <h4 class="card-title text-center">Add New User
-                </h4>
+                <h4 class="card-title text-center">Add New User</h4>
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
-
                     <!-- Begin form -->
-                    <form action="{{.BaseUrl}}dashboard/contestAdd" method="POST">
+                    <form
+                        action="{{.BaseUrl}}dashboard/contestAdd"
+                        method="POST"
+                    >
                         <div class="form-group">
                             <label for="title">Contest Name:</label>
-                            <input type="text" class="form-control" id="title" name="title" value="" required>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="title"
+                                name="title"
+                                value=""
+                                required
+                            />
                         </div>
                         <div class="form-group">
                             <label for="description">Description:</label>
-                            <textarea class="form-control" id="description" name="description"
-                                style="min-height: 400px;"></textarea>
+                            <textarea
+                                class="form-control"
+                                id="description"
+                                name="description"
+                                style="min-height: 400px"
+                            ></textarea>
                         </div>
                         <div class="form-group">
-                            <label for="start-time">Start Time (fill empty for unlimited):</label>
-                            <input type="text" class="form-control" id="start-time" name="start_time" value="">
+                            <label for="start-time"
+                                >Start Time (fill empty for unlimited):</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="start-time"
+                                name="start_time"
+                                value=""
+                            />
                         </div>
                         <div class="form-group">
-                            <label for="end-time">End Time (fill empty for unlimited):</label>
-                            <input type="text" class="form-control" id="end-time" name="end_time" value="">
+                            <label for="end-time"
+                                >End Time (fill empty for unlimited):</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="end-time"
+                                name="end_time"
+                                value=""
+                            />
                         </div>
                         <div class="form-group">
-                            <label for="max-runtime">Maximum Time per Session (in seconds):</label>
-                            <input type="text" class="form-control" id="max-runtime" name="max_runtime" value=""
-                                required>
+                            <label for="max-runtime"
+                                >Maximum Time per Session (in seconds):</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="max-runtime"
+                                name="max_runtime"
+                                value=""
+                                required
+                            />
                         </div>
                         <div class="form-group">
-                            <label for="freeze-time">Freeze Scoreboard time (fill empty for disable):</label>
-                            <input type="text" class="form-control" id="freeze-time" name="freeze_time" value="">
+                            <label for="freeze-time"
+                                >Freeze Scoreboard time (fill empty for
+                                disable):</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="freeze-time"
+                                name="freeze_time"
+                                value=""
+                            />
                         </div>
 
                         <div class="text-right">
                             <button type="submit" class="btn btn-success">
-                                <i class="fas fa-user-edit"></i> Add Contest</button>
+                                <i class="fas fa-user-edit"></i> Add Contest
+                            </button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <!-- Datetimepicker -->
-<script src="{{.BaseUrl}}assets/shared/datetimepicker/build/jquery.datetimepicker.full.js" type="text/javascript"
-    charset="utf-8"></script>
+<script
+    src="{{.BaseUrl}}assets/shared/datetimepicker/build/jquery.datetimepicker.full.js"
+    type="text/javascript"
+    charset="utf-8"
+></script>
 <!-- TinyMCE editor -->
-<script src="{{.BaseUrl}}assets/shared/tinymce/tinymce.min.js" type="text/javascript" charset="utf-8"></script>
+<script
+    src="{{.BaseUrl}}assets/shared/tinymce/tinymce.min.js"
+    type="text/javascript"
+    charset="utf-8"
+></script>
 
 <script id="gySubviewScript">
     function subviewInit() {
@@ -63,8 +114,9 @@
         $("#end-time").datetimepicker();
         $("#freeze-time").datetimepicker();
         tinymce.init({
-            selector: '#description',
-            plugins: 'print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons'
+            selector: "#description",
+            plugins:
+                "print preview paste importcss searchreplace autolink autosave save directionality code visualblocks visualchars fullscreen image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime advlist lists wordcount imagetools textpattern noneditable help charmap quickbars emoticons",
         });
     }
 </script>

@@ -10,9 +10,10 @@ package main
 
 import (
 	"errors"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"strconv"
 	"strings"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type LanguageProgramController struct {

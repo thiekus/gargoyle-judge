@@ -7,15 +7,18 @@
             </div>-->
             <div class="card-content collapse show">
                 <div class="card-body">
-
                     <div class="card box-shadow-0 border-primary">
                         <div class="card-header card-head-inverse bg-primary">
-                            <h4 class="card-title text-white float-left"><i class="fas fa-book-open mr-1"></i>
-                                {{.PageData.Contest.Title}}</h4>
+                            <h4 class="card-title text-white float-left">
+                                <i class="fas fa-book-open mr-1"></i>
+                                {{.PageData.Contest.Title}}
+                            </h4>
                             <div class="heading-elements float-right">
                                 <!-- Caption kanan -->
-                                <span id="tiktokContainer" style="display:none;"><i class="fas fa-stopwatch mr-1"></i>
-                                    <span id="tiktok"></span></span>
+                                <span id="tiktokContainer" style="display: none"
+                                    ><i class="fas fa-stopwatch mr-1"></i>
+                                    <span id="tiktok"></span
+                                ></span>
                             </div>
                         </div>
                         <div class="card-content collapse show">
@@ -25,7 +28,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -39,9 +41,12 @@
             </div>
             <div class="card-body">
                 <!-- Navs button groups -->
-                <div class="btn-group-vertical" style="width:100%;">
-                    <a class="btn btn-outline-dark text-left" href="{{.BaseUrl}}dashboard/scoreboard/{{.PageData.Contest.Id}}"><i
-                            class="fas fa-chalkboard mr-2"></i> Scoreboard</a>
+                <div class="btn-group-vertical" style="width: 100%">
+                    <a
+                        class="btn btn-outline-dark text-left"
+                        href="{{.BaseUrl}}dashboard/scoreboard/{{.PageData.Contest.Id}}"
+                        ><i class="fas fa-chalkboard mr-2"></i> Scoreboard</a
+                    >
                 </div>
             </div>
         </div>
@@ -54,13 +59,15 @@
             <div class="card-body">
                 {{if gt .PageData.Count 0}}
                 <!-- Problem button groups -->
-                <div class="btn-group-vertical" style="width:100%;">
+                <div class="btn-group-vertical" style="width: 100%">
                     {{$baseUrl := .BaseUrl}}
                     {{with .PageData.Problems}}
                     {{range .}}
-                    <a href="{{$baseUrl}}{{.ProblemUrl}}" class="btn btn-outline-primary text-left"><i
-                            class="fas fa-puzzle-piece mr-2"></i>
-                        {{.Name}}</a>
+                    <a
+                        href="{{$baseUrl}}{{.ProblemUrl}}"
+                        class="btn btn-outline-primary text-left"
+                        ><i class="fas fa-puzzle-piece mr-2"></i> {{.Name}}</a
+                    >
                     {{end}}
                     {{end}}
                 </div>

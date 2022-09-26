@@ -9,8 +9,9 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type SubmissionDbModel struct {
@@ -27,10 +28,10 @@ func NewSubmissionDbModel(db DbContext) SubmissionDbModel {
 func (sdm *SubmissionDbModel) GetSubmission(subId int) (gytypes.SubmissionData, error) {
 	si := gytypes.SubmissionData{}
 	db := sdm.db
-	query := `SELECT s.id, s.id_problem, s.id_user, s.id_lang, s.code, s.verdict, s.details, s.score, s.submit_time, s.compile_time, 
-        s.compile_stdout, s.compile_stderr, u.display_name, p.problem_name, c.title 
+	query := `SELECT s.id, s.id_problem, s.id_user, s.id_lang, s.code, s.verdict, s.details, s.score, s.submit_time, s.compile_time,
+        s.compile_stdout, s.compile_stderr, u.display_name, p.problem_name, c.title
         FROM ((({{.TablePrefix}}submissions AS s INNER JOIN {{.TablePrefix}}users AS u ON s.id_user = u.id)
-        INNER JOIN {{.TablePrefix}}problems AS p ON s.id_problem = p.id) 
+        INNER JOIN {{.TablePrefix}}problems AS p ON s.id_problem = p.id)
         INNER JOIN {{.TablePrefix}}contests AS c ON p.contest_id = c.id)
         WHERE s.id = ?`
 	stmt, err := db.Prepare(query)
@@ -84,11 +85,11 @@ func (sdm *SubmissionDbModel) GetSubmissionCount(userId int, problemId int) (int
 
 func (sdm *SubmissionDbModel) GetSubmissionList(userId int, problemId int) ([]gytypes.SubmissionData, error) {
 	db := sdm.db
-	query := `SELECT s.id, s.id_problem, s.id_user, s.id_lang, s.code, s.verdict, s.details, s.score, s.submit_time, s.compile_time, 
-        s.compile_stdout, s.compile_stderr, u.display_name, p.problem_name, c.title 
+	query := `SELECT s.id, s.id_problem, s.id_user, s.id_lang, s.code, s.verdict, s.details, s.score, s.submit_time, s.compile_time,
+        s.compile_stdout, s.compile_stderr, u.display_name, p.problem_name, c.title
         FROM ((({{.TablePrefix}}submissions AS s INNER JOIN {{.TablePrefix}}users AS u ON s.id_user = u.id)
-        INNER JOIN {{.TablePrefix}}problems AS p ON s.id_problem = p.id) 
-        INNER JOIN {{.TablePrefix}}contests AS c ON p.contest_id = c.id) 
+        INNER JOIN {{.TablePrefix}}problems AS p ON s.id_problem = p.id)
+        INNER JOIN {{.TablePrefix}}contests AS c ON p.contest_id = c.id)
         WHERE ((s.id_user = ?) OR (0 = ?)) AND ((s.id_problem = ?) OR (0 = ?)) ORDER BY s.id DESC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -134,7 +135,7 @@ func (sdm *SubmissionDbModel) GetSubmissionList(userId int, problemId int) ([]gy
 
 func (sdm *SubmissionDbModel) GetTestCasesOfProblem(problemId int) ([]gytypes.TestCaseData, error) {
 	db := sdm.db
-	query := `SELECT id, id_problem, test_no, input, output FROM {{.TablePrefix}}testcases 
+	query := `SELECT id, id_problem, test_no, input, output FROM {{.TablePrefix}}testcases
        WHERE id_problem = ? ORDER BY test_no ASC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -165,7 +166,7 @@ func (sdm *SubmissionDbModel) GetTestCasesOfProblem(problemId int) ([]gytypes.Te
 
 func (sdm *SubmissionDbModel) GetTestResultOfSubmission(submissionId int) ([]gytypes.TestResultData, error) {
 	db := sdm.db
-	query := `SELECT id, id_problem, id_submission, test_no, verdict, time_elapsed, memory_used, score FROM 
+	query := `SELECT id, id_problem, id_submission, test_no, verdict, time_elapsed, memory_used, score FROM
        {{.TablePrefix}}testresults WHERE id_submission = ? ORDER BY test_no ASC`
 	prep, err := db.Prepare(query)
 	if err != nil {
@@ -199,8 +200,8 @@ func (sdm *SubmissionDbModel) GetTestResultOfSubmission(submissionId int) ([]gyt
 
 func (sdm *SubmissionDbModel) InsertSubmissionOnQueue(idProblem, idUser, idLang int, code string) (int, error) {
 	db := sdm.db
-	query := `INSERT INTO {{.TablePrefix}}submissions (id_problem, id_user, id_lang, code, verdict, submit_time)
-        VALUES (?, ?, ?, ?, ?, ?)`
+	query := `INSERT INTO {{.TablePrefix}}submissions (id_problem, id_user, id_lang, code, verdict, details, submit_time, compile_stdout, compile_stderr)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {
 		return 0, err
@@ -213,7 +214,10 @@ func (sdm *SubmissionDbModel) InsertSubmissionOnQueue(idProblem, idUser, idLang 
 		idLang,
 		code,
 		gytypes.SubmissionOnQueue,
+		"",
 		now,
+		"",
+		"",
 	)
 	if err != nil {
 		return 0, err
@@ -227,7 +231,7 @@ func (sdm *SubmissionDbModel) InsertSubmissionOnQueue(idProblem, idUser, idLang 
 
 func (sdm *SubmissionDbModel) InsertTestResult(testResult gytypes.TestResultData) error {
 	db := sdm.db
-	query := `INSERT INTO {{.TablePrefix}}testresults (id_problem, id_submission, test_no, verdict, time_elapsed, memory_used, score) 
+	query := `INSERT INTO {{.TablePrefix}}testresults (id_problem, id_submission, test_no, verdict, time_elapsed, memory_used, score)
         VALUES (?, ?, ?, ?, ?, ?, ?)`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -254,7 +258,7 @@ func (sdm *SubmissionDbModel) UpdateSubmission(id int, submission gytypes.Submis
         score = ?,
         compile_time = ?,
         compile_stdout = ?,
-        compile_stderr = ? 
+        compile_stderr = ?
         WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {

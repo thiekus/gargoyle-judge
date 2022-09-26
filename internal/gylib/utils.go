@@ -12,10 +12,6 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"fmt"
-	nested "github.com/antonfisher/nested-logrus-formatter"
-	"github.com/gorilla/securecookie"
-	"github.com/mattn/go-colorable"
-	"github.com/sirupsen/logrus"
 	"io"
 	"net/http"
 	"os"
@@ -23,6 +19,11 @@ import (
 	"runtime"
 	"strings"
 	"time"
+
+	nested "github.com/antonfisher/nested-logrus-formatter"
+	"github.com/gorilla/securecookie"
+	"github.com/mattn/go-colorable"
+	"github.com/sirupsen/logrus"
 )
 
 const dateTimePickerFormatTime = "2006/01/02 15:04"

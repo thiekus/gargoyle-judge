@@ -10,10 +10,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"io/ioutil"
 	"os"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type PageAccessPerm struct {

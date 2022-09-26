@@ -9,9 +9,10 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"net/http"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"net/http"
 )
 
 type DashboardManageContestData struct {
@@ -35,7 +36,7 @@ func dashboardManageContestsGetEndpoint(w http.ResponseWriter, r *http.Request) 
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}()
 	db, err := OpenDatabase()
@@ -68,7 +69,7 @@ func dashboardContestAddGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageContests", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageContests", 302)
 		}
 	}()
 	langs, err := appLangPrograms.GetLanguageMap()

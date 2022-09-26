@@ -8,7 +8,9 @@ package main
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import "github.com/thiekus/gargoyle-judge/internal/gytypes"
+import (
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
+)
 
 type LanguageDbModel struct {
 	db DbContext
@@ -23,8 +25,8 @@ func NewLanguageDbModel(db DbContext) LanguageDbModel {
 
 func (ldm *LanguageDbModel) GetLanguageList() (gytypes.LanguageProgramMap, error) {
 	db := ldm.db
-	query := `SELECT id, ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, 
-       enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys 
+	query := `SELECT id, ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd,
+       enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys
        FROM {{.TablePrefix}}languages`
 	prep, err := db.Prepare(query)
 	if err != nil {

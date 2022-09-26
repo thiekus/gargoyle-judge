@@ -9,6 +9,14 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"io/ioutil"
+	"net/http"
+	"path/filepath"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/gorilla/mux"
 	"github.com/patrickmn/go-cache"
 	"github.com/tdewolff/minify"
@@ -19,20 +27,14 @@ import (
 	"github.com/tdewolff/minify/svg"
 	"github.com/tdewolff/minify/xml"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"io/ioutil"
-	"net/http"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"time"
 )
 
 func setAssetsWithCaching(r *mux.Router) {
 	log := gylib.GetStdLog()
 	// Initialize assets go-cache
 	c := cache.New(30*time.Minute, 1*time.Hour)
-	r.PathPrefix("/assets/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		localPath := gylib.ConcatByProgramLibDir("." + r.URL.Path)
+	r.PathPrefix(FixRootPath("/assets/")).HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		localPath := gylib.ConcatByProgramLibDir("." + strings.TrimPrefix(r.URL.Path, GetAppRootPrefix()))
 		if fileData, cached := c.Get(localPath); cached {
 			//log.Printf("Hit cache for %s", localPath)
 			contentType, _ := c.Get(localPath + ":type")

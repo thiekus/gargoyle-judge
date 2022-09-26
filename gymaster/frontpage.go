@@ -8,7 +8,9 @@ package main
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import "net/http"
+import (
+	"net/http"
+)
 
 // Just simple homepage endpoint
 func homeGetEndpoint(w http.ResponseWriter, r *http.Request) {

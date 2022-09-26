@@ -11,15 +11,16 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/shirou/gopsutil/process"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gyrpc"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 	"time"
+
+	"github.com/shirou/gopsutil/process"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gyrpc"
 )
 
 const appVersion = "0.7r69"

@@ -10,11 +10,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"html/template"
 	"strconv"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type ContestDbModel struct {
@@ -95,7 +96,7 @@ func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (
 
 func (cdm *ContestDbModel) GetContestList() ([]gytypes.ContestData, error) {
 	db := cdm.db
-	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream, 
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream,
         start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests ORDER BY id DESC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -184,7 +185,7 @@ func (cdm *ContestDbModel) GetContestListOfUserId(uid int) ([]gytypes.ContestDat
 func (cdm *ContestDbModel) GetContestListForScoreboard(publicScoreboard bool) ([]gytypes.ScoreboardListData, error) {
 	var contestList []gytypes.ScoreboardListData
 	db := cdm.db
-	query := `SELECT c.id, c.title, (SELECT COUNT(*) FROM {{.TablePrefix}}contest_access as a WHERE a.id_contest = c.id), c.allow_public 
+	query := `SELECT c.id, c.title, (SELECT COUNT(*) FROM {{.TablePrefix}}contest_access as a WHERE a.id_contest = c.id), c.allow_public
         FROM {{.TablePrefix}}contests as c WHERE (c.allow_public = ?) OR (0 = ?)`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -215,7 +216,7 @@ func (cdm *ContestDbModel) GetContestListForScoreboard(publicScoreboard bool) ([
 func (cdm *ContestDbModel) GetContestDetails(contestId int) (gytypes.ContestData, error) {
 	cd := gytypes.ContestData{}
 	db := cdm.db
-	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream, 
+	query := `SELECT id, title, description, style, allowed_lang, problem_count, contest_group_id, enable_freeze, active, allow_public, must_stream,
         start_timestamp, end_timestamp, freeze_timestamp, unfreeze_timestamp, max_runtime FROM {{.TablePrefix}}contests WHERE id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -303,7 +304,7 @@ func (cdm *ContestDbModel) GetProblemSet(contestId int) ([]gytypes.ProblemData, 
 func (cdm *ContestDbModel) GetProblemById(problemId int) (gytypes.ProblemData, error) {
 	qd := gytypes.ProblemData{}
 	db := cdm.db
-	query := `SELECT p.id, p.contest_id, p.problem_name, p.problem_shortname, p.description, p.time_limit, p.mem_limit, p.max_attempts, c.allowed_lang 
+	query := `SELECT p.id, p.contest_id, p.problem_name, p.problem_shortname, p.description, p.time_limit, p.mem_limit, p.max_attempts, c.allowed_lang
         FROM {{.TablePrefix}}problems AS p INNER JOIN {{.TablePrefix}}contests AS c ON p.contest_id = c.id WHERE p.id = ?`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -330,7 +331,7 @@ func (cdm *ContestDbModel) GetProblemById(problemId int) (gytypes.ProblemData, e
 
 func (cdm *ContestDbModel) InsertContestAccess(access gytypes.ContestAccess) error {
 	db := cdm.db
-	query := `INSERT INTO {{.TablePrefix}}contest_access (id_user, id_contest, start_time, end_time, allowed) 
+	query := `INSERT INTO {{.TablePrefix}}contest_access (id_user, id_contest, start_time, end_time, allowed)
         VALUES (?, ?, ?, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {

@@ -10,10 +10,11 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 type CountryListName map[string]string

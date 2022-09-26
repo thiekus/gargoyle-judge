@@ -9,9 +9,10 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"time"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"time"
 )
 
 type NotificationDbModel struct {
@@ -27,7 +28,7 @@ func NewNotificationDbModel(db DbContext) NotificationDbModel {
 
 func (ndm *NotificationDbModel) GetUserNotifications(userId int, unreadOnly bool) ([]gytypes.NotificationData, error) {
 	db := ndm.db
-	query := `SELECT id, id_user, id_user_from, received_time, has_read, description, link FROM {{.TablePrefix}}notifications 
+	query := `SELECT id, id_user, id_user_from, received_time, has_read, description, link FROM {{.TablePrefix}}notifications
         WHERE (id_user = ?) AND ((has_read = ?) OR (1 = ?)) ORDER BY received_time DESC`
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -62,7 +63,7 @@ func (ndm *NotificationDbModel) GetUserNotifications(userId int, unreadOnly bool
 
 func (ndm *NotificationDbModel) InsertUserNotification(targetUserId, fromUserId int, description, link string) error {
 	db := ndm.db
-	query := `INSERT INTO {{.TablePrefix}}notifications (id_user, id_user_from, received_time, has_read, description, link) 
+	query := `INSERT INTO {{.TablePrefix}}notifications (id_user, id_user_from, received_time, has_read, description, link)
         VALUES (?, ?, ?, ?, ?, ?)`
 	stmt, err := db.Prepare(query)
 	if err != nil {

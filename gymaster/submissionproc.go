@@ -11,10 +11,11 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strconv"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gyrpc"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"strconv"
 )
 
 type SubmissionProcessor struct {

@@ -6,7 +6,6 @@
             </div>
             <div class="card-content collapse show">
                 <div class="card-body">
-
                     {{if gt .PageData.Count 0}}
 
                     <p>There are {{.PageData.Count}} contests here.</p>
@@ -17,7 +16,8 @@
                     {{range .}}
                     <div class="card box-shadow-0 border-primary">
                         <div class="card-header card-head-inverse bg-primary">
-                            <h4 class="card-title text-white float-left"><i class="fas fa-book mr-1"></i> {{.Title}}
+                            <h4 class="card-title text-white float-left">
+                                <i class="fas fa-book mr-1"></i> {{.Title}}
                             </h4>
                             <div class="heading-elements float-right">
                                 {{.ProblemCount}} problems
@@ -28,24 +28,25 @@
                                 <p>{{.Description}}</p>
                                 {{.TimeDesc}}
                                 <div class="text-right">
-                                    <a href="{{$baseUrl}}{{.ContestUrl}}" class="btn btn-success"><i
-                                            class="fas fa-book-open mr-1"></i> Start Contest</a>
+                                    <a
+                                        href="{{$baseUrl}}{{.ContestUrl}}"
+                                        class="btn btn-success"
+                                        ><i class="fas fa-book-open mr-1"></i>
+                                        Start Contest</a
+                                    >
                                 </div>
                             </div>
                         </div>
                     </div>
                     {{end}}
                     {{end}}
-
                     {{else}}
                     <p>No contest available!</p>
                     {{end}}
-
                 </div>
             </div>
         </div>
     </div>
-
 </div>
 
 <script id="gySubviewScript">

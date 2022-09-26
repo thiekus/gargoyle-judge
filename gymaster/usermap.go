@@ -10,22 +10,23 @@ package main
 
 import (
 	"fmt"
-	"github.com/dustin/go-humanize"
-	"github.com/gorilla/sessions"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/dustin/go-humanize"
+	"github.com/gorilla/sessions"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
-//type UsersMap map[int]UserInfo
+// type UsersMap map[int]UserInfo
 type UsersMap struct {
 	sync.Map
 }
 
-//type UsersTokenMap map[string]int
+// type UsersTokenMap map[string]int
 type UsersTokenMap struct {
 	sync.Map
 }

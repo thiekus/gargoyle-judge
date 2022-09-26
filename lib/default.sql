@@ -3,7 +3,7 @@
 
 -- Programming Languages
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}languages', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}languages; 
+IF OBJECT_ID('{{.TablePrefix}}languages', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}languages;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}languages;
 -- {{end}}
@@ -22,36 +22,35 @@ CREATE TABLE {{.TablePrefix}}languages (
     limit_syscall INTEGER NOT NULL DEFAULT 0,
     preg_replace_from VARCHAR(200) NOT NULL DEFAULT '',
     preg_replace_to VARCHAR(200) NOT NULL DEFAULT '',
-    forbidden_keys TEXT NOT NULL DEFAULT ''
+    forbidden_keys TEXT NOT NULL
 );
 -- Default languages
 -- Pure C using GCC
-INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
+INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys)
     VALUES ('c', 'C', 1, 'c_cpp', 'appmain.c', 'appmain', 'gcc -Wall -o \{\{.WorkPath\}\}/\{\{.ExeName\}\} -O2 -std=gnu99 -lm \{\{.WorkPath\}\}/\{\{.SourceName\}\}', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 -- C++ using GCC
-INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
+INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys)
     VALUES ('cpp', 'C++', 1, 'c_cpp', 'appmain.cpp', 'appmain', 'g++ -Wall -o \{\{.WorkPath\}\}/\{\{.ExeName\}\} -O2 -std=gnu++14 -lm \{\{.WorkPath\}\}/\{\{.SourceName\}\}', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 -- Pascal using FPC
-INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
+INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys)
     VALUES ('pas', 'Pascal', 1, 'pascal', 'appmain.pas', 'appmain', 'fpc -O2 -XS -Sg \{\{.WorkPath\}\}/\{\{.SourceName\}\}', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 -- Java
-INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
+INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys)
     VALUES ('java', 'Java', 1, 'java', 'PandoraApp.java', 'PandoraApp.class', 'javac -encoding UTF-8 -d . \{\{.WorkPath\}\}/\{\{.SourceName\}\}', 'java -Xmx\{\{.MemLimit\}\}m -cp \{\{.WorkPath\}\} PandoraApp', 0, 0, 1, 'class .*\\{|class .*\\s{', 'class PandoraApp {', '');
 -- Golang
-INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys) 
+INSERT INTO {{.TablePrefix}}languages (ext_name, display_name, enabled, syntax_name, source_name, exe_name, compile_cmd, exec_cmd, enable_sandbox, limit_memory, limit_syscall, preg_replace_from, preg_replace_to, forbidden_keys)
     VALUES ('go', 'Go', 1, 'golang', 'appmain.go', 'appmain', 'go build -o \{\{.WorkPath\}\}/\{\{.ExeName\}\} \{\{.WorkPath\}\}/', '\{\{.WorkPath\}\}/\{\{.ExeName\}\}', 1, 1, 1, '', '', '');
 
 -- User table
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}users', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}users; 
+IF OBJECT_ID('{{.TablePrefix}}users', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}users;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}users;
 -- {{end}}
 CREATE TABLE {{.TablePrefix}}users (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(64) NOT NULL,
-    salt VARCHAR(32) NOT NULL,
+    password VARCHAR(72) NOT NULL,
     email VARCHAR(50) NOT NULL UNIQUE,
     display_name VARCHAR(50) NOT NULL DEFAULT 'Somebody',
     gender VARCHAR(5) NOT NULL DEFAULT 'M',
@@ -69,7 +68,7 @@ CREATE TABLE {{.TablePrefix}}users (
 
 -- User roles
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}roles', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}roles; 
+IF OBJECT_ID('{{.TablePrefix}}roles', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}roles;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}roles;
 -- {{end}}
@@ -90,7 +89,7 @@ INSERT INTO {{.TablePrefix}}roles (rolename, access_root, access_jury, access_co
 
 -- Contestant Group
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}groups', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}groups; 
+IF OBJECT_ID('{{.TablePrefix}}groups', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}groups;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}groups;
 -- {{end}}
@@ -101,7 +100,7 @@ CREATE TABLE {{.TablePrefix}}groups (
 
 -- Contestant Group Member relations
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}group_members', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}group_members; 
+IF OBJECT_ID('{{.TablePrefix}}group_members', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}group_members;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}group_members;
 -- {{end}}
@@ -113,7 +112,7 @@ CREATE TABLE {{.TablePrefix}}group_members (
 
 -- News
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}news', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}news; 
+IF OBJECT_ID('{{.TablePrefix}}news', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}news;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}news;
 -- {{end}}
@@ -122,19 +121,19 @@ CREATE TABLE {{.TablePrefix}}news (
     author_id INTEGER NOT NULL,
     post_time INTEGER NOT NULL DEFAULT 0,
     title VARCHAR(50) NOT NULL DEFAULT 'Untitled',
-    body TEXT NOT NULL DEFAULT ''
+    body TEXT NOT NULL
 );
 
 -- Contest List
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}contests', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contests; 
+IF OBJECT_ID('{{.TablePrefix}}contests', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contests;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}contests;
 -- {{end}}
 CREATE TABLE {{.TablePrefix}}contests (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     title VARCHAR(50) NOT NULL DEFAULT 'Untitled',
-    description TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL,
     style VARCHAR(20) NOT NULL DEFAULT 'ICPC',
     allowed_lang VARCHAR(200) NOT NULL DEFAULT '1,2,4',
     problem_count INTEGER NOT NULL DEFAULT 0,
@@ -153,7 +152,7 @@ CREATE TABLE {{.TablePrefix}}contests (
 
 -- Problem List
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}problems', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}problems; 
+IF OBJECT_ID('{{.TablePrefix}}problems', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}problems;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}problems;
 -- {{end}}
@@ -162,7 +161,7 @@ CREATE TABLE {{.TablePrefix}}problems (
     contest_id INTEGER NOT NULL,
     problem_name VARCHAR(50) NOT NULL DEFAULT 'Untitled Problem',
     problem_shortname VARCHAR(20) NOT NULL DEFAULT 'Untitled',
-    description TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL,
     time_limit INTEGER NOT NULL DEFAULT 1,
     mem_limit INTEGER NOT NULL DEFAULT 32,
     max_attempts INTEGER NOT NULL DEFAULT 0
@@ -170,7 +169,7 @@ CREATE TABLE {{.TablePrefix}}problems (
 
 -- Contest Access
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}contest_access', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contest_access; 
+IF OBJECT_ID('{{.TablePrefix}}contest_access', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}contest_access;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}contest_access;
 -- {{end}}
@@ -185,7 +184,7 @@ CREATE TABLE {{.TablePrefix}}contest_access (
 
 -- Contest Submissions
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}submissions', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}submissions; 
+IF OBJECT_ID('{{.TablePrefix}}submissions', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}submissions;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}submissions;
 -- {{end}}
@@ -194,19 +193,19 @@ CREATE TABLE {{.TablePrefix}}submissions (
     id_problem INTEGER NOT NULL,
     id_user INTEGER NOT NULL,
     id_lang INTEGER NOT NULL DEFAULT 1,
-    code TEXT NOT NULL DEFAULT '',
+    code TEXT NOT NULL,
     verdict VARCHAR(4) NOT NULL DEFAULT 'QU',
-    details TEXT NOT NULL DEFAULT '',
+    details TEXT NOT NULL,
     score INTEGER NOT NULL DEFAULT 0,
     submit_time INTEGER NOT NULL DEFAULT 0,
     compile_time REAL NOT NULL DEFAULT 0,
-    compile_stdout TEXT NOT NULL DEFAULT '',
-    compile_stderr TEXT NOT NULL DEFAULT ''
+    compile_stdout TEXT NOT NULL,
+    compile_stderr TEXT NOT NULL
 );
 
 -- Contest problem testcase
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}testcases', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testcases; 
+IF OBJECT_ID('{{.TablePrefix}}testcases', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testcases;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}testcases;
 -- {{end}}
@@ -214,13 +213,13 @@ CREATE TABLE {{.TablePrefix}}testcases (
     id INTEGER PRIMARY KEY {{.AutoIncrement}},
     id_problem INTEGER NOT NULL,
     test_no INTEGER NOT NULL,
-    input TEXT NOT NULL DEFAULT '',
-    output TEXT NOT NULL DEFAULT ''
+    input TEXT NOT NULL,
+    output TEXT NOT NULL
 );
 
 -- Contest problem testresults
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}testresults', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testresults; 
+IF OBJECT_ID('{{.TablePrefix}}testresults', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}testresults;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}testresults;
 -- {{end}}
@@ -237,7 +236,7 @@ CREATE TABLE {{.TablePrefix}}testresults (
 
 -- Contest score for internal beholder (Admin and Jury)
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}scores_private', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_private; 
+IF OBJECT_ID('{{.TablePrefix}}scores_private', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_private;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}scores_private;
 -- {{end}}
@@ -256,7 +255,7 @@ CREATE TABLE {{.TablePrefix}}scores_private (
 
 -- Contest score for public
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}scores_public', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_public; 
+IF OBJECT_ID('{{.TablePrefix}}scores_public', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}scores_public;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}scores_public;
 -- {{end}}
@@ -275,7 +274,7 @@ CREATE TABLE {{.TablePrefix}}scores_public (
 
 -- Slaves list
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}slaves', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}slaves; 
+IF OBJECT_ID('{{.TablePrefix}}slaves', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}slaves;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}slaves;
 -- {{end}}
@@ -286,12 +285,12 @@ CREATE TABLE {{.TablePrefix}}slaves (
     enable INTEGER NOT NULL DEFAULT 1
 );
 -- Insert default slave
-INSERT INTO {{.TablePrefix}}slaves (name, address, enable) 
+INSERT INTO {{.TablePrefix}}slaves (name, address, enable)
     VALUES ('Localhost Slave', 'localhost:28499', 1);
 
 -- Notifications
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}notifications', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}notifications; 
+IF OBJECT_ID('{{.TablePrefix}}notifications', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}notifications;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}notifications;
 -- {{end}}
@@ -307,7 +306,7 @@ CREATE TABLE {{.TablePrefix}}notifications (
 
 -- Login tokens
 -- {{if eq .Driver "sqlserver"}}
-IF OBJECT_ID('{{.TablePrefix}}tokens', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}tokens; 
+IF OBJECT_ID('{{.TablePrefix}}tokens', 'U') IS NOT NULL DROP TABLE {{.TablePrefix}}tokens;
 -- {{else}}
 DROP TABLE IF EXISTS {{.TablePrefix}}tokens;
 -- {{end}}

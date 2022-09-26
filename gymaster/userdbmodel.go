@@ -11,10 +11,11 @@ package main
 import (
 	"encoding/base64"
 	"errors"
-	"fmt"
+	"time"
+
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"time"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserDbModel struct {
@@ -58,21 +59,19 @@ func (udm *UserDbModel) CreateUserAccount(username string, password string, role
 		avatar = base64.StdEncoding.EncodeToString([]byte(gender + ":" + gylib.GetMD5Hash(username)))
 	}
 	db := &udm.db
-	query := `INSERT INTO {{.TablePrefix}}users 
-            (username, password, salt, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role, active, banned, create_time, lastaccess_time)
-			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`
+	query := `INSERT INTO {{.TablePrefix}}users
+            (username, password, email, display_name, gender, address, institution, country_id, avatar, syntax_theme, role, active, banned, create_time, lastaccess_time)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, ?, ?)`
 	prep, err := db.Prepare(query)
 	if err != nil {
 		return err
 	}
 	defer prep.Close()
-	passSalt := gylib.GenerateRandomSalt()
-	passHash := calculateSaltedHash(password, passSalt)
+	passHash := generatePasswordHash(password)
 	createTime := time.Now().Unix()
 	_, err = prep.Exec(
 		username,
 		passHash,
-		passSalt,
 		ui.Email,
 		displayName,
 		gender,
@@ -151,8 +150,8 @@ func (udm *UserDbModel) GetUserAccess(id int) (gytypes.UserRoleAccess, error) {
 
 func (udm *UserDbModel) GetUserList() ([]gytypes.UserInfo, error) {
 	db := udm.db
-	query := `SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
-        syntax_theme, role, active, banned 
+	query := `SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+        syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users`
 	rows, err := db.Query(query)
 	if err != nil {
@@ -195,8 +194,8 @@ func (udm *UserDbModel) GetUserById(userId int) (gytypes.UserInfo, error) {
 	ui := gytypes.UserInfo{}
 	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
-        syntax_theme, role, active, banned 
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+        syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users WHERE id = ?`)
 	if err != nil {
 		return ui, err
@@ -239,8 +238,8 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 	ui := gytypes.UserInfo{}
 	db := udm.db
 	stmt, err := db.Prepare(
-		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar, 
-        syntax_theme, role, active, banned 
+		`SELECT id, username, password, salt, email, display_name, gender, address, institution, country_id, avatar,
+        syntax_theme, role, active, banned
         FROM {{.TablePrefix}}users WHERE username = ?`)
 	if err != nil {
 		return ui, err
@@ -270,8 +269,7 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 		log.Errorf("[%s] Select error: %s", username, err.Error())
 		return ui, errors.New("username invalid or not exists")
 	}
-	passHash := calculateSaltedHash(password, ui.Salt)
-	if passHash != ui.Password {
+	if comparePasswordHash(ui.Password, password) {
 		err = errors.New("password authentication for this username is invalid")
 		log := gylib.GetStdLog()
 		log.Errorf("[%s] Password error: %s", username, err.Error())
@@ -286,24 +284,13 @@ func (udm *UserDbModel) GetUserByLogin(username string, password string) (gytype
 	if err != nil {
 		return ui, err
 	}
-	// For security reason, unsalted password will be re-encrypted again by same login passphrase
-	if ui.Salt == "" {
-		ui.Salt = gylib.GenerateRandomSalt()
-		ui.Password = calculateSaltedHash(password, ui.Salt)
-		ui.RoleId = roleId // catch this bug since updating password would null its role id
-		err = udm.ModifyUserAccount(ui.Id, ui)
-		if err != nil {
-			return ui, err
-		}
-	}
 	return ui, nil
 }
 
 func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error {
 	db := udm.db
-	query := `UPDATE {{.TablePrefix}}users SET 
+	query := `UPDATE {{.TablePrefix}}users SET
         password = ?,
-        salt = ?,
         email = ?,
         display_name = ?,
         gender = ?,
@@ -323,7 +310,6 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error
 	defer prep.Close()
 	_, err = prep.Exec(
 		ui.Password,
-		ui.Salt,
 		ui.Email,
 		ui.DisplayName,
 		ui.Gender,
@@ -342,7 +328,7 @@ func (udm *UserDbModel) ModifyUserAccount(userId int, ui gytypes.UserInfo) error
 
 func (udm *UserDbModel) GetUserGroupAccess(userId int) (gytypes.UserGroupAccess, error) {
 	db := udm.db
-	query := `SELECT gm.group_id, (SELECT gr.name FROM {{.TablePrefix}}groups as gr WHERE id=gm.group_id) 
+	query := `SELECT gm.group_id, (SELECT gr.name FROM {{.TablePrefix}}groups as gr WHERE id=gm.group_id)
         FROM {{.TablePrefix}}group_members as gm WHERE gm.user_id = ?`
 	prep, err := db.Prepare(query)
 	if err != nil {
@@ -423,16 +409,12 @@ func (udm *UserDbModel) CleanTokenOfUser(uid int) error {
 	return err
 }
 
-func calculateSaltedHash(password string, salt string) string {
-	// For ease for compatibility with Infest registration info, allow unsalted password
-	// GetUserByLogin method will be responsible to reset into salted form to avoid password leak while first login
-	if salt != "" {
-		full := len(salt)
-		half := full / 2
-		left := salt[:half]
-		right := salt[half:full]
-		return gylib.GetSHA256Hash(fmt.Sprintf("$%s$%s$%s$", left, password, right))
-	} else {
-		return gylib.GetSHA256Hash(password)
-	}
+func generatePasswordHash(password string) string {
+	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 19)
+	return string(hash)
+}
+
+func comparePasswordHash(passHash string, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(passHash), []byte(password))
+	return err == nil
 }

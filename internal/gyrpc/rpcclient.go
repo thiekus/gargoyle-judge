@@ -9,10 +9,11 @@ package gyrpc
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"net"
 	"net/rpc"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type GargoyleRpcClient struct {

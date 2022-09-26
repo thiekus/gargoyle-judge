@@ -13,15 +13,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	_ "github.com/denisenkom/go-mssqldb"
-	_ "github.com/go-sql-driver/mysql"
-//	_ "github.com/mattn/go-sqlite3"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"io/ioutil"
 	"net/url"
 	"strconv"
 	"strings"
 	"text/template"
+
+	_ "github.com/denisenkom/go-mssqldb"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 type DbContext struct {
@@ -54,16 +54,6 @@ func OpenDatabaseEx(driver string, multiStatements bool) (DbContext, error) {
 			return ctx, err
 		}
 		ctx.db = db
-
-	// SQLite 3.x
-//	case "sqlite3":
-//		db, err := sql.Open("sqlite3", gylib.ConcatByWorkDir(appConfig.DbFile))
-//		if err != nil {
-//			log := gylib.GetStdLog()
-//			log.Error(err)
-//			return ctx, err
-//		}
-//		ctx.db = db
 
 	// Microsoft SQL Server
 	case "sqlserver":

@@ -10,11 +10,12 @@ package main
 
 import (
 	"errors"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"net/http"
-	"strconv"
 )
 
 type DashboardManageUsersData struct {
@@ -45,7 +46,7 @@ func dashboardManageUsersGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard", 302)
 		}
 	}()
 	db, err := OpenDatabase()
@@ -78,7 +79,7 @@ func dashboardUserAddGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 		}
 	}()
 	cl, err := GetCountryListName()
@@ -115,7 +116,7 @@ func dashboardUserAddPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/userAdd", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/userAdd", 302)
 		}
 	}()
 	r.ParseForm()
@@ -148,7 +149,7 @@ func dashboardUserAddPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	appUsers.AddFlashMessage(w, r, "Success adding new user!", FlashSuccess)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+	http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 }
 
 func dashboardUserEditGetEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +164,7 @@ func dashboardUserEditGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 		}
 	}()
 	vars := mux.Vars(r)
@@ -207,7 +208,7 @@ func dashboardUserEditPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/userEdit", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/userEdit", 302)
 		}
 	}()
 	r.ParseForm()
@@ -241,10 +242,8 @@ func dashboardUserEditPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	ui.Email = email
 	// Change password only if desired
 	if password != "" {
-		salt := gylib.GenerateRandomSalt()
-		hash := calculateSaltedHash(password, salt)
+		hash := generatePasswordHash(password)
 		ui.Password = hash
-		ui.Salt = salt
 	}
 	if accessRole != 0 {
 		ui.RoleId = accessRole
@@ -260,7 +259,7 @@ func dashboardUserEditPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	appUsers.RefreshUser(id)
 	appUsers.AddFlashMessage(w, r, "Success updating account settings!", FlashSuccess)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+	http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 }
 
 func dashboardUserDeleteGetEndpoint(w http.ResponseWriter, r *http.Request) {
@@ -275,7 +274,7 @@ func dashboardUserDeleteGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 		}
 	}()
 	vars := mux.Vars(r)
@@ -294,5 +293,5 @@ func dashboardUserDeleteGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	appUsers.AddFlashMessage(w, r, "Success deleting account!", FlashSuccess)
-	http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/manageUsers", 302)
+	http.Redirect(w, r, GetAppUrl(r)+"/dashboard/manageUsers", 302)
 }

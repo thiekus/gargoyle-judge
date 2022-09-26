@@ -10,12 +10,13 @@ package main
 
 import (
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type DashboardContestGateData struct {
@@ -54,7 +55,7 @@ func dashboardContestsGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/contests", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/contests", 302)
 		}
 	}()
 	db, err := OpenDatabase()
@@ -82,7 +83,7 @@ func dashboardProblemSetGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/contests", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/contests", 302)
 		}
 	}()
 	vars := mux.Vars(r)
@@ -130,7 +131,7 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/contests", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/contests", 302)
 		}
 	}()
 	vars := mux.Vars(r)
@@ -176,7 +177,7 @@ func dashboardProblemGetEndpoint(w http.ResponseWriter, r *http.Request) {
 func dashboardProblemPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	log := gylib.GetStdLog()
 	var err error = nil
-	errRedirect := gylib.GetBaseUrlWithSlash(r) + "dashboard/contests"
+	errRedirect := GetAppUrl(r) + "/dashboard/contests"
 	defer func() {
 		if err != nil {
 			log.Error(err)
@@ -193,12 +194,12 @@ func dashboardProblemPostEndpoint(w http.ResponseWriter, r *http.Request) {
 	userId := appUsers.GetLoggedUserId(r)
 	problemId, err := strconv.Atoi(r.PostFormValue("problemId"))
 	if err != nil {
-		errRedirect = gylib.GetBaseUrlWithSlash(r) + "dashboard/problemSet/" + strconv.Itoa(contestId)
+		errRedirect = GetAppUrl(r) + "/dashboard/problemSet/" + strconv.Itoa(contestId)
 		return
 	}
 	langId, err := strconv.Atoi(r.PostFormValue("lang"))
 	if err != nil {
-		errRedirect = gylib.GetBaseUrlWithSlash(r) + "dashboard/problem/" + strconv.Itoa(problemId)
+		errRedirect = GetAppUrl(r) + "/dashboard/problem/" + strconv.Itoa(problemId)
 		return
 	}
 	var code string
@@ -219,19 +220,19 @@ func dashboardProblemPostEndpoint(w http.ResponseWriter, r *http.Request) {
 		code = r.PostFormValue("sourceCodeText")
 	default:
 		err = errors.New("invalid type name")
-		errRedirect = gylib.GetBaseUrlWithSlash(r) + "dashboard/problem/" + strconv.Itoa(problemId)
+		errRedirect = GetAppUrl(r) + "/dashboard/problem/" + strconv.Itoa(problemId)
 		return
 	}
 	sub, err := NewSubmissionProcessor(&appSlaves, problemId, userId, langId, code)
 	if err != nil {
-		errRedirect = gylib.GetBaseUrlWithSlash(r) + "dashboard/problem/" + strconv.Itoa(problemId)
+		errRedirect = GetAppUrl(r) + "/dashboard/problem/" + strconv.Itoa(problemId)
 		return
 	}
 	if err = sub.DoProcess(); err == nil {
 		appUsers.AddFlashMessage(w, r, "Berhasil memasukan submisi!", FlashSuccess)
-		http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/problemSet/"+strconv.Itoa(contestId), 302)
+		http.Redirect(w, r, GetAppUrl(r)+"/dashboard/problemSet/"+strconv.Itoa(contestId), 302)
 	} else {
-		errRedirect = gylib.GetBaseUrlWithSlash(r) + "dashboard/problem/" + strconv.Itoa(problemId)
+		errRedirect = GetAppUrl(r) + "/dashboard/problem/" + strconv.Itoa(problemId)
 	}
 }
 
@@ -242,7 +243,7 @@ func dashboardUserSubmissionsGetEndpoint(w http.ResponseWriter, r *http.Request)
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/userSubmissions", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/userSubmissions", 302)
 		}
 	}()
 	r.ParseForm()
@@ -275,7 +276,7 @@ func dashboardUserViewSubmissionGetEndpoint(w http.ResponseWriter, r *http.Reque
 		if err != nil {
 			log.Error(err)
 			appUsers.AddFlashMessage(w, r, "Error: "+err.Error(), FlashError)
-			http.Redirect(w, r, gylib.GetBaseUrlWithSlash(r)+"dashboard/userSubmissions", 302)
+			http.Redirect(w, r, GetAppUrl(r)+"/dashboard/userSubmissions", 302)
 		}
 	}()
 	vars := mux.Vars(r)

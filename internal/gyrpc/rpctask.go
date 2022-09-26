@@ -9,12 +9,13 @@ package gyrpc
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"math"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type GargoyleRpcTask struct {

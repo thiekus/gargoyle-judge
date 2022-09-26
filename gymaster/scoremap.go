@@ -10,9 +10,10 @@ package main
 
 import (
 	"errors"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"sync"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type ScoreboardDataContext struct {

@@ -10,13 +10,14 @@ package main
 
 import (
 	"errors"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"sync"
 	"time"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 // map[userId][contestId]
-//type ContestAccessMap map[int]map[int]ContestAccess
+// type ContestAccessMap map[int]map[int]ContestAccess
 type ContestInfoMap struct {
 	sync.Map
 }

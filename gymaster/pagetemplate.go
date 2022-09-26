@@ -12,6 +12,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"io/ioutil"
+	"net/http"
+	"regexp"
+	"runtime"
+	"time"
+
 	"github.com/tdewolff/minify"
 	"github.com/tdewolff/minify/css"
 	"github.com/tdewolff/minify/html"
@@ -21,12 +28,6 @@ import (
 	"github.com/tdewolff/minify/xml"
 	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
-	"html/template"
-	"io/ioutil"
-	"net/http"
-	"regexp"
-	"runtime"
-	"time"
 )
 
 type PageDataInfo struct {
@@ -129,8 +130,8 @@ func NewPageInfoData(w http.ResponseWriter, r *http.Request, pageData interface{
 	}
 	uas := r.UserAgent()
 	data := PageDataInfo{
-		BaseUrl:     gylib.GetBaseUrlWithSlash(r),
-		BaseUrlNS:   gylib.GetBaseUrl(r),
+		BaseUrl:     GetAppUrlWithSlash(r),
+		BaseUrlNS:   GetAppUrl(r),
 		AppVersion:  appVersion,
 		GoVersion:   runtime.Version(),
 		GoPlatform:  fmt.Sprintf("%s %s", runtime.GOOS, runtime.GOARCH),

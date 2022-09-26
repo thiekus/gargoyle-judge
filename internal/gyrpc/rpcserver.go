@@ -10,12 +10,13 @@ package gyrpc
 
 import (
 	"bytes"
-	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 	"html/template"
 	"net"
 	"net/rpc"
 	"path/filepath"
 	"runtime"
+
+	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
 type GargoyleRpcServerVars struct {

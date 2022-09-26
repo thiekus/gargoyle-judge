@@ -12,17 +12,18 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/nfnt/resize"
-	"github.com/o1egl/govatar"
-	"github.com/patrickmn/go-cache"
-	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"image/jpeg"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/nfnt/resize"
+	"github.com/o1egl/govatar"
+	"github.com/patrickmn/go-cache"
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 )
 
 var avatarCache *cache.Cache = nil
