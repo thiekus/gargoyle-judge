@@ -407,7 +407,7 @@ func (udm *UserDbModel) CleanTokenOfUser(uid int) error {
 }
 
 func generatePasswordHash(password string) string {
-	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 19)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(hash)
 }
 
