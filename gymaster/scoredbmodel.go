@@ -11,7 +11,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"math"
 	"sort"
 	"time"
@@ -245,12 +244,11 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 						user.TotalPenaltyTime += score.PenaltyTime
 						if score.AcceptedTime > 0 {
 							submitPenaltyTime := int64(0)
-							startTime := sci.StartTimestamp.Unix()
-							log.Printf("user %s: start from %d", user.Name, startTime)
+							contestStartTime := sci.StartTimestamp.Unix()
 							// Is contest was defined time?
-							if startTime > 0 {
+							if contestStartTime > 0 {
 								// Use fixed contest time
-								submitPenaltyTime = score.AcceptedTime - startTime
+								submitPenaltyTime = score.AcceptedTime - contestStartTime
 							} else {
 								// For unlimited contest, use first which user enter instead
 								submitPenaltyTime = score.AcceptedTime - user.StartTime
@@ -263,11 +261,11 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 					// Delta of UTC (e.g UTC +7)
 					utcDelta := int64(math.RoundToEven(appConfig.TimeUTC * 3600))
 					if score.AcceptedTime > 0 {
-						startTime := sci.StartTimestamp.Unix()
+						contestStartTime := sci.StartTimestamp.Unix()
 						// Is contest was defined time?
-						if startTime > 0 {
+						if contestStartTime > 0 {
 							// Use fixed contest time
-							score.AcceptedTime = score.AcceptedTime - startTime
+							score.AcceptedTime = score.AcceptedTime - contestStartTime
 						} else {
 							// For unlimited contest, use first which user enter instead
 							score.AcceptedTime = score.AcceptedTime - user.StartTime
