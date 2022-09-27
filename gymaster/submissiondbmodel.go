@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/thiekus/gargoyle-judge/internal/gylib"
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
 )
 
@@ -252,7 +253,11 @@ func (sdm *SubmissionDbModel) InsertTestResult(testResult gytypes.TestResultData
 }
 
 func sanitizePath(log string) string {
-	return strings.ReplaceAll(log, "/home/infest2022/gargoyle-judge", "/opt/gargoyle")
+	progDir := gylib.GetProgramBaseDir()
+	cachesDir := progDir + "/lib/caches"
+	log = strings.ReplaceAll(log, cachesDir, "/tmp")
+	log = strings.ReplaceAll(log, progDir, "/opt/gargoyle")
+	return log
 }
 
 func (sdm *SubmissionDbModel) UpdateSubmission(id int, submission gytypes.SubmissionData) error {

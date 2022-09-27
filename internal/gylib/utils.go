@@ -121,13 +121,17 @@ func GetStdLog() *logrus.Logger {
 	return appLog
 }
 
-func GetProgramLibDir() string {
+func GetProgramBaseDir() string {
 	exePath, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
-	dir := filepath.ToSlash(filepath.Dir(filepath.Dir(exePath)) + "/lib")
+	dir := filepath.ToSlash(filepath.Dir(filepath.Dir(exePath)))
 	return dir
+}
+
+func GetProgramLibDir() string {
+	return GetProgramBaseDir() + "/lib"
 }
 
 func ConcatByProgramLibDir(path string) string {
