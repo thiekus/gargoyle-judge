@@ -9,6 +9,7 @@ package main
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import (
+	"strings"
 	"time"
 
 	"github.com/thiekus/gargoyle-judge/internal/gytypes"
@@ -250,6 +251,10 @@ func (sdm *SubmissionDbModel) InsertTestResult(testResult gytypes.TestResultData
 	return err
 }
 
+func sanitizePath(log string) string {
+	return strings.Replace(log, "/home/infest2022/gargoyle-judge", "/opt/gargoyle", 0)
+}
+
 func (sdm *SubmissionDbModel) UpdateSubmission(id int, submission gytypes.SubmissionData) error {
 	db := sdm.db
 	query := `UPDATE {{.TablePrefix}}submissions SET
@@ -270,8 +275,8 @@ func (sdm *SubmissionDbModel) UpdateSubmission(id int, submission gytypes.Submis
 		submission.Details,
 		submission.Score,
 		submission.CompileTime,
-		submission.CompileStdout,
-		submission.CompileStderr,
+		sanitizePath(submission.CompileStdout),
+		sanitizePath(submission.CompileStderr),
 		id,
 	)
 	return err
