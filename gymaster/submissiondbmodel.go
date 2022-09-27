@@ -252,7 +252,7 @@ func (sdm *SubmissionDbModel) InsertTestResult(testResult gytypes.TestResultData
 }
 
 func sanitizePath(log string) string {
-	return strings.Replace(log, "/home/infest2022/gargoyle-judge", "/opt/gargoyle", 0)
+	return strings.ReplaceAll(log, "/home/infest2022/gargoyle-judge", "/opt/gargoyle")
 }
 
 func (sdm *SubmissionDbModel) UpdateSubmission(id int, submission gytypes.SubmissionData) error {
