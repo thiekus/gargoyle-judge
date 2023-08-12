@@ -58,7 +58,7 @@ func RandString(n int) string {
 }
 
 func GetBaseUrl(r *http.Request) string {
-	if r.TLS != nil {
+	if (r.TLS != nil) || (r.Header.Get("X-Forwarded-Proto") == "https") {
 		return fmt.Sprintf("https://%s", r.Host)
 	} else {
 		return fmt.Sprintf("http://%s", r.Host)
@@ -66,7 +66,7 @@ func GetBaseUrl(r *http.Request) string {
 }
 
 func GetBaseUrlWithSlash(r *http.Request) string {
-	if r.TLS != nil {
+	if (r.TLS != nil) || (r.Header.Get("X-Forwarded-Proto") == "https") {
 		return fmt.Sprintf("https://%s/", r.Host)
 	} else {
 		return fmt.Sprintf("http://%s/", r.Host)
