@@ -33,8 +33,8 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/urfave/cli v1.21.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
-	golang.org/x/crypto v0.12.0
-	golang.org/x/sys v0.11.0
+	golang.org/x/crypto v0.13.0
+	golang.org/x/sys v0.12.0
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gorm.io/gorm v1.23.8 // indirect
