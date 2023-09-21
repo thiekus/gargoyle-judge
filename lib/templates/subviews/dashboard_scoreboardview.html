@@ -81,7 +81,7 @@
                                     </td>
                                     {{with .Problems}}
                                     {{range .}}
-                                    {{if gt .AcceptedTime 0}}
+                                    {{if .IsAccepted}}
                                     <td class="text-center scoreboard-solved">
                                         {{.AcceptedTimeStr}}<br /><small
                                             ><i class="fas fa-running mr-1"></i>

@@ -193,6 +193,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 				OneHit:          false,
 				Regraded:        false,
 				AcceptedTimeStr: "00:00:00",
+				IsAccepted:      false, // Assume is not accepted
 			}
 			probs = append(probs, p)
 		}
@@ -233,6 +234,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 		if err != nil {
 			return nil, err
 		}
+		score.IsAccepted = score.AcceptedTime > 0
 		// Score comparison is unlikely needed as filtered by SQL, but won't we paranoid?
 		if score.ContestId == contestId {
 			if user, exists := users[score.UserId]; exists {
@@ -259,7 +261,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 					}
 					// Delta of UTC (e.g UTC +7)
 					//utcDelta := int64(math.RoundToEven(appConfig.TimeUTC * 3600))
-					if score.AcceptedTime > 0 {
+					if score.IsAccepted {
 						contestStartTime := sci.StartTimestamp.Unix()
 						// Is contest was defined time?
 						if contestStartTime > 0 {

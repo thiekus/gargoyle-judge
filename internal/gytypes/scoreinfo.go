@@ -70,6 +70,7 @@ type ScoreProblemData struct {
 	OneHit          bool
 	Regraded        bool
 	AcceptedTimeStr string
+	IsAccepted      bool
 }
 
 type ScoreboardListData struct {
