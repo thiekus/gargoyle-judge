@@ -11,7 +11,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"math"
 	"sort"
 	"time"
 
@@ -57,9 +56,9 @@ func (sdm *ScoreDbModel) GetContestInfoById(contestId int) (gytypes.ScoreContest
 	if err != nil {
 		return scd, err
 	}
-	scd.FreezeTime = time.Unix(utFreezeTime, 0)
-	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
-	scd.StartTimestamp = time.Unix(utStartTime, 0)
+	scd.FreezeTime = time.Unix(utFreezeTime, 0).Local()
+	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0).Local()
+	scd.StartTimestamp = time.Unix(utStartTime, 0).Local()
 	return scd, nil
 }
 
@@ -91,9 +90,9 @@ func (sdm *ScoreDbModel) GetContestInfoByProblemId(problemId int) (gytypes.Score
 	if err != nil {
 		return scd, err
 	}
-	scd.FreezeTime = time.Unix(utFreezeTime, 0)
-	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
-	scd.StartTimestamp = time.Unix(utStartTime, 0)
+	scd.FreezeTime = time.Unix(utFreezeTime, 0).Local()
+	scd.UnfreezeTime = time.Unix(utUnfreezeTime, 0).Local()
+	scd.StartTimestamp = time.Unix(utStartTime, 0).Local()
 	return scd, nil
 }
 
@@ -259,7 +258,7 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 						}
 					}
 					// Delta of UTC (e.g UTC +7)
-					utcDelta := int64(math.RoundToEven(appConfig.TimeUTC * 3600))
+					//utcDelta := int64(math.RoundToEven(appConfig.TimeUTC * 3600))
 					if score.AcceptedTime > 0 {
 						contestStartTime := sci.StartTimestamp.Unix()
 						// Is contest was defined time?
@@ -270,9 +269,9 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 							// For unlimited contest, use first which user enter instead
 							score.AcceptedTime = score.AcceptedTime - user.StartTime
 						}
-						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime-utcDelta, 0))
+						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime, 0).Local())
 					}
-					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime-utcDelta, 0))
+					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime, 0).Local())
 					// Replace again with modified user info
 					user.Problems[problemIndex] = score
 					users[user.UserId] = user

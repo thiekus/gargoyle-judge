@@ -32,7 +32,7 @@ func ajaxGetNotifications(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for i := range nd.Notifications {
-		nd.Notifications[i].ReceivedTimeStr = humanize.Time(time.Unix(nd.Notifications[i].ReceivedTimestamp, 0))
+		nd.Notifications[i].ReceivedTimeStr = humanize.Time(time.Unix(nd.Notifications[i].ReceivedTimestamp, 0).Local())
 	}
 	if data, err := json.Marshal(nd); err == nil {
 		w.Write(data)

@@ -197,8 +197,8 @@ func (cac *ContestAccessController) GetAccessInfoOfUser(userId int, contestId in
 			ca = gytypes.ContestAccess{
 				UserId:    userId,
 				ContestId: contestId,
-				StartTime: time.Unix(nowTime, 0),
-				EndTime:   time.Unix(endTime, 0),
+				StartTime: time.Unix(nowTime, 0).Local(),
+				EndTime:   time.Unix(endTime, 0).Local(),
 				Allowed:   true,
 			}
 			err = cdm.InsertContestAccess(ca)

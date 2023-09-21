@@ -61,7 +61,7 @@ func fetchNewsFeed() NewsFeed {
 		if err != nil {
 			return nf
 		}
-		ut := time.Unix(int64(newsTime), 0)
+		ut := time.Unix(int64(newsTime), 0).Local()
 		nd.PostDate = ut.Format(time.RFC3339)
 		nf.News = append(nf.News, nd)
 		nf.Count++

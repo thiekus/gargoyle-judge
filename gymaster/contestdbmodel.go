@@ -89,8 +89,8 @@ func (cdm *ContestDbModel) GetContestAccessOfUserId(contestId int, userId int) (
 	if err != nil {
 		return ca, err
 	}
-	ca.StartTime = time.Unix(utStartTime, 0)
-	ca.EndTime = time.Unix(utEndTime, 0)
+	ca.StartTime = time.Unix(utStartTime, 0).Local()
+	ca.EndTime = time.Unix(utEndTime, 0).Local()
 	return ca, nil
 }
 
@@ -132,10 +132,10 @@ func (cdm *ContestDbModel) GetContestList() ([]gytypes.ContestData, error) {
 		if err != nil {
 			return nil, err
 		}
-		cd.StartTime = time.Unix(utStartTime, 0)
-		cd.EndTime = time.Unix(utEndTime, 0)
-		cd.FreezeTime = time.Unix(utFreezeTime, 0)
-		cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
+		cd.StartTime = time.Unix(utStartTime, 0).Local()
+		cd.EndTime = time.Unix(utEndTime, 0).Local()
+		cd.FreezeTime = time.Unix(utFreezeTime, 0).Local()
+		cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0).Local()
 		cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 		if (utStartTime != 0) && (utEndTime != 0) {
 			maxTime := cd.MaxTime / 60
@@ -245,10 +245,10 @@ func (cdm *ContestDbModel) GetContestDetails(contestId int) (gytypes.ContestData
 	if err != nil {
 		return cd, err
 	}
-	cd.StartTime = time.Unix(utStartTime, 0)
-	cd.EndTime = time.Unix(utEndTime, 0)
-	cd.FreezeTime = time.Unix(utFreezeTime, 0)
-	cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0)
+	cd.StartTime = time.Unix(utStartTime, 0).Local()
+	cd.EndTime = time.Unix(utEndTime, 0).Local()
+	cd.FreezeTime = time.Unix(utFreezeTime, 0).Local()
+	cd.UnfreezeTime = time.Unix(utUnfreezeTime, 0).Local()
 	cd.ContestUrl = "dashboard/problemSet/" + strconv.Itoa(cd.Id)
 	if (utStartTime != 0) && (utEndTime != 0) {
 		maxTime := cd.MaxTime / 60

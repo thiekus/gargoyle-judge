@@ -62,7 +62,7 @@ func (sdm *SubmissionDbModel) GetSubmission(subId int) (gytypes.SubmissionData, 
 	if err != nil {
 		return si, err
 	}
-	si.SubmitTime = time.Unix(utSubmitTime, 0)
+	si.SubmitTime = time.Unix(utSubmitTime, 0).Local()
 	lang, err := appLangPrograms.GetLanguageFromId(si.LanguageId)
 	if err != nil {
 		return si, err
@@ -123,7 +123,7 @@ func (sdm *SubmissionDbModel) GetSubmissionList(userId int, problemId int) ([]gy
 			&sb.ProblemName,
 			&sb.ContestName,
 		)
-		sb.SubmitTime = time.Unix(utSubmitTime, 0)
+		sb.SubmitTime = time.Unix(utSubmitTime, 0).Local()
 		lang, err := appLangPrograms.GetLanguageFromId(sb.LanguageId)
 		if err != nil {
 			return subs, err

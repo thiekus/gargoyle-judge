@@ -55,7 +55,7 @@ func (ndm *NotificationDbModel) GetUserNotifications(userId int, unreadOnly bool
 		if err != nil {
 			return nil, err
 		}
-		nt.ReceivedTime = time.Unix(utReceivedTime, 0)
+		nt.ReceivedTime = time.Unix(utReceivedTime, 0).Local()
 		notifications = append(notifications, nt)
 	}
 	return notifications, nil
