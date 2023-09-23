@@ -271,9 +271,11 @@ func (sdm *ScoreDbModel) GetScoreboardForContest(contestId int, publicBoard bool
 							// For unlimited contest, use first which user enter instead
 							score.AcceptedTime = score.AcceptedTime - user.StartTime
 						}
-						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime, 0).Local())
+						// Don't alter with local time, use UTC
+						score.AcceptedTimeStr = gylib.TimeToHMS(time.Unix(score.AcceptedTime, 0).UTC())
 					}
-					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime, 0).Local())
+					// Don't alter with local time, use UTC
+					user.PenaltyTimeStr = gylib.TimeToHMS(time.Unix(user.TotalPenaltyTime, 0).UTC())
 					// Replace again with modified user info
 					user.Problems[problemIndex] = score
 					users[user.UserId] = user
